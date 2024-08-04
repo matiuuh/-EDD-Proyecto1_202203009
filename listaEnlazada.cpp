@@ -1,5 +1,6 @@
 #include "ListaEnlazada.h"
 #include <iostream>
+#include "Usuario.h"  // Asegúrate de incluir Usuario.h aquí
 
 using namespace std;
 
