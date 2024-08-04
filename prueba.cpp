@@ -40,6 +40,7 @@ public:
 
     ListaEnlazada() : cabeza(nullptr) {}
 
+    //funcion para agregar usuarios
     void agregarUsuario(const Usuario& usuario) {
         unique_ptr<Nodo> nuevoNodo = make_unique<Nodo>(usuario);
 
@@ -54,6 +55,19 @@ public:
         }
     }
 
+    //función para buscar usuarios según el correo
+    Usuario* buscarUsuarioPorCorreo(const string& correo) {
+        Nodo* temp = cabeza.get();
+        while (temp) {
+            if (temp->usuario.getCorreo() == correo) {
+                return &temp->usuario;
+            }
+            temp = temp->siguiente.get();
+        }
+        return nullptr; // Si no se encuentra el usuario
+    }
+
+    //función para mostrar los usuarios
     void mostrarUsuarios() const {
         Nodo* temp = cabeza.get();
         while (temp) {
@@ -67,8 +81,8 @@ public:
 
 // Prototipos
 void menu();
-void iniciarSesion();
-void registro(ListaEnlazada& lista);
+void iniciarSesion(ListaEnlazada&);
+void registro(ListaEnlazada&);
 
 int main() {
     // Llamar al menú
@@ -94,7 +108,7 @@ void menu() {
 
         switch (opcion) {
             case 1:
-                iniciarSesion();
+                iniciarSesion(listaUsuarios);
                 cout << "\n";
                 system("pause");
                 break;
@@ -123,10 +137,26 @@ void menu() {
     } while (opcion != 4);
 }
 
-void iniciarSesion() {
-    // Aquí podrías implementar la lógica para iniciar sesión
-    cout << "Funcionalidad de iniciar sesión no implementada." << endl;
+void iniciarSesion(ListaEnlazada& lista) {
+    string correo, contrasenia;
+    cout << "Ingrese el correo: "; getline(cin, correo);
+    cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
+
+    // Buscar al usuario por correo
+    Usuario* usuario = lista.buscarUsuarioPorCorreo(correo);
+    if(usuario){
+        // Verificar si la contraseña es correcta
+        if(usuario->getContrasenia() == contrasenia){
+            cout << "Inicio de sesión exitoso. Bienvenido, " << usuario->getNombre() << "!" << endl;
+            
+        }else{
+            cout << "Credenciales incorrectas" << endl;
+        }
+    }else {
+        cout << "Credenciales incorrectas" << endl;
+    }
 }
+
 
 void registro(ListaEnlazada& lista) {
     string nombre, apellidos, fechaNacimiento, correo, contrasenia;
@@ -136,6 +166,12 @@ void registro(ListaEnlazada& lista) {
     cout << "Ingrese la fecha de nacimiento (DD/MM/YYYY): "; getline(cin, fechaNacimiento);
     cout << "Ingrese el correo: "; getline(cin, correo);
     cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
+
+    // Verificar si el correo ya existe
+    if (lista.buscarUsuarioPorCorreo(correo)) {
+        cout << "Error: Ya existe un usuario con este correo." << endl;
+        return; // Salir de la función si el correo ya está registrado
+    }
 
     Usuario nuevoUsuario(nombre, apellidos, fechaNacimiento, correo, contrasenia);
     lista.agregarUsuario(nuevoUsuario);
