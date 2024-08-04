@@ -14,8 +14,7 @@ private:
     string contrasenia;
 
 public:
-    // Constructor
-    Usuario(string nombre, string apellidos, string fechaNacimiento, string correo, string contrasenia);
+    Usuario(const string& nombre, const string& apellidos, const string& fechaNacimiento, const string& correo, const string& contrasenia);
 
     // Getters
     string getNombre() const;

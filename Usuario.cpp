@@ -1,8 +1,8 @@
 #include "Usuario.h"
 
 // Constructor
-Usuario::Usuario(string _nombre, string _apellidos, string _fechaNacimiento, string _correo, string _contrasenia)
-    : nombre(_nombre), apellidos(_apellidos), fechaNacimiento(_fechaNacimiento), correo(_correo), contrasenia(_contrasenia) {}
+Usuario::Usuario(const string& nombre, const string& apellidos, const string& fechaNacimiento, const string& correo, const string& contrasenia)
+    : nombre(nombre), apellidos(apellidos), fechaNacimiento(fechaNacimiento), correo(correo), contrasenia(contrasenia) {}
 
 // Getters
 string Usuario::getNombre() const {
