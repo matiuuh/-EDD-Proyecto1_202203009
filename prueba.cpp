@@ -81,8 +81,10 @@ public:
 
 // Prototipos
 void menu();
+void menuUsuario();
 void iniciarSesion(ListaEnlazada&);
 void registro(ListaEnlazada&);
+void menuAdmin();
 
 int main() {
     // Llamar al menú
@@ -178,3 +180,97 @@ void registro(ListaEnlazada& lista) {
 
     cout << "Usuario registrado exitosamente." << endl;
 }
+
+void menuUsuario(){
+    int opcion;
+    do {
+        cout << "\t-----Menu Usuario-----\n";
+        cout << "\t1. Perfil" << endl;
+        cout << "\t2. Solicitudes" << endl;
+        cout << "\t3. Publicaciones" << endl;
+        cout << "\t4. Reportes" << endl;
+        cout << "\t5. Salir" << endl;
+        cout << "\tIngrese opcion: "; cin >> opcion;
+        cin.ignore(); // Para limpiar el buffer de entrada después de leer un número
+
+        switch (opcion) {
+            case 1:
+            cout<<"---------Perfil---------"<<endl;
+                //iniciarSesion(listaUsuarios);
+                cout << "\n";
+                system("pause");
+                break;
+            case 2:
+                cout<<"---------Solicitudes---------"<<endl;
+                cout << "\n";
+                system("pause");
+                break;
+            case 3:
+                cout << "---------Publicaciones---------" << endl;
+                cout << "Carnet: 202203009" << endl;
+                cout << "Link del repositorio: https://github.com/matiuuh/-EDD-Proyecto1_202203009.git" << endl;
+                cout << "\n";
+                system("pause");
+                break;
+            case 4:
+                cout << "---------Reportes---------" << endl;
+                break;
+            case 5:
+                cout << "volviendo..." << endl;
+                break;
+            default:
+                cout << "Ingrese una opcion valida." << endl;
+                system("pause");
+                break;
+        }
+        system("cls");
+    } while (opcion != 5);
+}
+
+void menuAdmin(){
+    int opcion;
+    do {
+        cout << "\t-----Menu Usuario-----\n";
+        cout << "\t1. Carga de usuarios" << endl;
+        cout << "\t2. Carga de relaciones" << endl;
+        cout << "\t3. Carga de publicaciones" << endl;
+        cout << "\t4. Gestionear usuarios" << endl;
+        cout << "\t5. Reportes" << endl;
+        cout << "\t6. Salir" << endl;
+        cout << "\tIngrese opcion: "; cin >> opcion;
+        cin.ignore(); // Para limpiar el buffer de entrada después de leer un número
+
+        switch (opcion) {
+            case 1:
+            cout<<"---------Perfil---------"<<endl;
+                //iniciarSesion(listaUsuarios);
+                cout << "\n";
+                system("pause");
+                break;
+            case 2:
+                cout<<"---------Solicitudes---------"<<endl;
+                cout << "\n";
+                system("pause");
+                break;
+            case 3:
+                cout << "---------Publicaciones---------" << endl;
+                cout << "Carnet: 202203009" << endl;
+                cout << "Link del repositorio: https://github.com/matiuuh/-EDD-Proyecto1_202203009.git" << endl;
+                cout << "\n";
+                system("pause");
+                break;
+            case 4:
+                cout << "---------Reportes---------" << endl;
+                break;
+            case 5:
+                cout << "volviendo..." << endl;
+                break;
+            default:
+                cout << "Ingrese una opcion valida." << endl;
+                system("pause");
+                break;
+        }
+        system("cls");
+    } while (opcion != 5);
+}
+
