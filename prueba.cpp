@@ -85,6 +85,9 @@ void menuUsuario();
 void iniciarSesion(ListaEnlazada&);
 void registro(ListaEnlazada&);
 void menuAdmin();
+void subMenuPerfil();
+void subMenuSolicitudes();
+void subMenuPublicaciones();
 
 int main() {
     // Llamar al menú
@@ -144,12 +147,19 @@ void iniciarSesion(ListaEnlazada& lista) {
     cout << "Ingrese el correo: "; getline(cin, correo);
     cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
 
+    // Verificar si es el administrador
+    if (correo == "admin" && contrasenia == "EDD") {
+        cout << "Inicio de sesion como Administrador exitoso. Bienvenido, Administrador!" << endl;
+        menuAdmin();
+        return; // Salir de la función después de iniciar sesión como administrador
+    }
+
     // Buscar al usuario por correo
     Usuario* usuario = lista.buscarUsuarioPorCorreo(correo);
     if(usuario){
         // Verificar si la contraseña es correcta
         if(usuario->getContrasenia() == contrasenia){
-            cout << "Inicio de sesión exitoso. Bienvenido, " << usuario->getNombre() << "!" << endl;
+            cout << "Inicio de sesion exitoso. Bienvenido, " << usuario->getNombre() << "!" << endl;
             
         }else{
             cout << "Credenciales incorrectas" << endl;
@@ -230,7 +240,7 @@ void menuUsuario(){
 void menuAdmin(){
     int opcion;
     do {
-        cout << "\t-----Menu Usuario-----\n";
+        cout << "\t-----Menu ADMINISTRADOR-----\n";
         cout << "\t1. Carga de usuarios" << endl;
         cout << "\t2. Carga de relaciones" << endl;
         cout << "\t3. Carga de publicaciones" << endl;
@@ -242,28 +252,34 @@ void menuAdmin(){
 
         switch (opcion) {
             case 1:
-            cout<<"---------Perfil---------"<<endl;
+            cout<<"---------Estamos en la carga de usuarios---------"<<endl;
                 //iniciarSesion(listaUsuarios);
                 cout << "\n";
                 system("pause");
                 break;
             case 2:
-                cout<<"---------Solicitudes---------"<<endl;
+                cout<<"---------relaciones---------"<<endl;
                 cout << "\n";
                 system("pause");
                 break;
             case 3:
-                cout << "---------Publicaciones---------" << endl;
+                cout << "---------publicaciones---------" << endl;
                 cout << "Carnet: 202203009" << endl;
                 cout << "Link del repositorio: https://github.com/matiuuh/-EDD-Proyecto1_202203009.git" << endl;
                 cout << "\n";
                 system("pause");
                 break;
             case 4:
-                cout << "---------Reportes---------" << endl;
+                cout << "---------gestion usuarios---------" << endl;
+                system("pause");
                 break;
             case 5:
+                cout << "----------reportes----------" << endl;
+                system("pause");
+                break;
+            case 6:
                 cout << "volviendo..." << endl;
+                system("pause");
                 break;
             default:
                 cout << "Ingrese una opcion valida." << endl;
@@ -271,6 +287,105 @@ void menuAdmin(){
                 break;
         }
         system("cls");
-    } while (opcion != 5);
+    } while (opcion != 6);
+}
+
+//Se agregan los sub-menús del menú de perfil
+void subMenuPerfil(){
+    char opcion;
+    do{
+        cout << "\ta. Ver perfil" << endl;
+        cout << "\tb. Eliminar Cuenta" << endl;
+        cout << "\tc. Volver" << endl;
+        cout << "\tIngrese opcion: "; cin >> opcion;
+        cin.ignore(); // Para limpiar el buffer de entrada después de leer un número
+
+        switch (opcion){
+        case 'a':
+            cout << "---------Ver Perfil---------" << endl;
+            system("pause");
+            break;
+        case 'b':
+            cout << "---------Elimnar Cuenta---------" << endl;
+            system("pause");
+            break;
+        case 'c':
+            cout<<"Saliendo del menu... "<<endl;
+            system("pause");
+            break;
+        default:
+            cout<<"Ingrese una opcion valida... "<<endl;
+            system("pause");
+            break;
+        }
+    } while (opcion!=3);
+    
+}
+
+//sub-menú de solicitudes
+void subMenuSolicitudes(){
+    char opcion;
+    do{
+        cout << "\ta. Ver solicitudes" << endl;
+        cout << "\tb. Enviar" << endl;
+        cout << "\tc. Volver" << endl;
+        cout << "\tIngrese opcion: "; cin >> opcion;
+        cin.ignore(); // Para limpiar el buffer de entrada después de leer un número
+
+        switch (opcion){
+        case 'a':
+            cout << "---------Ver Solicitudes---------" << endl;
+            system("pause");
+            break;
+        case 'b':
+            cout << "---------Enviar---------" << endl;
+            system("pause");
+            break;
+        case 'c':
+            cout<<"Saliendo del menu... "<<endl;
+            system("pause");
+            break;
+        default:
+            cout<<"Ingrese una opcion valida... "<<endl;
+            system("pause");
+            break;
+        }
+    } while (opcion!=3);
+}
+
+//sub-menú de publicaciones
+void subMenuPublicaciones(){
+    char opcion;
+    do{
+        cout << "\ta. Ver todas" << endl;
+        cout << "\tb. Crear" << endl;
+        cout << "\tc. Eliminar" << endl;
+        cout << "\td. Volver" << endl;
+        cout << "\tIngrese opcion: "; cin >> opcion;
+        cin.ignore(); // Para limpiar el buffer de entrada después de leer un número
+
+        switch (opcion){
+        case 'a':
+            cout << "---------Ver Todas---------" << endl;
+            system("pause");
+            break;
+        case 'b':
+            cout << "---------Crear---------" << endl;
+            system("pause");
+            break;
+        case 'c':
+            cout << "---------Eliminar---------" << endl;
+            system("pause");
+            break;
+        case 'd':
+            cout<<"Saliendo del menu... "<<endl;
+            system("pause");
+            break;
+        default:
+            cout<<"Ingrese una opcion valida... "<<endl;
+            system("pause");
+            break;
+        }
+    } while (opcion!=3);
 }
 
