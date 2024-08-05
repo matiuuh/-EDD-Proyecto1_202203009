@@ -16,6 +16,7 @@ public:
     string getCorreo() const { return correo; }
     string getContrasenia() const { return contrasenia; }
 
+
 private:
     string nombre;
     string apellidos;
@@ -79,6 +80,110 @@ public:
     }
 };
 
+class ListaSimpleSolicitudes {
+public:
+    struct NodoLista {
+        string solicitud;
+        NodoLista* siguiente;
+    };
+
+    NodoLista* cabeza;
+
+    ListaSimpleSolicitudes() : cabeza(nullptr) {}
+
+    // Destructor para liberar memoria
+    ~ListaSimpleSolicitudes() {
+        NodoLista* actual = cabeza;
+        while (actual != nullptr) {
+            NodoLista* siguiente = actual->siguiente;
+            delete actual;
+            actual = siguiente;
+        }
+    }
+
+    void agregarSolicitud(const string& solicitud) {
+        NodoLista* nuevoNodo = new NodoLista{solicitud, cabeza};
+        cabeza = nuevoNodo;
+    }
+
+    // Ejemplo de función para eliminar la primera solicitud encontrada
+    bool eliminarSolicitud(const string& solicitud) {
+        NodoLista* actual = cabeza;
+        NodoLista* anterior = nullptr;
+        while (actual != nullptr) {
+            if (actual->solicitud == solicitud) {
+                if (anterior == nullptr) {
+                    // El nodo a eliminar es el primero
+                    cabeza = actual->siguiente;
+                } else {
+                    anterior->siguiente = actual->siguiente;
+                }
+                delete actual;
+                return true;
+            }
+            anterior = actual;
+            actual = actual->siguiente;
+        }
+        return false; // No se encontró la solicitud
+    }
+
+    // Ejemplo de función para buscar una solicitud
+    bool buscarSolicitud(const string& solicitud) const {
+        NodoLista* actual = cabeza;
+        while (actual != nullptr) {
+            if (actual->solicitud == solicitud) {
+                return true; // Se encontró la solicitud
+            }
+            actual = actual->siguiente;
+        }
+        return false; // No se encontró la solicitud
+    }
+
+    // Ejemplo de función para mostrar todas las solicitudes
+    void mostrarSolicitudes() const {
+        NodoLista* actual = cabeza;
+        while (actual != nullptr) {
+            cout << actual->solicitud << endl;
+            actual = actual->siguiente;
+        }
+    }
+};
+
+
+class Pila {
+public:
+    struct NodoPila {
+        string solicitud;
+        NodoPila* siguiente;
+    };
+
+    NodoPila* tope;
+
+    Pila() : tope(nullptr) {}
+
+    void push(const string& solicitud) {
+        NodoPila* nuevoNodo = new NodoPila{solicitud, tope};
+        tope = nuevoNodo;
+    }
+
+    void pop() {
+        if (tope) {
+            NodoPila* nodoAEliminar = tope;
+            tope = tope->siguiente;
+            delete nodoAEliminar;
+        }
+    }
+
+    bool estaVacia() const {
+        return tope == nullptr;
+    }
+
+    string obtenerTope() const {
+        return tope ? tope->solicitud : "";
+    }
+};
+
+
 // Prototipos
 void menu();
 void menuUsuario();
@@ -88,15 +193,17 @@ void menuAdmin();
 void subMenuPerfil();
 void subMenuSolicitudes();
 void subMenuPublicaciones();
+void enviarSolicitud(Usuario&, Usuario&);
+void aceptarSolicitud(Usuario&);
 
 int main() {
     // Llamar al menú
     menu();
-
-    system("pause");
+    //system("pause");
     return 0;
 }
 
+//función del menú principal
 void menu() {
     int opcion;
     //hago una instancia de listaEnlazada para acceder a sus métodos
@@ -142,6 +249,7 @@ void menu() {
     } while (opcion != 4);
 }
 
+//función para el inicio de sesión
 void iniciarSesion(ListaEnlazada& lista) {
     string correo, contrasenia;
     cout << "Ingrese el correo: "; getline(cin, correo);
@@ -160,7 +268,7 @@ void iniciarSesion(ListaEnlazada& lista) {
         // Verificar si la contraseña es correcta
         if(usuario->getContrasenia() == contrasenia){
             cout << "Inicio de sesion exitoso. Bienvenido, " << usuario->getNombre() << "!" << endl;
-            
+            menuUsuario();
         }else{
             cout << "Credenciales incorrectas" << endl;
         }
@@ -169,7 +277,7 @@ void iniciarSesion(ListaEnlazada& lista) {
     }
 }
 
-
+//función para crear usuarios
 void registro(ListaEnlazada& lista) {
     string nombre, apellidos, fechaNacimiento, correo, contrasenia;
 
@@ -191,6 +299,7 @@ void registro(ListaEnlazada& lista) {
     cout << "Usuario registrado exitosamente." << endl;
 }
 
+//función para mostrar el menú de usuario
 void menuUsuario(){
     int opcion;
     do {
@@ -206,24 +315,25 @@ void menuUsuario(){
         switch (opcion) {
             case 1:
             cout<<"---------Perfil---------"<<endl;
-                //iniciarSesion(listaUsuarios);
+                subMenuPerfil();
                 cout << "\n";
                 system("pause");
                 break;
             case 2:
                 cout<<"---------Solicitudes---------"<<endl;
+                subMenuSolicitudes();
                 cout << "\n";
                 system("pause");
                 break;
             case 3:
                 cout << "---------Publicaciones---------" << endl;
-                cout << "Carnet: 202203009" << endl;
-                cout << "Link del repositorio: https://github.com/matiuuh/-EDD-Proyecto1_202203009.git" << endl;
+                subMenuPublicaciones();
                 cout << "\n";
                 system("pause");
                 break;
             case 4:
                 cout << "---------Reportes---------" << endl;
+                system("pause");
                 break;
             case 5:
                 cout << "volviendo..." << endl;
@@ -237,6 +347,7 @@ void menuUsuario(){
     } while (opcion != 5);
 }
 
+//función para mostrar el menú del administrador
 void menuAdmin(){
     int opcion;
     do {
@@ -318,7 +429,7 @@ void subMenuPerfil(){
             system("pause");
             break;
         }
-    } while (opcion!=3);
+    } while (opcion!='c');
     
 }
 
@@ -350,7 +461,7 @@ void subMenuSolicitudes(){
             system("pause");
             break;
         }
-    } while (opcion!=3);
+    } while (opcion!='c');
 }
 
 //sub-menú de publicaciones
@@ -386,6 +497,5 @@ void subMenuPublicaciones(){
             system("pause");
             break;
         }
-    } while (opcion!=3);
+    } while (opcion!='d');
 }
-
