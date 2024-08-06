@@ -1,26 +1,43 @@
-#include "ListaEnlazada.h"
-#include <iostream>
-#include "Usuario.h"  // Asegúrate de incluir Usuario.h aquí
+#include "./encabezados/ListaEnlazada.h"
 
 using namespace std;
-
-
-Nodo::Nodo(const Usuario& user, unique_ptr<Nodo> sig)
-    :usuario(user), siguiente(move(sig)) {}
-
+// Constructor
 ListaEnlazada::ListaEnlazada() : cabeza(nullptr) {}
 
+// Función para agregar usuarios
 void ListaEnlazada::agregarUsuario(const Usuario& usuario) {
-    cabeza = make_unique<Nodo>(usuario, move(cabeza));
+    unique_ptr<Nodo> nuevoNodo = make_unique<Nodo>(usuario);
+
+    if (!cabeza) {
+        cabeza = move(nuevoNodo);
+    } else {
+        Nodo* temp = cabeza.get();
+        while (temp->siguiente) {
+            temp = temp->siguiente.get();
+        }
+        temp->siguiente = move(nuevoNodo);
+    }
 }
 
+// Función para buscar usuarios según el correo
+Usuario* ListaEnlazada::buscarUsuarioPorCorreo(const string& correo) {
+    Nodo* temp = cabeza.get();
+    while (temp) {
+        if (temp->usuario.getCorreo() == correo) {
+            return &temp->usuario;
+        }
+        temp = temp->siguiente.get();
+    }
+    return nullptr; // Si no se encuentra el usuario
+}
+
+// Función para mostrar los usuarios
 void ListaEnlazada::mostrarUsuarios() const {
-    Nodo* actual = cabeza.get();
-    while (actual != nullptr) {
-            cout << "Nombre: " << actual->usuario.getNombre()
-                << ", Apellidos: " << actual->usuario.getApellidos()
-                << ", Fecha de Nacimiento: " << actual->usuario.getFechaNacimiento()
-                << ", Correo: " << actual->usuario.getCorreo() << std::endl;
-        actual = actual->siguiente.get();
+    Nodo* temp = cabeza.get();
+    while (temp) {
+        cout << "Nombre: " << temp->usuario.getNombre() << ", Apellidos: " << temp->usuario.getApellidos()
+            << ", Fecha de Nacimiento: " << temp->usuario.getFechaNacimiento() << ", Correo: " << temp->usuario.getCorreo()
+            << endl;
+        temp = temp->siguiente.get();
     }
 }

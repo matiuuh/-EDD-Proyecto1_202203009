@@ -1,11 +1,15 @@
 #include <iostream>
+#include <string>
+#include "./encabezados/ListaEnlazada.h" // Asegúrate de incluir el archivo de encabezado para ListaEnlazada
+#include "./encabezados/Usuario.h"    // Asegúrate de incluir el archivo de encabezado para Usuario
+
 
 using namespace std;
 
 // Prototipos
 void menu();
-void iniciarSesion();
-void registro();
+void iniciarSesion(ListaEnlazada&);
+void registro(ListaEnlazada&);
 void menuUsuario();
 void menuAdmin();
 void subMenuPerfil();
@@ -21,6 +25,7 @@ int main() {
 
 void menu() {
     int opcion;
+    ListaEnlazada listaUsuarios;
 
     do {
         cout << "\t-----Menu-----\n";
@@ -36,7 +41,7 @@ void menu() {
                 system("pause");
                 break;
             case 2:
-                registro();
+                registro(listaUsuarios);
                 cout << "\n";
                 system("pause");
                 break;
@@ -59,28 +64,53 @@ void menu() {
     } while (opcion != 4);
 }
 
-void iniciarSesion(){
-    
+void iniciarSesion(ListaEnlazada& lista) {
+    string correo, contrasenia;
+    cout << "Ingrese el correo: "; getline(cin, correo);
+    cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
+
+    // Verificar si es el administrador
+    if (correo == "admin" && contrasenia == "EDD") {
+        cout << "Inicio de sesion como Administrador exitoso. Bienvenido, Administrador!" << endl;
+        menuAdmin();
+        return; // Salir de la función después de iniciar sesión como administrador
+    }
+
+    // Buscar al usuario por correo
+    Usuario* usuario = lista.buscarUsuarioPorCorreo(correo);
+    if(usuario){
+        // Verificar si la contraseña es correcta
+        if(usuario->getContrasenia() == contrasenia){
+            cout << "Inicio de sesion exitoso. Bienvenido, " << usuario->getNombre() << "!" << endl;
+            menuUsuario();
+        }else{
+            cout << "Credenciales incorrectas" << endl;
+        }
+    }else {
+        cout << "Credenciales incorrectas" << endl;
+    }
 }
 
-void registro() {
-    std::string nombre, apellidos, fechaNacimiento, correo, contrasenia;
+//función para crear usuarios
+void registro(ListaEnlazada& lista) {
+    string nombre, apellidos, fechaNacimiento, correo, contrasenia;
 
-    std::cout << "Ingrese el nombre: ";
-    std::getline(std::cin, nombre);
+    cout << "Ingrese el nombre: "; getline(cin, nombre);
+    cout << "Ingrese los apellidos: "; getline(cin, apellidos);
+    cout << "Ingrese la fecha de nacimiento (DD/MM/YYYY): "; getline(cin, fechaNacimiento);
+    cout << "Ingrese el correo: "; getline(cin, correo);
+    cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
 
-    std::cout << "Ingrese los apellidos: ";
-    std::getline(std::cin, apellidos);
+    // Verificar si el correo ya existe
+    if (lista.buscarUsuarioPorCorreo(correo)) {
+        cout << "Error: Ya existe un usuario con este correo." << endl;
+        return; // Salir de la función si el correo ya está registrado
+    }
 
-    std::cout << "Ingrese la fecha de nacimiento (DD/MM/YYYY): ";
-    std::getline(std::cin, fechaNacimiento);
+    Usuario nuevoUsuario(nombre, apellidos, fechaNacimiento, correo, contrasenia);
+    lista.agregarUsuario(nuevoUsuario);
 
-    std::cout << "Ingrese el correo: ";
-    std::getline(std::cin, correo);
-    
-    std::cout << "Ingrese el contrasenia: ";
-    std::getline(std::cin, contrasenia);
-
+    cout << "Usuario registrado exitosamente." << endl;
 }
 
 //función para mostrar el menú de usuario
