@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 #include "./encabezados/ListaEnlazada.h" // Asegúrate de incluir el archivo de encabezado para ListaEnlazada
-#include "./encabezados/Usuario.h"    // Asegúrate de incluir el archivo de encabezado para Usuario
-
 
 using namespace std;
 
