@@ -7,6 +7,7 @@ using namespace std;
 // Clase Usuario
 class Usuario {
 public:
+
     Usuario(const string& nombre, const string& apellidos, const string& fechaNacimiento, const string& correo, const string& contrasenia)
         : nombre(nombre), apellidos(apellidos), fechaNacimiento(fechaNacimiento), correo(correo), contrasenia(contrasenia) {}
 
@@ -77,6 +78,28 @@ public:
                 << endl;
             temp = temp->siguiente.get();
         }
+    }
+
+    // Método para eliminar usuario por correo
+    bool eliminarUsuario(const string& correo) {
+        if (!cabeza) return false; // Lista vacía
+
+        if (cabeza->usuario.getCorreo() == correo) {
+            cabeza = move(cabeza->siguiente);
+            return true;
+        }
+
+        Nodo* temp = cabeza.get();
+        while (temp->siguiente && temp->siguiente->usuario.getCorreo() != correo) {
+            temp = temp->siguiente.get();
+        }
+
+        if (temp->siguiente) {
+            temp->siguiente = move(temp->siguiente->siguiente);
+            return true;
+        }
+
+        return false; // Usuario no encontrado
     }
 };
 
@@ -149,26 +172,25 @@ public:
     }
 };
 
-
-class Pila {
+class PilaSolicitudes {
 public:
-    struct NodoPila {
+    struct NodoPilaSolicitudes {
         string solicitud;
-        NodoPila* siguiente;
+        NodoPilaSolicitudes* siguiente;
     };
 
-    NodoPila* tope;
+    NodoPilaSolicitudes* tope;
 
-    Pila() : tope(nullptr) {}
+    PilaSolicitudes() : tope(nullptr) {}
 
     void push(const string& solicitud) {
-        NodoPila* nuevoNodo = new NodoPila{solicitud, tope};
+        NodoPilaSolicitudes* nuevoNodo = new NodoPilaSolicitudes{solicitud, tope};
         tope = nuevoNodo;
     }
 
     void pop() {
         if (tope) {
-            NodoPila* nodoAEliminar = tope;
+            NodoPilaSolicitudes* nodoAEliminar = tope;
             tope = tope->siguiente;
             delete nodoAEliminar;
         }
@@ -193,8 +215,6 @@ void menuAdmin();
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void subMenuSolicitudes(/*const Usuario& usuarioConectado*/);
 void subMenuPublicaciones(const Usuario& usuarioConectado);
-void enviarSolicitud(Usuario&, Usuario&);
-void aceptarSolicitud(Usuario&);
 void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
 
 int main() {
@@ -508,34 +528,20 @@ void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado) {
 
     if (confirmacion == "si") {
         // Lógica para eliminar la cuenta del usuarioConectado
-        // Debemos buscar y eliminar el usuario de la lista
-        bool eliminado = false;
-        Nodo* actual = lista.cabeza.get();
-        Nodo* anterior = nullptr;
-
-        while (actual) {
-            if (actual->usuario.getCorreo() == usuarioConectado.getCorreo()) {
-                if (anterior) {
-                    anterior->siguiente = move(actual->siguiente);
-                } else {
-                    lista.cabeza = move(actual->siguiente);
-                }
-                eliminado = true;
-                break;
-            }
-            anterior = actual;
-            actual = actual->siguiente.get();
-        }
+        bool eliminado = lista.eliminarUsuario(usuarioConectado.getCorreo());
 
         if (eliminado) {
             cout << "Cuenta de " << usuarioConectado.getNombre() << " eliminada exitosamente." << endl;
+            // Aquí puedes agregar lógica para redirigir al menú principal
+            return;
         } else {
-            cout << "No se encontro la cuenta para eliminar." << endl;
+            cout << "No se encontró la cuenta para eliminar." << endl;
         }
 
         // Redirigir al menú principal después de eliminar la cuenta
         return;
     } else {
-        cout << "Cancelando eliminacion de cuenta." << endl;
+        cout << "Cancelando eliminación de cuenta." << endl;
     }
 }
+
