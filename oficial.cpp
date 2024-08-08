@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <queue>
 
 using namespace std;
 
@@ -122,6 +123,50 @@ public:
     }
 };
 
+class NodoMatriz {
+public:
+    string nombre;
+    NodoMatriz* siguiente;
+
+    NodoMatriz(string n) : nombre(n), siguiente(nullptr) {}
+};
+
+class MatrizDispersa {
+private:
+    NodoMatriz* cabeza;
+
+    //NodoMatriz* buscarNodo(string nombre);
+
+public:
+    MatrizDispersa() : cabeza(nullptr) {}
+
+    void agregarAmistad(const string& nombre1, const string& nombre2) {
+        insertarNombre(nombre1);
+        insertarNombre(nombre2);
+        // Aquí puedes implementar la lógica adicional para actualizar la matriz dispersa.
+        cout << "Amistad entre " << nombre1 << " y " << nombre2 << " agregada a la matriz dispersa." << endl;
+    }
+
+    NodoMatriz* buscarNodo(string nombre) {
+        NodoMatriz* actual = cabeza;
+        while (actual != nullptr) {
+            if (actual->nombre == nombre) {
+                return actual;
+            }
+            actual = actual->siguiente;
+        }
+        return nullptr;
+    }
+
+    void insertarNombre(string nombre) {
+        if (buscarNodo(nombre) == nullptr) {
+            NodoMatriz* nuevo = new NodoMatriz(nombre);
+            nuevo->siguiente = cabeza;
+            cabeza = nuevo;
+        }
+    }
+};
+
 // Clase Usuario
 class Usuario {
 public:
@@ -157,6 +202,42 @@ public:
             copiaSolicitudesRecibidas.pop();
         }
     }
+
+    void aceptarSolicitud(Usuario* receptor, Usuario* emisor, MatrizDispersa& matriz) {
+    if (receptor && emisor) {
+        // Eliminar la solicitud de ambas partes
+        receptor->solicitudesRecibidas.pop();
+        receptor->solicitudesEnviadas.eliminarSolicitud(emisor->getCorreo());
+
+        emisor->solicitudesEnviadas.eliminarSolicitud(receptor->getCorreo());
+        emisor->solicitudesRecibidas.pop();
+
+        // Agregar la amistad a la matriz dispersa
+        matriz.agregarAmistad(receptor->getNombre(), emisor->getNombre());
+
+        cout << "Solicitud aceptada. Ahora son amigos." << endl;
+    } else {
+        cout << "Error: Usuario receptor o emisor no válido." << endl;
+    }
+}
+
+
+    void rechazarSolicitud(Usuario* receptor, Usuario* emisor) {
+        if (receptor && emisor) {
+            // Eliminar la solicitud de ambas partes
+            cout << "Intentando eliminar solicitud recibida del receptor..." << endl;
+            receptor->solicitudesRecibidas.pop();
+            receptor->solicitudesEnviadas.eliminarSolicitud(emisor->getCorreo());
+
+            emisor->solicitudesEnviadas.eliminarSolicitud(receptor->getCorreo());
+            emisor->solicitudesRecibidas.pop();
+
+            cout << "Solicitud rechazada." << endl;
+        } else {
+            cout << "Error: Usuario receptor o emisor no válido." << endl;
+        }
+    }
+
 
 private:
     string nombre;
@@ -249,17 +330,19 @@ public:
 
 // Prototipos
 void menu();
-void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado);
-void iniciarSesion(ListaEnlazada&);
+void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz);
+void iniciarSesion(ListaEnlazada&, MatrizDispersa& matriz);
 void registro(ListaEnlazada&);
 void menuAdmin();
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
-void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista);
+void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, MatrizDispersa& matriz);
 void subMenuPublicaciones(const Usuario& usuarioConectado);
 void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
 
 int main() {
-    // Llamar al menú
+    // Instancias de las clases
+    ListaEnlazada listaUsuarios;
+    MatrizDispersa matrizDispersa;
     menu();
     //system("pause");
     return 0;
@@ -270,6 +353,7 @@ void menu() {
     int opcion;
     //hago una instancia de listaEnlazada para acceder a sus métodos
     ListaEnlazada listaUsuarios;
+    MatrizDispersa matriz;
 
     do {
         cout << "\t-----Menu-----\n";
@@ -282,7 +366,7 @@ void menu() {
 
         switch (opcion) {
             case 1:
-                iniciarSesion(listaUsuarios);
+                iniciarSesion(listaUsuarios, matriz);
                 cout << "\n";
                 system("pause");
                 break;
@@ -312,7 +396,7 @@ void menu() {
 }
 
 //función para el inicio de sesión
-void iniciarSesion(ListaEnlazada& lista) {
+void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz) {
     string correo, contrasenia;
     cout << "Ingrese el correo: "; getline(cin, correo);
     cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
@@ -330,7 +414,7 @@ void iniciarSesion(ListaEnlazada& lista) {
         // Verificar si la contraseña es correcta
         if(usuario->getContrasenia() == contrasenia){
             cout << "Inicio de sesion exitoso. Bienvenido, " << usuario->getNombre() << "!" << endl;
-            menuUsuario(lista, *usuario);
+            menuUsuario(lista, *usuario, matriz);
         }else{
             cout << "Credenciales incorrectas" << endl;
         }
@@ -362,7 +446,7 @@ void registro(ListaEnlazada& lista) {
 }
 
 //función para mostrar el menú de usuario
-void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado){
+void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz){
     int opcion;
     do {
         cout << "\t-----Menu Usuario-----\n";
@@ -385,7 +469,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado){
                 break;
             case 2:
                 cout<<"---------Solicitudes---------"<<endl;
-                subMenuSolicitudes(usuarioConectado, lista);
+                subMenuSolicitudes(usuarioConectado, lista, matriz);
                 cout << "\n";
                 system("pause");
                 break;
@@ -497,46 +581,77 @@ void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado){
 }
 
 //sub-menú de solicitudes
-void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios){
+void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios, MatrizDispersa& matriz) {
     char opcion;
-    do{
+    do {
         cout << "\ta. Ver solicitudes" << endl;
         cout << "\tb. Enviar" << endl;
-        cout << "\tc. Volver" << endl;
+        cout << "\tc. Aceptar solicitud" << endl;
+        cout << "\td. Rechazar solicitud" << endl;
+        cout << "\te. Volver" << endl;
         cout << "\tIngrese opcion: "; cin >> opcion;
         cin.ignore(); // Para limpiar el buffer de entrada después de leer un número
 
-        switch (opcion){
-        case 'a':
-            cout << "---------Ver Solicitudes---------" << endl;
-            usuarioConectado.mostrarSolicitudesRecibidas();
-            break;
-        case 'b':
-            {
-            cout << "---------Enviar Solicitud---------" << endl;
-            string correoReceptor;
-            cout << "Ingrese el correo del receptor: ";
-            cin >> correoReceptor;
-            Usuario* receptor = listaUsuarios.buscarUsuarioPorCorreo(correoReceptor);
-            if (receptor) {
-                usuarioConectado.enviarSolicitud(usuarioConectado, *receptor); // Llamar a la función con dos argumentos
-                //cout << "Solicitud enviada a " << receptor->getCorreo() << endl;
-            } else {
-                cout << "Usuario no encontrado." << endl;
+        switch (opcion) {
+            case 'a':
+                cout << "---------Ver Solicitudes---------" << endl;
+                usuarioConectado.mostrarSolicitudesRecibidas();
+                break;
+            case 'b':
+                {
+                cout << "---------Enviar Solicitud---------" << endl;
+                string correoReceptor;
+                cout << "Ingrese el correo del receptor: ";
+                cin >> correoReceptor;
+                Usuario* receptor = listaUsuarios.buscarUsuarioPorCorreo(correoReceptor);
+                if (receptor) {
+                    usuarioConectado.enviarSolicitud(usuarioConectado, *receptor);
+                } else {
+                    cout << "Usuario no encontrado." << endl;
+                }
+                system("pause");
+                break;
             }
-            system("pause");
-            break;
+            case 'c':
+                {
+                cout << "---------Aceptar Solicitud---------" << endl;
+                string correoEmisor;
+                cout << "Ingrese el correo del emisor: ";
+                cin >> correoEmisor;
+                Usuario* emisor = listaUsuarios.buscarUsuarioPorCorreo(correoEmisor);
+                if (emisor) {
+                    usuarioConectado.aceptarSolicitud(&usuarioConectado, emisor, matriz);
+                } else {
+                    cout << "Usuario no encontrado." << endl;
+                }
+                system("pause");
+                break;
+            }
+            case 'd':
+                {
+                cout << "---------Rechazar Solicitud---------" << endl;
+                string correoEmisor;
+                cout << "Ingrese el correo del emisor: ";
+                cin >> correoEmisor;
+                Usuario* emisor = listaUsuarios.buscarUsuarioPorCorreo(correoEmisor);
+                if (emisor) {
+                    usuarioConectado.rechazarSolicitud(&usuarioConectado, emisor);
+                } else {
+                    cout << "Usuario no encontrado." << endl;
+                }
+                system("pause");
+                break;
+            }
+            case 'e':
+                cout << "Saliendo del menu..." << endl;
+                system("pause");
+                break;
+            default:
+                cout << "Ingrese una opcion valida..." << endl;
+                system("pause");
+                break;
         }
-        case 'c':
-            cout<<"Saliendo del menu... "<<endl;
-            system("pause");
-            break;
-        default:
-            cout<<"Ingrese una opcion valida... "<<endl;
-            system("pause");
-            break;
-        }
-    } while (opcion!='c');
+    } while (opcion != 'e');
 }
 
 //sub-menú de publicaciones
