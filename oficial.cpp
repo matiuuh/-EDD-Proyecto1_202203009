@@ -88,12 +88,17 @@ public:
     }
 
     void pop() {
-        if (tope) {
-            NodoPilaSolicitudes* nodoAEliminar = tope;
-            tope = tope->siguiente;
-            delete nodoAEliminar;
-        }
+    if (tope) {
+        cout << "Solicitud en el tope (dentro de pop): " << tope->solicitud << endl;
+        NodoPilaSolicitudes* nodoAEliminar = tope;
+        tope = tope->siguiente;
+        delete nodoAEliminar;
+        cout << "Nodo eliminado correctamente." << endl;
+    } else {
+        cout << "La pila está vacía, no se puede hacer pop." << endl;
     }
+}
+
 
     bool estaVacia() const {
         return tope == nullptr;
@@ -197,47 +202,74 @@ public:
     void mostrarSolicitudesRecibidas() const {
         cout << "Solicitudes recibidas por " << nombre << ":" << endl;
         PilaSolicitudes copiaSolicitudesRecibidas = solicitudesRecibidas;  // Crear una copia para no modificar la pila original
-        while (!copiaSolicitudesRecibidas.estaVacia()) {
-            cout << copiaSolicitudesRecibidas.obtenerTope() << endl;
-            copiaSolicitudesRecibidas.pop();
-        }
+        //while (!copiaSolicitudesRecibidas.estaVacia()) {
+        cout << copiaSolicitudesRecibidas.obtenerTope() << endl;
+            //copiaSolicitudesRecibidas.pop();
+       // }
     }
 
     void aceptarSolicitud(Usuario* receptor, Usuario* emisor, MatrizDispersa& matriz) {
-    if (receptor && emisor) {
-        // Eliminar la solicitud de ambas partes
-        receptor->solicitudesRecibidas.pop();
-        receptor->solicitudesEnviadas.eliminarSolicitud(emisor->getCorreo());
-
-        emisor->solicitudesEnviadas.eliminarSolicitud(receptor->getCorreo());
-        emisor->solicitudesRecibidas.pop();
-
-        // Agregar la amistad a la matriz dispersa
-        matriz.agregarAmistad(receptor->getNombre(), emisor->getNombre());
-
-        cout << "Solicitud aceptada. Ahora son amigos." << endl;
-    } else {
-        cout << "Error: Usuario receptor o emisor no válido." << endl;
+    if (receptor == nullptr) {
+        cout << "Error: El puntero receptor es nulo." << endl;
+        return;
     }
+
+    if (emisor == nullptr) {
+        cout << "Error: El puntero emisor es nulo." << endl;
+        return;
+    }
+
+    cout << "Receptor: " << receptor->getNombre() << " (" << receptor->getCorreo() << ")" << endl;
+    cout << "Emisor: " << emisor->getNombre() << " (" << emisor->getCorreo() << ")" << endl;
+
+    // Verificar el estado de la pila antes de hacer pop
+    cout << "Solicitud en el tope de la pila de solicitudes recibidas del receptor (antes de pop, estoy dentro de aceptar solicitud): " << receptor->solicitudesRecibidas.obtenerTope() << endl;
+
+    // Eliminar la solicitud de ambas partes
+    receptor->solicitudesRecibidas.pop();
+    cout << "Solicitud eliminada de la pila de solicitudes recibidas del receptor." << endl;
+    receptor->solicitudesEnviadas.eliminarSolicitud(emisor->getCorreo());
+
+    emisor->solicitudesEnviadas.eliminarSolicitud(receptor->getCorreo());
+    emisor->solicitudesRecibidas.pop();
+    cout << "Solicitud eliminada de la pila de solicitudes recibidas del emisor." << endl;
+
+    // Agregar la amistad a la matriz dispersa
+    matriz.agregarAmistad(receptor->getNombre(), emisor->getNombre());
+
+    cout << "Solicitud aceptada. Ahora son amigos." << endl;
 }
 
 
     void rechazarSolicitud(Usuario* receptor, Usuario* emisor) {
         if (receptor && emisor) {
-            // Eliminar la solicitud de ambas partes
-            cout << "Intentando eliminar solicitud recibida del receptor..." << endl;
-            receptor->solicitudesRecibidas.pop();
+            // Verificar y depurar antes de hacer pop en solicitudesRecibidas
+            if (!receptor->solicitudesRecibidas.estaVacia()) {
+                cout << "Solicitud en el tope (antes de pop): " << receptor->solicitudesRecibidas.obtenerTope() << endl;
+                receptor->solicitudesRecibidas.pop();
+                cout << "Solicitud eliminada de solicitudesRecibidas." << endl;
+            } else {
+                cout << "Error: No hay solicitudes recibidas para eliminar en receptor." << endl;
+            }
+
+            // Eliminar solicitudes en la lista de enviadas del receptor
             receptor->solicitudesEnviadas.eliminarSolicitud(emisor->getCorreo());
 
+            // Eliminar solicitudes en la lista de enviadas y recibidas del emisor
             emisor->solicitudesEnviadas.eliminarSolicitud(receptor->getCorreo());
-            emisor->solicitudesRecibidas.pop();
+            if (!emisor->solicitudesRecibidas.estaVacia()) {
+                cout << "Solicitud en el tope (antes de pop): " << emisor->solicitudesRecibidas.obtenerTope() << endl;
+                emisor->solicitudesRecibidas.pop();
+                cout << "Solicitud eliminada de solicitudesRecibidas." << endl;
+            } else {
+                cout << "Error: No hay solicitudes recibidas para eliminar en emisor." << endl;
+            }
 
             cout << "Solicitud rechazada." << endl;
         } else {
             cout << "Error: Usuario receptor o emisor no válido." << endl;
         }
     }
-
 
 private:
     string nombre;
