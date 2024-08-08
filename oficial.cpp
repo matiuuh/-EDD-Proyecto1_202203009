@@ -4,10 +4,127 @@
 
 using namespace std;
 
+// Clase ListaSimpleSolicitudes
+class ListaSimpleSolicitudes {
+public:
+    struct NodoLista {
+        string solicitud;
+        NodoLista* siguiente;
+    };
+
+    NodoLista* cabeza;
+
+    ListaSimpleSolicitudes() : cabeza(nullptr) {}
+
+    ~ListaSimpleSolicitudes() {
+        NodoLista* actual = cabeza;
+        while (actual != nullptr) {
+            NodoLista* siguiente = actual->siguiente;
+            delete actual;
+            actual = siguiente;
+        }
+    }
+
+    void agregarSolicitud(const string& solicitud) {
+        NodoLista* nuevoNodo = new NodoLista{solicitud, cabeza};
+        cabeza = nuevoNodo;
+    }
+
+    bool eliminarSolicitud(const string& solicitud) {
+        NodoLista* actual = cabeza;
+        NodoLista* anterior = nullptr;
+        while (actual != nullptr) {
+            if (actual->solicitud == solicitud) {
+                if (anterior == nullptr) {
+                    cabeza = actual->siguiente;
+                } else {
+                    anterior->siguiente = actual->siguiente;
+                }
+                delete actual;
+                return true;
+            }
+            anterior = actual;
+            actual = actual->siguiente;
+        }
+        return false;
+    }
+
+    bool buscarSolicitud(const string& solicitud) const {
+        NodoLista* actual = cabeza;
+        while (actual != nullptr) {
+            if (actual->solicitud == solicitud) {
+                return true;
+            }
+            actual = actual->siguiente;
+        }
+        return false;
+    }
+
+    void mostrarSolicitudes() const {
+        NodoLista* actual = cabeza;
+        while (actual != nullptr) {
+            cout << actual->solicitud << endl;
+            actual = actual->siguiente;
+        }
+    }
+};
+
+// Clase PilaSolicitudes
+class PilaSolicitudes {
+public:
+    struct NodoPilaSolicitudes {
+        string solicitud;
+        NodoPilaSolicitudes* siguiente;
+    };
+
+    NodoPilaSolicitudes* tope;
+
+    PilaSolicitudes() : tope(nullptr) {}
+
+    void push(const string& solicitud) {
+        NodoPilaSolicitudes* nuevoNodo = new NodoPilaSolicitudes{solicitud, tope};
+        tope = nuevoNodo;
+    }
+
+    void pop() {
+        if (tope) {
+            NodoPilaSolicitudes* nodoAEliminar = tope;
+            tope = tope->siguiente;
+            delete nodoAEliminar;
+        }
+    }
+
+    bool estaVacia() const {
+        return tope == nullptr;
+    }
+
+    string obtenerTope() const {
+        return tope ? tope->solicitud : "";
+    }
+
+    bool buscarSolicitud(const string& solicitud) const {
+        NodoPilaSolicitudes* actual = tope;
+        while (actual != nullptr) {
+            if (actual->solicitud == solicitud) {
+                return true;
+            }
+            actual = actual->siguiente;
+        }
+        return false;
+    }
+
+    void mostrarSolicitudes() const {
+        NodoPilaSolicitudes* actual = tope;
+        while (actual != nullptr) {
+            cout << actual->solicitud << endl;
+            actual = actual->siguiente;
+        }
+    }
+};
+
 // Clase Usuario
 class Usuario {
 public:
-
     Usuario(const string& nombre, const string& apellidos, const string& fechaNacimiento, const string& correo, const string& contrasenia)
         : nombre(nombre), apellidos(apellidos), fechaNacimiento(fechaNacimiento), correo(correo), contrasenia(contrasenia) {}
 
@@ -17,6 +134,29 @@ public:
     string getCorreo() const { return correo; }
     string getContrasenia() const { return contrasenia; }
 
+    bool tieneSolicitudPendiente(const string& correo) const {
+        return solicitudesEnviadas.buscarSolicitud(correo) || solicitudesRecibidas.buscarSolicitud(correo);
+    }
+
+    // Método `enviarSolicitud` debe ser no constante
+    void enviarSolicitud(Usuario& emisor, Usuario& receptor) {
+        if (!emisor.tieneSolicitudPendiente(receptor.getCorreo()) && !receptor.tieneSolicitudPendiente(emisor.getCorreo())) {
+            emisor.solicitudesEnviadas.agregarSolicitud(receptor.getCorreo());
+            receptor.solicitudesRecibidas.push(emisor.getCorreo());
+            cout<<"solicitud enviada con exito a "<< receptor.correo<<endl;
+        } else {
+            cout << "Ya existe una solicitud pendiente entre estos usuarios." << endl;
+        }
+    }
+
+    void mostrarSolicitudesRecibidas() const {
+        cout << "Solicitudes recibidas por " << nombre << ":" << endl;
+        PilaSolicitudes copiaSolicitudesRecibidas = solicitudesRecibidas;  // Crear una copia para no modificar la pila original
+        while (!copiaSolicitudesRecibidas.estaVacia()) {
+            cout << copiaSolicitudesRecibidas.obtenerTope() << endl;
+            copiaSolicitudesRecibidas.pop();
+        }
+    }
 
 private:
     string nombre;
@@ -24,6 +164,9 @@ private:
     string fechaNacimiento;
     string correo;
     string contrasenia;
+
+    ListaSimpleSolicitudes solicitudesEnviadas;
+    PilaSolicitudes solicitudesRecibidas;
 };
 
 // Clase Nodo
@@ -103,117 +246,15 @@ public:
     }
 };
 
-class ListaSimpleSolicitudes {
-public:
-    struct NodoLista {
-        string solicitud;
-        NodoLista* siguiente;
-    };
-
-    NodoLista* cabeza;
-
-    ListaSimpleSolicitudes() : cabeza(nullptr) {}
-
-    // Destructor para liberar memoria
-    ~ListaSimpleSolicitudes() {
-        NodoLista* actual = cabeza;
-        while (actual != nullptr) {
-            NodoLista* siguiente = actual->siguiente;
-            delete actual;
-            actual = siguiente;
-        }
-    }
-
-    void agregarSolicitud(const string& solicitud) {
-        NodoLista* nuevoNodo = new NodoLista{solicitud, cabeza};
-        cabeza = nuevoNodo;
-    }
-
-    // Ejemplo de función para eliminar la primera solicitud encontrada
-    bool eliminarSolicitud(const string& solicitud) {
-        NodoLista* actual = cabeza;
-        NodoLista* anterior = nullptr;
-        while (actual != nullptr) {
-            if (actual->solicitud == solicitud) {
-                if (anterior == nullptr) {
-                    // El nodo a eliminar es el primero
-                    cabeza = actual->siguiente;
-                } else {
-                    anterior->siguiente = actual->siguiente;
-                }
-                delete actual;
-                return true;
-            }
-            anterior = actual;
-            actual = actual->siguiente;
-        }
-        return false; // No se encontró la solicitud
-    }
-
-    // Ejemplo de función para buscar una solicitud
-    bool buscarSolicitud(const string& solicitud) const {
-        NodoLista* actual = cabeza;
-        while (actual != nullptr) {
-            if (actual->solicitud == solicitud) {
-                return true; // Se encontró la solicitud
-            }
-            actual = actual->siguiente;
-        }
-        return false; // No se encontró la solicitud
-    }
-
-    // Ejemplo de función para mostrar todas las solicitudes
-    void mostrarSolicitudes() const {
-        NodoLista* actual = cabeza;
-        while (actual != nullptr) {
-            cout << actual->solicitud << endl;
-            actual = actual->siguiente;
-        }
-    }
-};
-
-class PilaSolicitudes {
-public:
-    struct NodoPilaSolicitudes {
-        string solicitud;
-        NodoPilaSolicitudes* siguiente;
-    };
-
-    NodoPilaSolicitudes* tope;
-
-    PilaSolicitudes() : tope(nullptr) {}
-
-    void push(const string& solicitud) {
-        NodoPilaSolicitudes* nuevoNodo = new NodoPilaSolicitudes{solicitud, tope};
-        tope = nuevoNodo;
-    }
-
-    void pop() {
-        if (tope) {
-            NodoPilaSolicitudes* nodoAEliminar = tope;
-            tope = tope->siguiente;
-            delete nodoAEliminar;
-        }
-    }
-
-    bool estaVacia() const {
-        return tope == nullptr;
-    }
-
-    string obtenerTope() const {
-        return tope ? tope->solicitud : "";
-    }
-};
-
 
 // Prototipos
 void menu();
-void menuUsuario(ListaEnlazada& lista, const Usuario& usuarioConectado);
+void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado);
 void iniciarSesion(ListaEnlazada&);
 void registro(ListaEnlazada&);
 void menuAdmin();
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
-void subMenuSolicitudes(/*const Usuario& usuarioConectado*/);
+void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista);
 void subMenuPublicaciones(const Usuario& usuarioConectado);
 void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
 
@@ -321,7 +362,7 @@ void registro(ListaEnlazada& lista) {
 }
 
 //función para mostrar el menú de usuario
-void menuUsuario(ListaEnlazada& lista, const Usuario& usuarioConectado){
+void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado){
     int opcion;
     do {
         cout << "\t-----Menu Usuario-----\n";
@@ -344,7 +385,7 @@ void menuUsuario(ListaEnlazada& lista, const Usuario& usuarioConectado){
                 break;
             case 2:
                 cout<<"---------Solicitudes---------"<<endl;
-                subMenuSolicitudes(/*usuarioConectado*/);
+                subMenuSolicitudes(usuarioConectado, lista);
                 cout << "\n";
                 system("pause");
                 break;
@@ -456,7 +497,7 @@ void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado){
 }
 
 //sub-menú de solicitudes
-void subMenuSolicitudes(/*const Usuario& usuarioConectado*/){
+void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios){
     char opcion;
     do{
         cout << "\ta. Ver solicitudes" << endl;
@@ -468,12 +509,24 @@ void subMenuSolicitudes(/*const Usuario& usuarioConectado*/){
         switch (opcion){
         case 'a':
             cout << "---------Ver Solicitudes---------" << endl;
-            system("pause");
+            usuarioConectado.mostrarSolicitudesRecibidas();
             break;
         case 'b':
-            cout << "---------Enviar---------" << endl;
-            //eliminarCuenta(lista, usuarioConectado);
+            {
+            cout << "---------Enviar Solicitud---------" << endl;
+            string correoReceptor;
+            cout << "Ingrese el correo del receptor: ";
+            cin >> correoReceptor;
+            Usuario* receptor = listaUsuarios.buscarUsuarioPorCorreo(correoReceptor);
+            if (receptor) {
+                usuarioConectado.enviarSolicitud(usuarioConectado, *receptor); // Llamar a la función con dos argumentos
+                //cout << "Solicitud enviada a " << receptor->getCorreo() << endl;
+            } else {
+                cout << "Usuario no encontrado." << endl;
+            }
+            system("pause");
             break;
+        }
         case 'c':
             cout<<"Saliendo del menu... "<<endl;
             system("pause");
