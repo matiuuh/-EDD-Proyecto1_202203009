@@ -503,13 +503,11 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 cout<<"---------Solicitudes---------"<<endl;
                 subMenuSolicitudes(usuarioConectado, lista, matriz);
                 cout << "\n";
-                system("pause");
                 break;
             case 3:
                 cout << "---------Publicaciones---------" << endl;
                 subMenuPublicaciones(usuarioConectado);
                 cout << "\n";
-                system("pause");
                 break;
             case 4:
                 cout << "---------Reportes---------" << endl;
@@ -520,7 +518,6 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 break;
             default:
                 cout << "Ingrese una opcion valida." << endl;
-                system("pause");
                 break;
         }
         system("cls");
@@ -641,7 +638,6 @@ void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios,
                 } else {
                     cout << "Usuario no encontrado." << endl;
                 }
-                system("pause");
                 break;
             }
             case 'c':
@@ -656,7 +652,6 @@ void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios,
                 } else {
                     cout << "Usuario no encontrado." << endl;
                 }
-                system("pause");
                 break;
             }
             case 'd':
@@ -671,16 +666,13 @@ void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios,
                 } else {
                     cout << "Usuario no encontrado." << endl;
                 }
-                system("pause");
                 break;
             }
             case 'e':
                 cout << "Saliendo del menu..." << endl;
-                system("pause");
                 break;
             default:
                 cout << "Ingrese una opcion valida..." << endl;
-                system("pause");
                 break;
         }
     } while (opcion != 'e');
