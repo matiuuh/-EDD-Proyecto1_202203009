@@ -2,8 +2,88 @@
 #include <memory>
 #include <string>
 #include <queue>
+#include <ctime> // Para obtener la fecha y hora actual
 
 using namespace std;
+
+class Publicacion {
+private:
+    string correoUsuario;
+    string contenido;
+    string fecha;
+    string hora;
+
+public:
+    Publicacion(const std::string& correo, const std::string& contenido)
+        : correoUsuario(correo), contenido(contenido) {
+        // Obtener la fecha y hora actual
+        time_t now = time(0);
+        tm* ltm = localtime(&now);
+
+        // Formatear la fecha y la hora
+        fecha = to_string(1900 + ltm->tm_year) + "-" +
+                to_string(1 + ltm->tm_mon) + "-" +
+                to_string(ltm->tm_mday);
+
+        hora = to_string(ltm->tm_hour) + ":" +
+                to_string(ltm->tm_min) + ":" +
+                to_string(ltm->tm_sec);
+    }
+
+    // Métodos para obtener los datos de la publicación
+    string getCorreoUsuario() const { return correoUsuario; }
+    string getContenido() const { return contenido; }
+    string getFecha() const { return fecha; }
+    string getHora() const { return hora; }
+
+    // Método para mostrar la publicación
+    void mostrarPublicacion() const {
+        cout << "Correo: " << correoUsuario << endl;
+        cout << "Fecha: " << fecha << endl;
+        cout << "Hora: " << hora << endl;
+        cout << "Contenido: " << contenido << endl;
+    }
+};
+
+class NodoPublicacion {
+public:
+    shared_ptr<Publicacion> publicacion;
+    shared_ptr<NodoPublicacion> siguiente;
+    shared_ptr<NodoPublicacion> anterior;
+
+    NodoPublicacion(const shared_ptr<Publicacion>& publicacion)
+        : publicacion(publicacion), siguiente(nullptr), anterior(nullptr) {}
+};
+
+class ListaDoblePublicaciones {
+private:
+    shared_ptr<NodoPublicacion> cabeza;
+    shared_ptr<NodoPublicacion> cola;
+
+public:
+    ListaDoblePublicaciones() : cabeza(nullptr), cola(nullptr) {}
+
+    void agregarPublicacion(const shared_ptr<Publicacion>& publicacion) {
+        auto nuevoNodo = make_shared<NodoPublicacion>(publicacion);
+        if (!cabeza) {
+            cabeza = nuevoNodo;
+            cola = nuevoNodo;
+        } else {
+            cola->siguiente = nuevoNodo;
+            nuevoNodo->anterior = cola;
+            cola = nuevoNodo;
+        }
+    }
+
+    void mostrarPublicaciones() const {
+        auto actual = cabeza;
+        while (actual) {
+            actual->publicacion->mostrarPublicacion();
+            cout << "-----------------------" << endl;
+            actual = actual->siguiente;
+        }
+    }
+};
 
 // Clase ListaSimpleSolicitudes
 class ListaSimpleSolicitudes {
@@ -139,8 +219,6 @@ public:
 class MatrizDispersa {
 private:
     NodoMatriz* cabeza;
-
-    //NodoMatriz* buscarNodo(string nombre);
 
 public:
     MatrizDispersa() : cabeza(nullptr) {}
@@ -362,19 +440,21 @@ public:
 
 // Prototipos
 void menu();
-void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz);
-void iniciarSesion(ListaEnlazada&, MatrizDispersa& matriz);
+void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones);
+void iniciarSesion(ListaEnlazada&, MatrizDispersa&, ListaDoblePublicaciones&);
 void registro(ListaEnlazada&);
 void menuAdmin();
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, MatrizDispersa& matriz);
-void subMenuPublicaciones(const Usuario& usuarioConectado);
+void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones);
 void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
 
 int main() {
     // Instancias de las clases
     ListaEnlazada listaUsuarios;
     MatrizDispersa matrizDispersa;
+    //ListaDoblePublicaciones listaPublicaciones;
+
     menu();
     //system("pause");
     return 0;
@@ -386,6 +466,7 @@ void menu() {
     //hago una instancia de listaEnlazada para acceder a sus métodos
     ListaEnlazada listaUsuarios;
     MatrizDispersa matriz;
+    ListaDoblePublicaciones listaPublicaciones;
 
     do {
         cout << "\t-----Menu-----\n";
@@ -398,7 +479,7 @@ void menu() {
 
         switch (opcion) {
             case 1:
-                iniciarSesion(listaUsuarios, matriz);
+                iniciarSesion(listaUsuarios, matriz, listaPublicaciones);
                 cout << "\n";
                 system("pause");
                 break;
@@ -428,7 +509,7 @@ void menu() {
 }
 
 //función para el inicio de sesión
-void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz) {
+void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones) {
     string correo, contrasenia;
     cout << "Ingrese el correo: "; getline(cin, correo);
     cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
@@ -446,7 +527,7 @@ void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz) {
         // Verificar si la contraseña es correcta
         if(usuario->getContrasenia() == contrasenia){
             cout << "Inicio de sesion exitoso. Bienvenido, " << usuario->getNombre() << "!" << endl;
-            menuUsuario(lista, *usuario, matriz);
+            menuUsuario(lista, *usuario, matriz, listaPublicaciones);
         }else{
             cout << "Credenciales incorrectas" << endl;
         }
@@ -478,7 +559,7 @@ void registro(ListaEnlazada& lista) {
 }
 
 //función para mostrar el menú de usuario
-void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz){
+void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones){
     int opcion;
     do {
         cout << "\t-----Menu Usuario-----\n";
@@ -503,11 +584,13 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 cout<<"---------Solicitudes---------"<<endl;
                 subMenuSolicitudes(usuarioConectado, lista, matriz);
                 cout << "\n";
+                system("pause");
                 break;
             case 3:
                 cout << "---------Publicaciones---------" << endl;
-                subMenuPublicaciones(usuarioConectado);
+                subMenuPublicaciones(usuarioConectado, listaPublicaciones);
                 cout << "\n";
+                system("pause");
                 break;
             case 4:
                 cout << "---------Reportes---------" << endl;
@@ -518,6 +601,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 break;
             default:
                 cout << "Ingrese una opcion valida." << endl;
+                system("pause");
                 break;
         }
         system("cls");
@@ -638,6 +722,7 @@ void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios,
                 } else {
                     cout << "Usuario no encontrado." << endl;
                 }
+                system("pause");
                 break;
             }
             case 'c':
@@ -652,6 +737,7 @@ void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios,
                 } else {
                     cout << "Usuario no encontrado." << endl;
                 }
+                system("pause");
                 break;
             }
             case 'd':
@@ -666,20 +752,36 @@ void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios,
                 } else {
                     cout << "Usuario no encontrado." << endl;
                 }
+                system("pause");
                 break;
             }
             case 'e':
                 cout << "Saliendo del menu..." << endl;
+                system("pause");
                 break;
             default:
                 cout << "Ingrese una opcion valida..." << endl;
+                system("pause");
                 break;
         }
     } while (opcion != 'e');
 }
 
+void crearPublicacion(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones) {
+    string contenido;
+    cout << "Ingrese el contenido de la publicacion: "; //cin.ignore();
+    getline(cin, contenido);
+
+    auto nuevaPublicacion = make_shared<Publicacion>(usuarioConectado.getCorreo(), contenido);
+    listaPublicaciones.agregarPublicacion(nuevaPublicacion);
+
+    cout << "Publicacion creada exitosamente." << endl;
+    system("pause");
+}
+
+
 //sub-menú de publicaciones
-void subMenuPublicaciones(const Usuario& usuarioConectado){
+void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones){
     char opcion;
     do{
         cout << "\ta. Ver todas" << endl;
@@ -692,11 +794,11 @@ void subMenuPublicaciones(const Usuario& usuarioConectado){
         switch (opcion){
         case 'a':
             cout << "---------Ver Todas---------" << endl;
-            system("pause");
+            listaPublicaciones.mostrarPublicaciones();
             break;
         case 'b':
             cout << "---------Crear---------" << endl;
-            system("pause");
+            crearPublicacion(usuarioConectado, listaPublicaciones);
             break;
         case 'c':
             cout << "---------Eliminar---------" << endl;
@@ -736,4 +838,5 @@ void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado) {
         cout << "Cancelando eliminación de cuenta." << endl;
     }
 }
+
 
