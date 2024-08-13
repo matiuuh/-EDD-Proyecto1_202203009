@@ -43,6 +43,14 @@ public:
         cout << "Hora: " << hora << endl;
         cout << "Contenido: " << contenido << endl;
     }
+
+    // Sobrecarga del operador == para comparar dos publicaciones
+    bool operator==(const Publicacion& otra) const {
+        return correoUsuario == otra.correoUsuario &&
+            contenido == otra.contenido &&
+            fecha == otra.fecha &&
+            hora == otra.hora;
+    }
 };
 
 class NodoPublicacion {
@@ -75,14 +83,57 @@ public:
         }
     }
 
-    void mostrarPublicaciones() const {
+    int size() const {
+        int count = 0;
         auto actual = cabeza;
         while (actual) {
+            count++;
+            actual = actual->siguiente;
+        }
+        return count;
+    }
+
+    bool estaVacia() const {
+        return cabeza == nullptr;
+    }
+
+    shared_ptr<NodoPublicacion> obtenerCabeza() const {
+        return cabeza;
+    }
+
+    void mostrarPublicaciones() const {
+        int indice = 1;
+        auto actual = cabeza;
+        while (actual) {
+            cout << indice << ". ";
             actual->publicacion->mostrarPublicacion();
             cout << "-----------------------" << endl;
             actual = actual->siguiente;
+            indice++;
         }
     }
+
+    bool eliminarPublicacion(const shared_ptr<Publicacion>& publicacion) {
+    auto actual = cabeza;
+    while (actual) {
+        // Aquí comparamos el contenido de la publicación en lugar de los punteros
+        if (*actual->publicacion == *publicacion) {
+            if (actual->anterior) {
+                actual->anterior->siguiente = actual->siguiente;
+            } else {
+                cabeza = actual->siguiente;
+            }
+            if (actual->siguiente) {
+                actual->siguiente->anterior = actual->anterior;
+            } else {
+                cola = actual->anterior;
+            }
+            return true; // Publicación eliminada con éxito
+        }
+        actual = actual->siguiente;
+    }
+    return false; // No se encontró la publicación
+}
 };
 
 // Clase ListaSimpleSolicitudes
@@ -261,6 +312,26 @@ public:
     string getFechaNacimiento() const { return fechaNacimiento; }
     string getCorreo() const { return correo; }
     string getContrasenia() const { return contrasenia; }
+
+    ListaDoblePublicaciones publicaciones;
+
+    // Método para mostrar publicaciones
+    void mostrarPublicaciones() const {
+        if (publicaciones.estaVacia()) {
+            std::cout << "No tienes publicaciones." << std::endl;
+            return;
+        }
+
+        auto actual = publicaciones.obtenerCabeza();
+        while (actual) {
+            cout << "Fecha: " << actual->publicacion->getFecha() << endl;
+            cout << "Hora: " << actual->publicacion->getHora() << endl;
+            cout << "Contenido: " << actual->publicacion->getContenido() << endl;
+            cout << "---------------------------------" << endl;
+
+            actual = actual->siguiente;
+        }
+    }
 
     bool tieneSolicitudPendiente(const string& correo) const {
         return solicitudesEnviadas.buscarSolicitud(correo) || solicitudesRecibidas.buscarSolicitud(correo);
@@ -772,11 +843,14 @@ void crearPublicacion(Usuario& usuarioConectado, ListaDoblePublicaciones& listaP
     cout << "Ingrese el contenido de la publicacion: "; //cin.ignore();
     getline(cin, contenido);
 
-    auto nuevaPublicacion = make_shared<Publicacion>(usuarioConectado.getCorreo(), contenido);
-    listaPublicaciones.agregarPublicacion(nuevaPublicacion);
+    // Crear una nueva publicación
+    shared_ptr<Publicacion> nuevaPublicacion = make_shared<Publicacion>(usuarioConectado.getCorreo(), contenido);
+
+    // Agregar la publicación a la lista del usuario
+    usuarioConectado.publicaciones.agregarPublicacion(nuevaPublicacion);
 
     cout << "Publicacion creada exitosamente." << endl;
-    system("pause");
+    //system("pause");
 }
 
 
@@ -794,7 +868,14 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
         switch (opcion){
         case 'a':
             cout << "---------Ver Todas---------" << endl;
-            listaPublicaciones.mostrarPublicaciones();
+            if (usuarioConectado.publicaciones.estaVacia()) {
+                cout << "No tienes publicaciones." << endl;
+            } else {
+                usuarioConectado.publicaciones.mostrarPublicaciones();
+            }
+            //listaPublicaciones.mostrarPublicaciones();
+            //cout<<"esto es una prubea "<<endl;
+            //usuarioConectado.mostrarPublicaciones();
             break;
         case 'b':
             cout << "---------Crear---------" << endl;
@@ -802,6 +883,23 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
             break;
         case 'c':
             cout << "---------Eliminar---------" << endl;
+            usuarioConectado.mostrarPublicaciones(); // Mostrar todas las publicaciones del usuario
+            cout << "Ingrese el número de la publicación que desea eliminar: ";
+            int indice;
+            cin >> indice;
+            if (indice > 0 && indice <= usuarioConectado.publicaciones.size()) {
+                auto actual = usuarioConectado.publicaciones.obtenerCabeza();
+                for (int i = 1; i < indice; ++i) {
+                    actual = actual->siguiente;
+                }
+                if (listaPublicaciones.eliminarPublicacion(actual->publicacion)) {
+                    cout << "Publicación eliminada con éxito." << endl;
+                } else {
+                    cout << "No se pudo eliminar la publicación." << endl;
+                }
+            } else {
+                cout << "Índice no válido." << endl;
+            }
             //eliminarCuenta(lista, usuarioConectado);//cambiar de lugar esto
             break;
         case 'd':
