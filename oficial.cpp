@@ -114,26 +114,31 @@ public:
     }
 
     bool eliminarPublicacion(const shared_ptr<Publicacion>& publicacion) {
-    auto actual = cabeza;
-    while (actual) {
-        // Aquí comparamos el contenido de la publicación en lugar de los punteros
-        if (*actual->publicacion == *publicacion) {
-            if (actual->anterior) {
-                actual->anterior->siguiente = actual->siguiente;
-            } else {
-                cabeza = actual->siguiente;
+        auto actual = cabeza;
+        while (actual) {
+            // Mensaje de depuración usando el getter
+            std::cout << "Comparando con publicación: " << actual->publicacion->getContenido() << std::endl;
+
+            if (*actual->publicacion == *publicacion) {
+                std::cout << "Publicación encontrada: " << actual->publicacion->getContenido() << std::endl;
+                if (actual->anterior) {
+                    actual->anterior->siguiente = actual->siguiente;
+                } else {
+                    cabeza = actual->siguiente;
+                }
+                if (actual->siguiente) {
+                    actual->siguiente->anterior = actual->anterior;
+                } else {
+                    cola = actual->anterior;
+                }
+                return true; // Publicación eliminada con éxito
             }
-            if (actual->siguiente) {
-                actual->siguiente->anterior = actual->anterior;
-            } else {
-                cola = actual->anterior;
-            }
-            return true; // Publicación eliminada con éxito
+            actual = actual->siguiente;
         }
-        actual = actual->siguiente;
+        std::cout << "Publicación no encontrada" << std::endl;
+        return false; // No se encontró la publicación
     }
-    return false; // No se encontró la publicación
-}
+
 };
 
 // Clase ListaSimpleSolicitudes
@@ -883,16 +888,24 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
             break;
         case 'c':
             cout << "---------Eliminar---------" << endl;
-            usuarioConectado.mostrarPublicaciones(); // Mostrar todas las publicaciones del usuario
+            usuarioConectado.publicaciones.mostrarPublicaciones(); // Mostrar todas las publicaciones del usuario
+
             cout << "Ingrese el número de la publicación que desea eliminar: ";
             int indice;
             cin >> indice;
+
+            // Verificamos que el índice sea válido
             if (indice > 0 && indice <= usuarioConectado.publicaciones.size()) {
                 auto actual = usuarioConectado.publicaciones.obtenerCabeza();
+
+                // Avanzamos hasta la publicación correspondiente al índice
                 for (int i = 1; i < indice; ++i) {
-                    actual = actual->siguiente;
+                    if (actual) {
+                        actual = actual->siguiente;
+                    }
                 }
-                if (listaPublicaciones.eliminarPublicacion(actual->publicacion)) {
+
+                if (actual && usuarioConectado.publicaciones.eliminarPublicacion(actual->publicacion)) {
                     cout << "Publicación eliminada con éxito." << endl;
                 } else {
                     cout << "No se pudo eliminar la publicación." << endl;
