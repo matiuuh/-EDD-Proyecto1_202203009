@@ -48,6 +48,17 @@ public:
     bool estaVacia() const {
         return !cabeza;
     }
+
+    // Método para contar el número de amigos en la lista
+    int size() const {
+        int contador = 0;
+        Nodo* actual = cabeza.get();
+        while (actual) {
+            contador++;
+            actual = actual->siguiente.get();
+        }
+        return contador;
+    }
 };
 
 class Publicacion {
@@ -312,8 +323,10 @@ class NodoMatriz {
 public:
     string nombre;
     NodoMatriz* siguiente;
+    ListaEnlazadaAmigos amigos; // Lista de amigos
 
-    NodoMatriz(string n) : nombre(n), siguiente(nullptr) {}
+
+    NodoMatriz(const string& nombre) : nombre(nombre), siguiente(nullptr) {}
 
 };
 
@@ -325,10 +338,23 @@ public:
     MatrizDispersa() : cabeza(nullptr) {}
 
     void agregarAmistad(const string& nombre1, const string& nombre2) {
-        insertarNombre(nombre1);
-        insertarNombre(nombre2);
-        // Aquí puedes implementar la lógica adicional para actualizar la matriz dispersa.
-        cout << "Amistad entre " << nombre1 << " y " << nombre2 << " agregada a la matriz dispersa." << endl;
+        NodoMatriz* nodo1 = buscarNodo(nombre1);
+        NodoMatriz* nodo2 = buscarNodo(nombre2);
+
+        if (!nodo1) {
+            insertarNombre(nombre1);
+            nodo1 = buscarNodo(nombre1);
+        }
+        if (!nodo2) {
+            insertarNombre(nombre2);
+            nodo2 = buscarNodo(nombre2);
+        }
+
+        if (nodo1 && nodo2) {
+            nodo1->amigos.agregarAmigo(nombre2);
+            nodo2->amigos.agregarAmigo(nombre1);
+            cout << "Amistad entre " << nombre1 << " y " << nombre2 << " agregada a la matriz dispersa." << endl;
+        }
     }
 
     NodoMatriz* buscarNodo(const string nombre) const {
@@ -342,7 +368,7 @@ public:
         return nullptr;
     }
 
-    void insertarNombre(string nombre) {
+    void insertarNombre(const string& nombre) {
         if (buscarNodo(nombre) == nullptr) {
             NodoMatriz* nuevo = new NodoMatriz(nombre);
             nuevo->siguiente = cabeza;
@@ -351,13 +377,15 @@ public:
     }
 
     void obtenerAmigos(const string& correoUsuario, ListaEnlazadaAmigos& amigosLista) const {
-        NodoMatriz* filaUsuario = buscarNodo(correoUsuario);
-        if (filaUsuario) {
-            NodoMatriz* actual = filaUsuario->siguiente;
-            while (actual) {
-                amigosLista.agregarAmigo(actual->nombre);
-                actual = actual->siguiente;
-            }
+        NodoMatriz* nodoUsuario = buscarNodo(correoUsuario); // Encuentra el nodo del usuario en la matriz
+
+        if (nodoUsuario) {
+            nodoUsuario->amigos.paraCadaAmigo([&](const string& correoAmigo) {
+                cout << "Amigo encontrado: " << correoAmigo << endl;
+                amigosLista.agregarAmigo(correoAmigo);
+            });
+        } else {
+            cout << "No se encontró el usuario en la matriz dispersa." << endl;
         }
     }
 };
@@ -571,6 +599,7 @@ public:
 
         return false; // Usuario no encontrado
     }
+
 };
 
 
@@ -591,16 +620,29 @@ void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicacione
     ListaEnlazadaAmigos amigosLista;
     matrizAmigos.obtenerAmigos(usuario.getCorreo(), amigosLista);
 
+    cout << "Cantidad de amigos: " << amigosLista.size() << endl;
+
     amigosLista.paraCadaAmigo([&](const string& correoAmigo) {
         Usuario* amigo = listaUsuarios.buscarUsuarioPorCorreo(correoAmigo);
         if (amigo) {
-            cout << "Publicaciones de " << amigo->getNombre() << ":" << endl;
-            amigo->publicaciones.mostrarPublicaciones();
+            cout << "Extrayendo publicaciones de " << amigo->getNombre() << ":" << endl;
+
+            auto nodoPublicacion = amigo->publicaciones.obtenerCabeza();
+            while (nodoPublicacion) {
+                // Agregamos la publicación a la lista doblemente enlazada del feed
+                listaPublicaciones.agregarPublicacion(nodoPublicacion->publicacion);
+                nodoPublicacion = nodoPublicacion->siguiente;
+            }
         } else {
             cout << "No se pudo encontrar el usuario con correo: " << correoAmigo << endl;
         }
     });
+
+    // Mostrar todas las publicaciones almacenadas en la lista doblemente enlazada
+    cout << "Mostrando publicaciones de los amigos:" << endl;
+    listaPublicaciones.mostrarPublicaciones();
 }
+
 
 int main() {
     // Instancias de las clases
@@ -954,6 +996,7 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
                 usuarioConectado.publicaciones.mostrarPublicaciones();
             }
             mostrarPublicacionesDeAmigos(usuarioConectado, listaPublicaciones, matrizAmigos, listaUsuarios);
+            
             //listaPublicaciones.mostrarPublicaciones();
             //cout<<"esto es una prubea "<<endl;
             //usuarioConectado.mostrarPublicaciones();
