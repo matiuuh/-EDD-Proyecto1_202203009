@@ -990,13 +990,17 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
         switch (opcion){
         case 'a':
             cout << "---------Ver Todas---------" << endl;
+            
+            // Limpiar la lista de publicaciones antes de agregar nuevas
+            listaPublicaciones = ListaDoblePublicaciones(); // Reinicializar la lista
+
             if (usuarioConectado.publicaciones.estaVacia()) {
                 cout << "No tienes publicaciones." << endl;
             } else {
                 usuarioConectado.publicaciones.mostrarPublicaciones();
             }
+            // Mostrar todas las publicaciones en la lista circular doblemente enlazada
             mostrarPublicacionesDeAmigos(usuarioConectado, listaPublicaciones, matrizAmigos, listaUsuarios);
-            
             //listaPublicaciones.mostrarPublicaciones();
             //cout<<"esto es una prubea "<<endl;
             //usuarioConectado.mostrarPublicaciones();
