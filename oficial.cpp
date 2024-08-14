@@ -3,8 +3,52 @@
 #include <string>
 #include <queue>
 #include <ctime> // Para obtener la fecha y hora actual
+#include <functional>
+
 
 using namespace std;
+
+// Clase ListaEnlazadaAmigos para almacenar los correos de los amigos
+class ListaEnlazadaAmigos {
+private:
+    struct Nodo {
+        string correo;
+        unique_ptr<Nodo> siguiente;
+        Nodo(const string& correo) : correo(correo), siguiente(nullptr) {}
+    };
+
+    unique_ptr<Nodo> cabeza;
+
+public:
+    ListaEnlazadaAmigos() : cabeza(nullptr) {}
+
+    // Método para agregar un amigo a la lista
+    void agregarAmigo(const string& correo) {
+        unique_ptr<Nodo> nuevoNodo = make_unique<Nodo>(correo);
+        if (!cabeza) {
+            cabeza = move(nuevoNodo);
+        } else {
+            Nodo* temp = cabeza.get();
+            while (temp->siguiente) {
+                temp = temp->siguiente.get();
+            }
+            temp->siguiente = move(nuevoNodo);
+        }
+    }
+
+    // Método para iterar sobre la lista y realizar una acción con cada amigo
+    void paraCadaAmigo(const function<void(const string&)>& accion) const {
+        Nodo* temp = cabeza.get();
+        while (temp) {
+            accion(temp->correo);
+            temp = temp->siguiente.get();
+        }
+    }
+
+    bool estaVacia() const {
+        return !cabeza;
+    }
+};
 
 class Publicacion {
 private:
@@ -270,6 +314,7 @@ public:
     NodoMatriz* siguiente;
 
     NodoMatriz(string n) : nombre(n), siguiente(nullptr) {}
+
 };
 
 class MatrizDispersa {
@@ -286,7 +331,7 @@ public:
         cout << "Amistad entre " << nombre1 << " y " << nombre2 << " agregada a la matriz dispersa." << endl;
     }
 
-    NodoMatriz* buscarNodo(string nombre) {
+    NodoMatriz* buscarNodo(const string nombre) const {
         NodoMatriz* actual = cabeza;
         while (actual != nullptr) {
             if (actual->nombre == nombre) {
@@ -304,7 +349,21 @@ public:
             cabeza = nuevo;
         }
     }
+
+    void obtenerAmigos(const string& correoUsuario, ListaEnlazadaAmigos& amigosLista) const {
+        NodoMatriz* filaUsuario = buscarNodo(correoUsuario);
+        if (filaUsuario) {
+            NodoMatriz* actual = filaUsuario->siguiente;
+            while (actual) {
+                amigosLista.agregarAmigo(actual->nombre);
+                actual = actual->siguiente;
+            }
+        }
+    }
 };
+
+// Declaración anticipada
+class ListaEnlazada;//resuelve el problema del orden de las clases
 
 // Clase Usuario
 class Usuario {
@@ -394,7 +453,6 @@ public:
     cout << "Solicitud aceptada. Ahora son amigos." << endl;
 }
 
-
     void rechazarSolicitud(Usuario* receptor, Usuario* emisor) {
         if (receptor && emisor) {
             // Verificar y depurar antes de hacer pop en solicitudesRecibidas
@@ -424,6 +482,8 @@ public:
             cout << "Error: Usuario receptor o emisor no válido." << endl;
         }
     }
+
+    friend void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios);
 
 private:
     string nombre;
@@ -468,7 +528,7 @@ public:
     }
 
     //función para buscar usuarios según el correo
-    Usuario* buscarUsuarioPorCorreo(const string& correo) {
+    Usuario* buscarUsuarioPorCorreo(const string& correo) const {
         Nodo* temp = cabeza.get();
         while (temp) {
             if (temp->usuario.getCorreo() == correo) {
@@ -522,8 +582,25 @@ void registro(ListaEnlazada&);
 void menuAdmin();
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, MatrizDispersa& matriz);
-void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones);
+void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios);
 void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
+void mostrarPublicacionesDeAmigos(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos);
+
+// Definición fuera de la clase Usuario
+void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
+    ListaEnlazadaAmigos amigosLista;
+    matrizAmigos.obtenerAmigos(usuario.getCorreo(), amigosLista);
+
+    amigosLista.paraCadaAmigo([&](const string& correoAmigo) {
+        Usuario* amigo = listaUsuarios.buscarUsuarioPorCorreo(correoAmigo);
+        if (amigo) {
+            cout << "Publicaciones de " << amigo->getNombre() << ":" << endl;
+            amigo->publicaciones.mostrarPublicaciones();
+        } else {
+            cout << "No se pudo encontrar el usuario con correo: " << correoAmigo << endl;
+        }
+    });
+}
 
 int main() {
     // Instancias de las clases
@@ -664,9 +741,8 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 break;
             case 3:
                 cout << "---------Publicaciones---------" << endl;
-                subMenuPublicaciones(usuarioConectado, listaPublicaciones);
+                subMenuPublicaciones(usuarioConectado, listaPublicaciones, matriz, lista);
                 cout << "\n";
-                system("pause");
                 break;
             case 4:
                 cout << "---------Reportes---------" << endl;
@@ -858,9 +934,8 @@ void crearPublicacion(Usuario& usuarioConectado, ListaDoblePublicaciones& listaP
     //system("pause");
 }
 
-
 //sub-menú de publicaciones
-void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones){
+void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios){
     char opcion;
     do{
         cout << "\ta. Ver todas" << endl;
@@ -878,6 +953,7 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
             } else {
                 usuarioConectado.publicaciones.mostrarPublicaciones();
             }
+            mostrarPublicacionesDeAmigos(usuarioConectado, listaPublicaciones, matrizAmigos, listaUsuarios);
             //listaPublicaciones.mostrarPublicaciones();
             //cout<<"esto es una prubea "<<endl;
             //usuarioConectado.mostrarPublicaciones();
