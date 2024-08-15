@@ -1,0 +1,7 @@
+digraph G {
+    rankdir=LR;
+    node [shape=record];
+    nodo0 [label="ff"];
+    nodo0 -> nodo1;
+    nodo1 [label="ss"];
+}

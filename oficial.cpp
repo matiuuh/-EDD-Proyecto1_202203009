@@ -4,6 +4,8 @@
 #include <queue>
 #include <ctime> // Para obtener la fecha y hora actual
 #include <functional>
+#include <fstream>
+
 
 
 using namespace std;
@@ -122,20 +124,52 @@ class ListaDoblePublicaciones {
 private:
     shared_ptr<NodoPublicacion> cabeza;
     shared_ptr<NodoPublicacion> cola;
+    shared_ptr<NodoPublicacion> actual; // Nodo actual para navegación
 
 public:
-    ListaDoblePublicaciones() : cabeza(nullptr), cola(nullptr) {}
+    ListaDoblePublicaciones() : cabeza(nullptr), cola(nullptr), actual(nullptr) {}
 
     void agregarPublicacion(const shared_ptr<Publicacion>& publicacion) {
         auto nuevoNodo = make_shared<NodoPublicacion>(publicacion);
         if (!cabeza) {
             cabeza = nuevoNodo;
             cola = nuevoNodo;
+            actual = nuevoNodo; // El primer nodo es el actual
         } else {
             cola->siguiente = nuevoNodo;
             nuevoNodo->anterior = cola;
             cola = nuevoNodo;
         }
+    }
+
+    void mostrarPublicacionActual() const {
+        if (actual) {
+            actual->publicacion->mostrarPublicacion();
+        } else {
+            cout << "No hay publicaciones para mostrar." << endl;
+        }
+    }
+
+    void irSiguiente() {
+        if (actual && actual->siguiente) {
+            actual = actual->siguiente;
+            mostrarPublicacionActual();
+        } else {
+            cout << "No hay siguiente publicación." << endl;
+        }
+    }
+
+    void irAnterior() {
+        if (actual && actual->anterior) {
+            actual = actual->anterior;
+            mostrarPublicacionActual();
+        } else {
+            cout << "No hay publicación anterior." << endl;
+        }
+    }
+
+    void reiniciar() {
+        actual = cabeza; // Volver al inicio de la lista
     }
 
     int size() const {
@@ -259,6 +293,10 @@ public:
             actual = actual->siguiente;
         }
     }
+
+    NodoLista* obtenerCabeza() const {
+        return cabeza;  // Suponiendo que `cabeza` es el puntero a la cabeza de la lista
+    }
 };
 
 // Clase PilaSolicitudes
@@ -290,6 +328,9 @@ public:
     }
 }
 
+    NodoPilaSolicitudes* obtenerCima() const {
+        return tope;  // Suponiendo que `tope` es el puntero a la cima de la pila
+    }
 
     bool estaVacia() const {
         return tope == nullptr;
@@ -513,6 +554,14 @@ public:
 
     friend void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios);
 
+    PilaSolicitudes& getSolicitudesRecibidas() {
+        return solicitudesRecibidas;
+    }
+
+    ListaSimpleSolicitudes& getSolicitudesEnviadas() {
+        return solicitudesEnviadas;
+    }
+
 private:
     string nombre;
     string apellidos;
@@ -614,6 +663,8 @@ void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, Matriz
 void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios);
 void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void mostrarPublicacionesDeAmigos(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos);
+void generarGraficoPilaSolicitudesRecibidas(const PilaSolicitudes& pilaSolicitudes);
+void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSolicitudes);
 
 // Definición fuera de la clase Usuario
 void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
@@ -788,7 +839,9 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 break;
             case 4:
                 cout << "---------Reportes---------" << endl;
-                system("pause");
+                // Asumiendo que tienes un objeto usuarioConectado de tipo Usuario:
+                generarGraficoPilaSolicitudesRecibidas(usuarioConectado.getSolicitudesRecibidas());
+                generarGraficoColaSolicitudesEnviadas(usuarioConectado.getSolicitudesEnviadas());
                 break;
             case 5:
                 cout << "volviendo..." << endl;
@@ -1004,6 +1057,29 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
             //listaPublicaciones.mostrarPublicaciones();
             //cout<<"esto es una prubea "<<endl;
             //usuarioConectado.mostrarPublicaciones();
+            // Reiniciar la lista para empezar desde el principio
+            listaPublicaciones.reiniciar();
+
+            char opcion;
+            do {
+                cout << "Selecciona una opción: (s)iguiente, (a)nterior, (q)uit" << endl;
+                cin >> opcion;
+
+                switch (opcion) {
+                    case 's':
+                        listaPublicaciones.irSiguiente();
+                        break;
+                    case 'a':
+                        listaPublicaciones.irAnterior();
+                        break;
+                    case 'q':
+                        cout << "Saliendo del visualizador de publicaciones." << endl;
+                        break;
+                    default:
+                        cout << "Opción no válida." << endl;
+                        break;
+                }
+            } while (opcion != 'q');
             break;
         case 'b':
             cout << "---------Crear---------" << endl;
@@ -1073,4 +1149,53 @@ void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado) {
     }
 }
 
+void generarGraficoPilaSolicitudesRecibidas(const PilaSolicitudes& pilaSolicitudes) {
+    ofstream archivo("pila_solicitudes_recibidas.dot");
+    archivo << "digraph G {" << endl;
+    archivo << "    rankdir=TB;" << endl; // Organiza de arriba hacia abajo (estilo de pila)
+    archivo << "    node [shape=record];" << endl;
 
+    auto nodoActual = pilaSolicitudes.tope; // Acceder al tope de la pila directamente
+    int i = 0;
+
+    while (nodoActual != nullptr) {
+        archivo << "    nodo" << i << " [label=\"" << nodoActual->solicitud << "\"];" << endl;
+        if (nodoActual->siguiente) {
+            archivo << "    nodo" << i << " -> nodo" << i + 1 << ";" << endl;
+        }
+        nodoActual = nodoActual->siguiente;
+        i++;
+    }
+
+    archivo << "}" << endl;
+    archivo.close();
+
+    // Generar la imagen a partir del archivo DOT
+    system("dot -Tpng pila_solicitudes_recibidas.dot -o pila_solicitudes_recibidas.png");
+}
+
+
+void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSolicitudes) {
+    ofstream archivo("cola_solicitudes_enviadas.dot");
+    archivo << "digraph G {" << endl;
+    archivo << "    rankdir=LR;" << endl; // Organiza de izquierda a derecha (estilo de cola)
+    archivo << "    node [shape=record];" << endl;
+
+    auto nodoActual = listaSolicitudes.obtenerCabeza(); // Método que te permite obtener la cabeza de la lista
+    int i = 0;
+
+    while (nodoActual != nullptr) {
+        archivo << "    nodo" << i << " [label=\"" << nodoActual->solicitud << "\"];" << endl;
+        if (nodoActual->siguiente) {
+            archivo << "    nodo" << i << " -> nodo" << i + 1 << ";" << endl;
+        }
+        nodoActual = nodoActual->siguiente;
+        i++;
+    }
+
+    archivo << "}" << endl;
+    archivo.close();
+
+    // Generar la imagen a partir del archivo DOT
+    system("dot -Tpng cola_solicitudes_enviadas.dot -o cola_solicitudes_enviadas.png");
+}

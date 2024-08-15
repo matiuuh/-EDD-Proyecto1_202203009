@@ -1,0 +1,5 @@
+digraph G {
+    rankdir=TB;
+    node [shape=record];
+    nodo0 [label="dd"];
+}
