@@ -61,6 +61,12 @@ public:
         }
         return contador;
     }
+    
+    // Método para obtener el primer nodo
+    Nodo* getPrimero() const {
+        return cabeza.get();
+    }
+
 };
 
 class Publicacion {
@@ -665,6 +671,7 @@ void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void mostrarPublicacionesDeAmigos(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos);
 void generarGraficoPilaSolicitudesRecibidas(const PilaSolicitudes& pilaSolicitudes);
 void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSolicitudes);
+void mostrarListaAmigos(const Usuario& usuarioConectado, MatrizDispersa& matrizAmigos);
 
 // Definición fuera de la clase Usuario
 void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
@@ -838,10 +845,14 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 cout << "\n";
                 break;
             case 4:
+                //MatrizDispersa matrizAmigos = obtenerMatrizAmigos();
                 cout << "---------Reportes---------" << endl;
                 // Asumiendo que tienes un objeto usuarioConectado de tipo Usuario:
                 generarGraficoPilaSolicitudesRecibidas(usuarioConectado.getSolicitudesRecibidas());
                 generarGraficoColaSolicitudesEnviadas(usuarioConectado.getSolicitudesEnviadas());
+                mostrarListaAmigos(usuarioConectado, matriz);
+                system("pause");
+                //generarGraficoListaAmigos(usuarioConectado, matrizAmigos);
                 break;
             case 5:
                 cout << "volviendo..." << endl;
@@ -1174,7 +1185,6 @@ void generarGraficoPilaSolicitudesRecibidas(const PilaSolicitudes& pilaSolicitud
     system("dot -Tpng pila_solicitudes_recibidas.dot -o pila_solicitudes_recibidas.png");
 }
 
-
 void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSolicitudes) {
     ofstream archivo("cola_solicitudes_enviadas.dot");
     archivo << "digraph G {" << endl;
@@ -1198,4 +1208,14 @@ void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSo
 
     // Generar la imagen a partir del archivo DOT
     system("dot -Tpng cola_solicitudes_enviadas.dot -o cola_solicitudes_enviadas.png");
+}
+
+void mostrarListaAmigos(const Usuario& usuarioConectado, MatrizDispersa& matrizAmigos) {
+    ListaEnlazadaAmigos listaAmigos;
+    matrizAmigos.obtenerAmigos(usuarioConectado.getNombre(), listaAmigos);
+
+    cout << "Lista de amigos de " << usuarioConectado.getNombre() << ":" << endl;
+    listaAmigos.paraCadaAmigo([](const string& correo) {
+        cout << "- " << correo << endl;
+    });
 }
