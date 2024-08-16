@@ -435,6 +435,16 @@ public:
             cout << "No se encontró el usuario en la matriz dispersa." << endl;
         }
     }
+
+    // Nuevo método para recorrer las relaciones de un usuario específico
+    void paraCadaRelacionDelUsuario(const string& nombreUsuario, const function<void(const string&, const string&)>& accion) const {
+        NodoMatriz* nodoUsuario = buscarNodo(nombreUsuario);
+        if (nodoUsuario) {
+            nodoUsuario->amigos.paraCadaAmigo([&](const string& amigo) {
+                accion(nombreUsuario, amigo); // Relación entre el usuario conectado y sus amigos
+            });
+        }
+    }
 };
 
 // Declaración anticipada
@@ -672,6 +682,7 @@ void mostrarPublicacionesDeAmigos(Usuario& usuarioConectado, ListaDoblePublicaci
 void generarGraficoPilaSolicitudesRecibidas(const PilaSolicitudes& pilaSolicitudes);
 void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSolicitudes);
 void mostrarListaAmigos(const Usuario& usuarioConectado, MatrizDispersa& matrizAmigos);
+void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDispersa& matriz);
 
 // Definición fuera de la clase Usuario
 void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
@@ -851,6 +862,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 generarGraficoPilaSolicitudesRecibidas(usuarioConectado.getSolicitudesRecibidas());
                 generarGraficoColaSolicitudesEnviadas(usuarioConectado.getSolicitudesEnviadas());
                 mostrarListaAmigos(usuarioConectado, matriz);
+                generarGraficoMatrizAmistades(usuarioConectado, matriz); // Aquí se llama al método para graficar la matriz de amistades
                 system("pause");
                 //generarGraficoListaAmigos(usuarioConectado, matrizAmigos);
                 break;
@@ -1218,4 +1230,22 @@ void mostrarListaAmigos(const Usuario& usuarioConectado, MatrizDispersa& matrizA
     listaAmigos.paraCadaAmigo([](const string& correo) {
         cout << "- " << correo << endl;
     });
+}
+
+void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDispersa& matriz) {
+    ofstream archivo("matriz_amistades.dot");
+    archivo << "digraph G {" << endl;
+    archivo << "    node [shape=record];" << endl;
+
+    // Recorrer toda la matriz para mostrar las relaciones de amistad del usuario conectado
+    matriz.paraCadaRelacionDelUsuario(usuarioConectado.getNombre(), [&](const string& usuario, const string& amigo) {
+        archivo << "    \"" << usuario << "\" -> \"" << amigo << "\";" << endl;
+        archivo << "    \"" << amigo << "\" -> \"" << usuario << "\";" << endl; // Flecha inversa
+    });
+
+    archivo << "}" << endl;
+    archivo.close();
+
+    // Generar la imagen a partir del archivo DOT
+    system("dot -Tpng matriz_amistades.dot -o matriz_amistades.png");
 }

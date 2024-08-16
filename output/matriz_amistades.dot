@@ -1,0 +1,7 @@
+digraph G {
+    node [shape=record];
+    "aa" -> "ss";
+    "ss" -> "aa";
+    "aa" -> "dd";
+    "dd" -> "aa";
+}
