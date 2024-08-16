@@ -683,6 +683,7 @@ void generarGraficoPilaSolicitudesRecibidas(const PilaSolicitudes& pilaSolicitud
 void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSolicitudes);
 void mostrarListaAmigos(const Usuario& usuarioConectado, MatrizDispersa& matrizAmigos);
 void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDispersa& matriz);
+void generarGraficoListaDoble(const ListaDoblePublicaciones& lista);
 
 // Definición fuera de la clase Usuario
 void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
@@ -825,6 +826,10 @@ void registro(ListaEnlazada& lista) {
 //función para mostrar el menú de usuario
 void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones){
     int opcion;
+
+    ListaDoblePublicaciones listaPublicacionesTemp;  // Mueve la declaración aquí
+    auto nodoPublicacion = std::shared_ptr<NodoPublicacion>();
+
     do {
         cout << "\t-----Menu Usuario-----\n";
         cout << "\t1. Perfil" << endl;
@@ -863,8 +868,20 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 generarGraficoColaSolicitudesEnviadas(usuarioConectado.getSolicitudesEnviadas());
                 mostrarListaAmigos(usuarioConectado, matriz);
                 generarGraficoMatrizAmistades(usuarioConectado, matriz); // Aquí se llama al método para graficar la matriz de amistades
+                
+                // Generar el gráfico de la lista doblemente enlazada de publicaciones
+                mostrarPublicacionesDeAmigos(usuarioConectado, listaPublicacionesTemp, matriz, lista);
+
+                // Inicializar nodoPublicacion en este punto para evitar el cruce de declaración
+                nodoPublicacion = usuarioConectado.publicaciones.obtenerCabeza();
+                while (nodoPublicacion) {
+                    listaPublicacionesTemp.agregarPublicacion(nodoPublicacion->publicacion);
+                    nodoPublicacion = nodoPublicacion->siguiente;
+                }
+
+                // Ahora genera el gráfico de la lista doblemente enlazada
+                generarGraficoListaDoble(listaPublicacionesTemp);
                 system("pause");
-                //generarGraficoListaAmigos(usuarioConectado, matrizAmigos);
                 break;
             case 5:
                 cout << "volviendo..." << endl;
@@ -1249,3 +1266,28 @@ void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDisper
     // Generar la imagen a partir del archivo DOT
     system("dot -Tpng matriz_amistades.dot -o matriz_amistades.png");
 }
+
+void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
+    ofstream archivo("lista_doble_publicaciones.dot");
+    archivo << "digraph G {" << endl;
+    archivo << "    node [shape=box];" << endl;
+    archivo << "    rankdir=LR;" << endl;  // Orientación horizontal
+
+    // Agregar nodos al gráfico
+    auto nodoActual = lista.obtenerCabeza();
+    while (nodoActual) {
+        archivo << "    \"" << nodoActual << "\" [label=\"" << nodoActual->publicacion->getContenido() << "\"];" << endl;
+        if (nodoActual->siguiente) {
+            // Enlace hacia adelante y atrás (bidireccional)
+            archivo << "    \"" << nodoActual << "\" -> \"" << nodoActual->siguiente << "\" [dir=both];" << endl;
+        }
+        nodoActual = nodoActual->siguiente;
+    }
+
+    archivo << "}" << endl;
+    archivo.close();
+
+    // Generar la imagen a partir del archivo DOT
+    system("dot -Tpng lista_doble_publicaciones.dot -o lista_doble_publicaciones.png");
+}
+
