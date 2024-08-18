@@ -710,6 +710,13 @@ void cargarUsuariosDesdeArchivo(const std::string& archivoJSON, ListaEnlazada& l
         std::string correo = usuarioJSON["correo"];
         std::string password = usuarioJSON["contraseña"];
 
+        // Verificar si el correo ya existe en la lista enlazada
+        Usuario* usuarioExistente = listaUsuarios.buscarUsuarioPorCorreo(correo);
+        if (usuarioExistente) {
+            std::cout << "El usuario con correo " << correo << " ya está registrado en el sistema. Se omitirá esta entrada." << std::endl;
+            continue; // Saltar a la siguiente iteración si el correo ya existe
+        }
+
         // Crear un objeto Usuario a partir de los datos JSON
         Usuario nuevoUsuario(nombre, apellidos, fechaNacimiento, correo, password);
 
