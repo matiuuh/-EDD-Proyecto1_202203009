@@ -1275,11 +1275,15 @@ void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
 
     // Agregar nodos al gráfico
     auto nodoActual = lista.obtenerCabeza();
+    auto nodoCabeza = nodoActual; // Guardamos la cabeza para hacerla circular
     while (nodoActual) {
         archivo << "    \"" << nodoActual << "\" [label=\"" << nodoActual->publicacion->getContenido() << "\"];" << endl;
         if (nodoActual->siguiente) {
             // Enlace hacia adelante y atrás (bidireccional)
             archivo << "    \"" << nodoActual << "\" -> \"" << nodoActual->siguiente << "\" [dir=both];" << endl;
+        } else {
+            // Si es el último nodo, conectarlo al primero para hacer la lista circular
+            archivo << "    \"" << nodoActual << "\" -> \"" << nodoCabeza << "\" [dir=both];" << endl;
         }
         nodoActual = nodoActual->siguiente;
     }
@@ -1290,4 +1294,5 @@ void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
     // Generar la imagen a partir del archivo DOT
     system("dot -Tpng lista_doble_publicaciones.dot -o lista_doble_publicaciones.png");
 }
+
 

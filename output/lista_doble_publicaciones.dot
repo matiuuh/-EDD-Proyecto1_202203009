@@ -1,7 +1,14 @@
 digraph G {
     node [shape=box];
     rankdir=LR;
-    "0x12656b40930" [label="segunda"];
-    "0x12656b40930" -> "0x12656b40570" [dir=both];
-    "0x12656b40570" [label="laraa"];
+    "0x2818ef21120" [label="segundaaa"];
+    "0x2818ef21120" -> "0x2818ef21800" [dir=both];
+    "0x2818ef21800" [label="hola, es primera"];
+    "0x2818ef21800" -> "0x2818ef21490" [dir=both];
+    "0x2818ef21490" [label="segundaaa"];
+    "0x2818ef21490" -> "0x2818ef21580" [dir=both];
+    "0x2818ef21580" [label="cuarta (creo)"];
+    "0x2818ef21580" -> "0x2818ef215d0" [dir=both];
+    "0x2818ef215d0" [label="hola, es primera"];
+    "0x2818ef215d0" -> "0x2818ef21120" [dir=both];
 }
