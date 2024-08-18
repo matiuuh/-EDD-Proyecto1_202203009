@@ -1,0 +1,23 @@
+[
+    {
+        "nombres": "Juan",
+        "apellidos": "Perez Gomez",
+        "fecha_de_nacimiento": "1990/05/14",
+        "correo": "juan.perez@example.com",
+        "contraseña": "passwprd123"
+    },
+    {
+        "nombres": "Sofia",
+        "apellidos": "Gonzales Hernandez",
+        "fecha_de_nacimiento": "2022/05/14",
+        "correo": "sofgon@example.com",
+        "contraseña": "1234"
+    },
+    {
+        "nombres": "lara",
+        "apellidos": "Benitez Marroquin",
+        "fecha_de_nacimiento": "2002/11/14",
+        "correo": "laraa",
+        "contraseña": "aaa"
+    }
+]

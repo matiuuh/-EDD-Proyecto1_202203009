@@ -5,9 +5,10 @@
 #include <ctime> // Para obtener la fecha y hora actual
 #include <functional>
 #include <fstream>
+#include <nlohmann/json.hpp>
 
 
-
+using json = nlohmann::json;
 using namespace std;
 
 // Clase ListaEnlazadaAmigos para almacenar los correos de los amigos
@@ -591,6 +592,13 @@ public:
         return solicitudesEnviadas;
     }
 
+    // Método para mostrar la información del usuario (opcional)
+    void mostrarInfo() const {
+        std::cout << "Nombre: " << nombre << " " << apellidos << "\n"
+                << "Fecha de Nacimiento: " << fechaNacimiento << "\n"
+                << "Correo: " << correo << "\n";
+    }
+
 private:
     string nombre;
     string apellidos;
@@ -680,13 +688,45 @@ public:
 
 };
 
+// Método para cargar usuarios desde un archivo JSON
+void cargarUsuariosDesdeArchivo(const std::string& archivoJSON, ListaEnlazada& listaUsuarios) {
+    // Leer el archivo JSON
+    std::ifstream archivo(archivoJSON);
+    if (!archivo.is_open()) {
+        std::cerr << "Error al abrir el archivo: " << archivoJSON << std::endl;
+        return;
+    }
+
+    // Parsear el archivo JSON
+    json jsonUsuarios;
+    archivo >> jsonUsuarios;
+
+    // Iterar sobre cada usuario en el JSON
+    for (const auto& usuarioJSON : jsonUsuarios) {
+        // Extraer los datos
+        std::string nombre = usuarioJSON["nombres"];
+        std::string apellidos = usuarioJSON["apellidos"];
+        std::string fechaNacimiento = usuarioJSON["fecha_de_nacimiento"];
+        std::string correo = usuarioJSON["correo"];
+        std::string password = usuarioJSON["contraseña"];
+
+        // Crear un objeto Usuario a partir de los datos JSON
+        Usuario nuevoUsuario(nombre, apellidos, fechaNacimiento, correo, password);
+
+        // Agregar el usuario a la lista enlazada
+        listaUsuarios.agregarUsuario(nuevoUsuario);
+    }
+
+    archivo.close();
+    std::cout << "Usuarios cargados con éxito." << std::endl;
+}
 
 // Prototipos
 void menu();
 void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones);
 void iniciarSesion(ListaEnlazada&, MatrizDispersa&, ListaDoblePublicaciones&);
 void registro(ListaEnlazada&);
-void menuAdmin();
+void menuAdmin(ListaEnlazada& listaUsuarios);
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, MatrizDispersa& matriz);
 void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios);
@@ -740,9 +780,8 @@ void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicacione
 
 int main() {
     // Instancias de las clases
-    ListaEnlazada listaUsuarios;
-    MatrizDispersa matrizDispersa;
-    //ListaDoblePublicaciones listaPublicaciones;
+    //ListaEnlazada listaUsuarios;
+    //MatrizDispersa matrizDispersa;
 
     menu();
     //system("pause");
@@ -806,7 +845,7 @@ void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePubli
     // Verificar si es el administrador
     if (correo == "admin" && contrasenia == "EDD") {
         cout << "Inicio de sesion como Administrador exitoso. Bienvenido, Administrador!" << endl;
-        menuAdmin();
+        menuAdmin(lista);
         return; // Salir de la función después de iniciar sesión como administrador
     }
 
@@ -928,8 +967,10 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
 }
 
 //función para mostrar el menú del administrador
-void menuAdmin(){
+void menuAdmin(ListaEnlazada& listaUsuarios){
     int opcion;
+    string archivoJSON = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/usuarios.json";
+
     do {
         cout << "\t-----Menu ADMINISTRADOR-----\n";
         cout << "\t1. Carga de usuarios" << endl;
@@ -943,29 +984,31 @@ void menuAdmin(){
 
         switch (opcion) {
             case 1:
-            cout<<"---------Estamos en la carga de usuarios---------"<<endl;
-                //iniciarSesion(listaUsuarios);
+            cout<<"---------Carga de usuarios---------"<<endl;
+                // Llamada a la función para cargar usuarios
+                cargarUsuariosDesdeArchivo(archivoJSON, listaUsuarios);
                 cout << "\n";
+                listaUsuarios.mostrarUsuarios(); // Mostrar usuarios cargados (opcional)
                 system("pause");
                 break;
             case 2:
-                cout<<"---------relaciones---------"<<endl;
+                cout<<"---------Relaciones---------"<<endl;
                 cout << "\n";
                 system("pause");
                 break;
             case 3:
-                cout << "---------publicaciones---------" << endl;
+                cout << "---------Publicaciones---------" << endl;
                 cout << "Carnet: 202203009" << endl;
                 cout << "Link del repositorio: https://github.com/matiuuh/-EDD-Proyecto1_202203009.git" << endl;
                 cout << "\n";
                 system("pause");
                 break;
             case 4:
-                cout << "---------gestion usuarios---------" << endl;
+                cout << "---------Gestion usuarios---------" << endl;
                 system("pause");
                 break;
             case 5:
-                cout << "----------reportes----------" << endl;
+                cout << "----------Reportes----------" << endl;
                 system("pause");
                 break;
             case 6:

@@ -1,17 +1,4 @@
 digraph G {
     node [shape=box];
     rankdir=LR;
-    "0x245c91851a0" [label="es rara"];
-    "0x245c91851a0" -> "0x245c9185240" [dir=both];
-    "0x245c9185240" [label="pero linda"];
-    "0x245c9185240" -> "0x245c9185470" [dir=both];
-    "0x245c9185470" [label="lara"];
-    "0x245c9185470" -> "0x245c9185290" [dir=both];
-    "0x245c9185290" [label="me"];
-    "0x245c9185290" -> "0x245c91851f0" [dir=both];
-    "0x245c91851f0" [label="dijo que"];
-    "0x245c91851f0" -> "0x245c9185ba0" [dir=both];
-    "0x245c9185ba0" [label="mi voz <3"];
-    "0x245c9185ba0" -> "0x245c91851a0" [dir=both];
-    "0x245c9185ba0" -> "0x245c91851a0" [dir=both];
 }

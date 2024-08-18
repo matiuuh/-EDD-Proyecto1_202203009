@@ -1,5 +1,5 @@
 digraph G {
     rankdir=TB;
     node [shape=record];
-    nodo0 [label="aa"];
+    nodo0 [label="sofgon@example.com"];
 }

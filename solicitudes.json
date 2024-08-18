@@ -1,0 +1,17 @@
+[
+    {
+        "emisor": "sofgon@example.com",
+        "receptor": "juan.perez@example.com",
+        "estado": "ACEPTADA"
+    },
+    {
+        "emisor": "laraa",
+        "receptor": "sofgon@example.com",
+        "estado": "PENDIENTE"
+    },
+    {
+        "emisor": "juan.perez@example.com",
+        "receptor": "laraa",
+        "estado": "PENDIENTE"
+    }
+]
