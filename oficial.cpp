@@ -140,10 +140,14 @@ public:
         if (!cabeza) {
             cabeza = nuevoNodo;
             cola = nuevoNodo;
+            cabeza->siguiente = cabeza; // Hacer circular
+            cabeza->anterior = cola;    // Hacer circular
             actual = nuevoNodo; // El primer nodo es el actual
         } else {
             cola->siguiente = nuevoNodo;
             nuevoNodo->anterior = cola;
+            nuevoNodo->siguiente = cabeza; // Conectar al inicio para hacer circular
+            cabeza->anterior = nuevoNodo;  // Conectar al final para hacer circular
             cola = nuevoNodo;
         }
     }
@@ -157,20 +161,16 @@ public:
     }
 
     void irSiguiente() {
-        if (actual && actual->siguiente) {
-            actual = actual->siguiente;
+        if (actual) {
+            actual = actual->siguiente; // Ahora es circular, siempre habrá un siguiente
             mostrarPublicacionActual();
-        } else {
-            cout << "No hay siguiente publicación." << endl;
         }
     }
 
     void irAnterior() {
-        if (actual && actual->anterior) {
-            actual = actual->anterior;
+        if (actual) {
+            actual = actual->anterior; // Ahora es circular, siempre habrá un anterior
             mostrarPublicacionActual();
-        } else {
-            cout << "No hay publicación anterior." << endl;
         }
     }
 
@@ -179,11 +179,13 @@ public:
     }
 
     int size() const {
-        int count = 0;
-        auto actual = cabeza;
-        while (actual) {
+        if (!cabeza) return 0;
+
+        int count = 1;
+        auto temp = cabeza;
+        while (temp->siguiente != cabeza) {
             count++;
-            actual = actual->siguiente;
+            temp = temp->siguiente;
         }
         return count;
     }
@@ -197,40 +199,51 @@ public:
     }
 
     void mostrarPublicaciones() const {
+        if (!cabeza) {
+            cout << "No hay publicaciones para mostrar." << endl;
+            return;
+        }
+
         int indice = 1;
         auto actual = cabeza;
-        while (actual) {
+        do {
             cout << indice << ". ";
             actual->publicacion->mostrarPublicacion();
             cout << "-----------------------" << endl;
             actual = actual->siguiente;
             indice++;
-        }
+        } while (actual != cabeza); // Se recorre hasta volver al inicio
     }
 
     bool eliminarPublicacion(const shared_ptr<Publicacion>& publicacion) {
-        auto actual = cabeza;
-        while (actual) {
-            // Mensaje de depuración usando el getter
-            std::cout << "Comparando con publicación: " << actual->publicacion->getContenido() << std::endl;
+        if (!cabeza) return false; // Lista vacía
 
+        auto actual = cabeza;
+        do {
             if (*actual->publicacion == *publicacion) {
-                std::cout << "Publicación encontrada: " << actual->publicacion->getContenido() << std::endl;
-                if (actual->anterior) {
-                    actual->anterior->siguiente = actual->siguiente;
+                if (actual == cabeza && actual == cola) {
+                    // Único nodo en la lista
+                    cabeza = nullptr;
+                    cola = nullptr;
                 } else {
-                    cabeza = actual->siguiente;
-                }
-                if (actual->siguiente) {
-                    actual->siguiente->anterior = actual->anterior;
-                } else {
-                    cola = actual->anterior;
+                    if (actual == cabeza) {
+                        cabeza = cabeza->siguiente;
+                        cabeza->anterior = cola;
+                        cola->siguiente = cabeza;
+                    } else if (actual == cola) {
+                        cola = cola->anterior;
+                        cola->siguiente = cabeza;
+                        cabeza->anterior = cola;
+                    } else {
+                        actual->anterior->siguiente = actual->siguiente;
+                        actual->siguiente->anterior = actual->anterior;
+                    }
                 }
                 return true; // Publicación eliminada con éxito
             }
             actual = actual->siguiente;
-        }
-        std::cout << "Publicación no encontrada" << std::endl;
+        } while (actual != cabeza); // Recorrer hasta volver al inicio
+
         return false; // No se encontró la publicación
     }
 
@@ -687,6 +700,16 @@ void generarGraficoListaDoble(const ListaDoblePublicaciones& lista);
 
 // Definición fuera de la clase Usuario
 void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
+    // Agregar las publicaciones del usuario conectado a la lista circular
+    auto nodoPublicacionUsuario = usuario.publicaciones.obtenerCabeza();
+    if (nodoPublicacionUsuario) {
+        do {
+            listaPublicaciones.agregarPublicacion(nodoPublicacionUsuario->publicacion);
+            nodoPublicacionUsuario = nodoPublicacionUsuario->siguiente;
+        } while (nodoPublicacionUsuario != usuario.publicaciones.obtenerCabeza());
+    }
+
+    // Luego, agregar las publicaciones de los amigos
     ListaEnlazadaAmigos amigosLista;
     matrizAmigos.obtenerAmigos(usuario.getCorreo(), amigosLista);
 
@@ -698,18 +721,19 @@ void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicacione
             cout << "Extrayendo publicaciones de " << amigo->getNombre() << ":" << endl;
 
             auto nodoPublicacion = amigo->publicaciones.obtenerCabeza();
-            while (nodoPublicacion) {
-                // Agregamos la publicación a la lista doblemente enlazada del feed
-                listaPublicaciones.agregarPublicacion(nodoPublicacion->publicacion);
-                nodoPublicacion = nodoPublicacion->siguiente;
+            if (nodoPublicacion) {
+                do {
+                    listaPublicaciones.agregarPublicacion(nodoPublicacion->publicacion);
+                    nodoPublicacion = nodoPublicacion->siguiente;
+                } while (nodoPublicacion != amigo->publicaciones.obtenerCabeza());
             }
         } else {
             cout << "No se pudo encontrar el usuario con correo: " << correoAmigo << endl;
         }
     });
 
-    // Mostrar todas las publicaciones almacenadas en la lista doblemente enlazada
-    cout << "Mostrando publicaciones de los amigos:" << endl;
+    // Mostrar todas las publicaciones almacenadas en la lista circular doblemente enlazada
+    cout << "Mostrando publicaciones de los amigos y del usuario:" << endl;
     listaPublicaciones.mostrarPublicaciones();
 }
 
@@ -861,26 +885,34 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 cout << "\n";
                 break;
             case 4:
-                //MatrizDispersa matrizAmigos = obtenerMatrizAmigos();
                 cout << "---------Reportes---------" << endl;
-                // Asumiendo que tienes un objeto usuarioConectado de tipo Usuario:
+
+                // 1. Generar gráficos de las solicitudes (Pila y Cola)
                 generarGraficoPilaSolicitudesRecibidas(usuarioConectado.getSolicitudesRecibidas());
                 generarGraficoColaSolicitudesEnviadas(usuarioConectado.getSolicitudesEnviadas());
+
+                // 2. Mostrar la lista de amigos
                 mostrarListaAmigos(usuarioConectado, matriz);
-                generarGraficoMatrizAmistades(usuarioConectado, matriz); // Aquí se llama al método para graficar la matriz de amistades
-                
-                // Generar el gráfico de la lista doblemente enlazada de publicaciones
+
+                // 3. Generar gráfico de la matriz de amistades
+                generarGraficoMatrizAmistades(usuarioConectado, matriz);
+
+                // 4. Reinicializar la lista temporal antes de llenarla
+                listaPublicacionesTemp = ListaDoblePublicaciones();
+
+                // 5. Mostrar las publicaciones de los amigos y agregarlas a listaPublicacionesTemp
                 mostrarPublicacionesDeAmigos(usuarioConectado, listaPublicacionesTemp, matriz, lista);
 
-                // Inicializar nodoPublicacion en este punto para evitar el cruce de declaración
+                // 6. Agregar las publicaciones del usuario conectado a listaPublicacionesTemp
                 nodoPublicacion = usuarioConectado.publicaciones.obtenerCabeza();
-                while (nodoPublicacion) {
-                    listaPublicacionesTemp.agregarPublicacion(nodoPublicacion->publicacion);
-                    nodoPublicacion = nodoPublicacion->siguiente;
-                }
+                //while (nodoPublicacion) {
+                //    listaPublicacionesTemp.agregarPublicacion(nodoPublicacion->publicacion);
+                //    nodoPublicacion = nodoPublicacion->siguiente;
+                //}
 
-                // Ahora genera el gráfico de la lista doblemente enlazada
+                // 7. Generar el gráfico de la lista doblemente enlazada circular
                 generarGraficoListaDoble(listaPublicacionesTemp);
+
                 system("pause");
                 break;
             case 5:
@@ -1273,19 +1305,30 @@ void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
     archivo << "    node [shape=box];" << endl;
     archivo << "    rankdir=LR;" << endl;  // Orientación horizontal
 
-    // Agregar nodos al gráfico
     auto nodoActual = lista.obtenerCabeza();
-    auto nodoCabeza = nodoActual; // Guardamos la cabeza para hacerla circular
-    while (nodoActual) {
-        archivo << "    \"" << nodoActual << "\" [label=\"" << nodoActual->publicacion->getContenido() << "\"];" << endl;
-        if (nodoActual->siguiente) {
-            // Enlace hacia adelante y atrás (bidireccional)
-            archivo << "    \"" << nodoActual << "\" -> \"" << nodoActual->siguiente << "\" [dir=both];" << endl;
-        } else {
-            // Si es el último nodo, conectarlo al primero para hacer la lista circular
-            archivo << "    \"" << nodoActual << "\" -> \"" << nodoCabeza << "\" [dir=both];" << endl;
+    if (nodoActual) {
+        auto nodoCabeza = nodoActual;  // Guardamos la cabeza para cerrar la lista circular
+        auto nodoPrevio = nodoActual;  // Nodo previo para manejar el enlace hacia atrás
+
+        do {
+            // Crear el nodo con su etiqueta
+            archivo << "    \"" << nodoActual << "\" [label=\"" << nodoActual->publicacion->getContenido() << "\"];" << endl;
+
+            // Enlace hacia adelante (siguiente)
+            if (nodoActual->siguiente) {
+                archivo << "    \"" << nodoActual << "\" -> \"" << nodoActual->siguiente << "\" [dir=both];" << endl;
+            }
+
+            // Actualizar nodoPrevio antes de avanzar
+            nodoPrevio = nodoActual;
+            nodoActual = nodoActual->siguiente;
+        } while (nodoActual && nodoActual != nodoCabeza);  // Terminar el ciclo al volver al nodoCabeza
+
+        // Conectar el último nodo de vuelta al primero para cerrar el ciclo
+        // Solo agregar una flecha bidireccional
+        if (nodoPrevio && nodoCabeza) {
+            archivo << "    \"" << nodoPrevio << "\" -> \"" << nodoCabeza << "\" [dir=both];" << endl;
         }
-        nodoActual = nodoActual->siguiente;
     }
 
     archivo << "}" << endl;
@@ -1294,5 +1337,3 @@ void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
     // Generar la imagen a partir del archivo DOT
     system("dot -Tpng lista_doble_publicaciones.dot -o lista_doble_publicaciones.png");
 }
-
-
