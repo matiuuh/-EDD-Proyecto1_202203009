@@ -1,19 +1,4 @@
 digraph G {
     node [shape=box];
     rankdir=LR;
-    "0x15d7eeb2090" [label="publicacion de lara"];
-    "0x15d7eeb2090" -> "0x15d7eeb15a0" [dir=both];
-    "0x15d7eeb15a0" [label="mi neva"];
-    "0x15d7eeb15a0" -> "0x15d7eeb18c0" [dir=both];
-    "0x15d7eeb18c0" [label="estoy de vuahe"];
-    "0x15d7eeb18c0" -> "0x15d7eeb1320" [dir=both];
-    "0x15d7eeb1320" [label="yo de nuev"];
-    "0x15d7eeb1320" -> "0x15d7eeb2130" [dir=both];
-    "0x15d7eeb2130" [label="oioioioi"];
-    "0x15d7eeb2130" -> "0x15d7eeb11e0" [dir=both];
-    "0x15d7eeb11e0" [label="azul"];
-    "0x15d7eeb11e0" -> "0x15d7eeb1640" [dir=both];
-    "0x15d7eeb1640" [label="no es"];
-    "0x15d7eeb1640" -> "0x15d7eeb2090" [dir=both];
-    "0x15d7eeb1640" -> "0x15d7eeb2090" [dir=both];
 }

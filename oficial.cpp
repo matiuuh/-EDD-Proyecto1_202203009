@@ -1114,25 +1114,31 @@ void cargarSolicitudesDesdeArchivo(const std::string& archivo, ListaEnlazada& li
 
         if (estado == "ACEPTADA") {
             if (solicitudPendiente) {
+                // Caso 1: Existe una solicitud pendiente
                 // Eliminar la solicitud de ambas partes
                 listaSolicitudes.eliminarSolicitud(emisor + "->" + receptor);
                 usuarioReceptor->getSolicitudesRecibidas().eliminarSolicitud(emisor);
                 usuarioEmisor->getSolicitudesEnviadas().eliminarSolicitud(receptor);
 
-                // Agregar la amistad a la matriz dispersa
-                if (!matriz.existeAmistad(emisor, receptor)) {
-                    matriz.agregarAmistad(emisor, receptor);
-                    matriz.agregarAmistad(receptor, emisor); // Agregar también la relación en el sentido contrario
-                }
-
-                // Agregar la relación a la lista global de relaciones
-                listaRelaciones.agregarRelacion(emisor, receptor);
-
-                std::cout << "Solicitud aceptada. Ahora " << emisor << " y " << receptor << " son amigos." << std::endl;
+                std::cout << "Solicitud aceptada y eliminada de la lista de solicitudes." << std::endl;
             } else {
+                // Caso 2: No existe una solicitud pendiente
                 std::cout << "Solicitud aceptada no encontrada en la lista de solicitudes." << std::endl;
             }
-        } else if (estado == "PENDIENTE") {
+
+            // En ambos casos, se agrega la amistad a la matriz dispersa si no existe aún
+            if (!matriz.existeAmistad(emisor, receptor)) {
+                matriz.agregarAmistad(emisor, receptor);
+                matriz.agregarAmistad(receptor, emisor); // Relación bidireccional
+            }
+
+            // Agregar la relación a la lista global de relaciones
+            listaRelaciones.agregarRelacion(emisor, receptor);
+
+            std::cout << "Ahora " << emisor << " y " << receptor << " son amigos." << std::endl;
+        }
+
+            else if (estado == "PENDIENTE") {
             if (!solicitudPendiente && !solicitudRecibida) {
                 // Agregar la solicitud a la lista de solicitudes pendientes
                 usuarioEmisor->getSolicitudesEnviadas().agregarSolicitud(receptor);

@@ -1,4 +1,3 @@
-digraph MatrizDispersa {
-    node [shape=box];
-    splines=true;
+digraph G {
+    node [shape=record];
 }
