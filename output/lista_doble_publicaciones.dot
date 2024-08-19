@@ -1,0 +1,9 @@
+digraph G {
+    node [shape=box];
+    rankdir=LR;
+    "0x1f68c8c35a0" [label="publicacion de sofia"];
+    "0x1f68c8c35a0" -> "0x1f68c8c2c40" [dir=both];
+    "0x1f68c8c2c40" [label="publicacion de lara"];
+    "0x1f68c8c2c40" -> "0x1f68c8c35a0" [dir=both];
+    "0x1f68c8c2c40" -> "0x1f68c8c35a0" [dir=both];
+}

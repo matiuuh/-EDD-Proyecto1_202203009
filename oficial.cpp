@@ -78,6 +78,9 @@ private:
     string hora;
 
 public:
+    Publicacion(const std::string& correo, const std::string& contenido, const std::string& fecha, const std::string& hora)
+        : correoUsuario(correo), contenido(contenido), fecha(fecha), hora(hora) {}
+
     Publicacion(const std::string& correo, const std::string& contenido)
         : correoUsuario(correo), contenido(contenido) {
         // Obtener la fecha y hora actual
@@ -793,6 +796,45 @@ void cargarUsuariosDesdeArchivo(const std::string& archivoJSON, ListaEnlazada& l
     std::cout << "Usuarios cargados con éxito." << std::endl;
 }
 
+void cargarPublicacionesDesdeArchivo(const std::string& archivo, ListaEnlazada& listaUsuarios, ListaDoblePublicaciones& listaPublicaciones) {
+    // Leer el archivo JSON
+    ifstream archivoEntrada(archivo);
+    if (!archivoEntrada.is_open()) {
+        cout << "Error al abrir el archivo: " << archivo << endl;
+        return;
+    }
+
+    json jsonData;
+    archivoEntrada >> jsonData;
+    archivoEntrada.close();
+
+    // Recorrer las publicaciones
+    for (const auto& publicacionJson : jsonData) {
+        string correo = publicacionJson["correo"];
+        string contenido = publicacionJson["contenido"];
+        string fecha = publicacionJson["fecha"];
+        string hora = publicacionJson["hora"];
+
+        // Buscar al usuario por correo
+        Usuario* usuario = listaUsuarios.buscarUsuarioPorCorreo(correo);
+        if (usuario != nullptr) {
+            // Crear la publicación
+            auto nuevaPublicacion = std::make_shared<Publicacion>(correo, contenido, fecha, hora);
+
+            // Agregar la publicación a la lista de publicaciones del usuario
+            usuario->publicaciones.agregarPublicacion(nuevaPublicacion);
+
+            // Agregar la publicación al feed general (lista circular de publicaciones)
+            listaPublicaciones.agregarPublicacion(nuevaPublicacion);
+        } else {
+            // Si no se encontró el correo en la lista de usuarios
+            cout << "El correo " << correo << " no existe en el sistema." << endl;
+        }
+    }
+}
+
+
+
 // Prototipos
 void menu();
 void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones);
@@ -1042,6 +1084,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
 void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones){
     int opcion;
     string archivoJSON = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/usuarios.json";
+    string archivoJSON1 = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/publicaciones.json";
 
     do {
         cout << "\t-----Menu ADMINISTRADOR-----\n";
@@ -1069,9 +1112,8 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
                 system("pause");
                 break;
             case 3:
-                cout << "---------Publicaciones---------" << endl;
-                cout << "Carnet: 202203009" << endl;
-                cout << "Link del repositorio: https://github.com/matiuuh/-EDD-Proyecto1_202203009.git" << endl;
+                cout << "---------Carga de publicaciones---------" << endl;
+                cargarPublicacionesDesdeArchivo(archivoJSON1, listaUsuarios, listaPublicaciones);
                 cout << "\n";
                 system("pause");
                 break;
@@ -1423,7 +1465,6 @@ void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDisper
     system("dot -Tpng matriz_amistades.dot -o matriz_amistades.png");
 }
 
-
 void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
     ofstream archivo("lista_doble_publicaciones.dot");
     archivo << "digraph G {" << endl;
@@ -1462,3 +1503,4 @@ void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
     // Generar la imagen a partir del archivo DOT
     system("dot -Tpng lista_doble_publicaciones.dot -o lista_doble_publicaciones.png");
 }
+
