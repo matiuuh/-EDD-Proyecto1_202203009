@@ -68,6 +68,18 @@ public:
         return cabeza.get();
     }
 
+    // Nuevo método para verificar si un amigo está en la lista
+    bool existeAmigo(const string& correo) const {
+        Nodo* temp = cabeza.get();
+        while (temp) {
+            if (temp->correo == correo) {
+                return true;
+            }
+            temp = temp->siguiente.get();
+        }
+        return false;
+    }
+
 };
 
 class Publicacion {
@@ -253,6 +265,16 @@ public:
 
 };
 
+class Solicitud {
+public:
+    std::string emisor;
+    std::string receptor;
+    std::string estado;
+
+    Solicitud(const std::string& emisor, const std::string& receptor, const std::string& estado)
+        : emisor(emisor), receptor(receptor), estado(estado) {}
+};
+
 // Clase ListaSimpleSolicitudes
 class ListaSimpleSolicitudes {
 public:
@@ -320,6 +342,28 @@ public:
     NodoLista* obtenerCabeza() const {
         return cabeza;  // Suponiendo que `cabeza` es el puntero a la cabeza de la lista
     }
+    
+    bool existeSolicitudPendiente(const std::string& emisor, const std::string& receptor) const {
+        NodoLista* actual = cabeza;
+        while (actual != nullptr) {
+            // Verificamos si la solicitud está en el formato "emisor:receptor"
+            std::string solicitud = actual->solicitud;
+            size_t pos = solicitud.find(':');
+            if (pos != std::string::npos) {
+                std::string solicitudEmisor = solicitud.substr(0, pos);
+                std::string solicitudReceptor = solicitud.substr(pos + 1);
+
+                // Verificamos el estado de la solicitud si es necesario
+                if (solicitudEmisor == emisor && solicitudReceptor == receptor) {
+                    return true; // Encontramos la solicitud pendiente
+                }
+            }
+            actual = actual->siguiente;
+        }
+        return false; // No encontramos ninguna solicitud pendiente
+    }
+
+
 };
 
 // Clase PilaSolicitudes
@@ -431,6 +475,7 @@ public:
     Iterador obtenerIterador() const {
         return Iterador(tope);
     }
+
 };
 
 class NodoMatriz {
@@ -489,16 +534,16 @@ public:
     return nullptr;
 }
 
-void insertarNombre(const string& correo) {
-    if (buscarNodo(correo) == nullptr) {
-        NodoMatriz* nuevo = new NodoMatriz(correo);
-        nuevo->siguiente = cabeza;
-        cabeza = nuevo;
-        cout << "Nodo insertado para " << correo << endl;
-    } else {
-        cout << "Nodo ya existe para " << correo << endl;
+    void insertarNombre(const string& correo) {
+        if (buscarNodo(correo) == nullptr) {
+            NodoMatriz* nuevo = new NodoMatriz(correo);
+            nuevo->siguiente = cabeza;
+            cabeza = nuevo;
+            cout << "Nodo insertado para " << correo << endl;
+        } else {
+            cout << "Nodo ya existe para " << correo << endl;
+        }
     }
-}
 
     void obtenerAmigos(const string& correoUsuario, ListaEnlazadaAmigos& amigosLista) const {
         NodoMatriz* nodoUsuario = buscarNodo(correoUsuario); // Encuentra el nodo del usuario en la matriz
@@ -521,6 +566,22 @@ void insertarNombre(const string& correo) {
                 accion(correoUsuario, amigo); // Relación entre el usuario conectado y sus amigos
             });
         }
+    }
+
+    // Método para verificar si existe una amistad entre dos usuarios
+    bool existeAmistad(const string& correo1, const string& correo2) const {
+        NodoMatriz* nodo1 = buscarNodo(correo1);
+        NodoMatriz* nodo2 = buscarNodo(correo2);
+
+        if (nodo1 && nodo2) {
+            // Verificar si correo2 está en la lista de amigos de correo1
+            bool amistad1 = nodo1->amigos.existeAmigo(correo2);
+            // Verificar si correo1 está en la lista de amigos de correo2
+            bool amistad2 = nodo2->amigos.existeAmigo(correo1);
+
+            return amistad1 && amistad2;
+        }
+        return false;
     }
 };
 
@@ -833,14 +894,79 @@ void cargarPublicacionesDesdeArchivo(const std::string& archivo, ListaEnlazada& 
     }
 }
 
+void cargarSolicitudesDesdeArchivo(const std::string& archivo, ListaEnlazada& listaUsuarios, ListaSimpleSolicitudes& listaSolicitudes, MatrizDispersa& matriz) {
+    // Abrir el archivo
+    std::ifstream archivoJSON(archivo);
+    if (!archivoJSON.is_open()) {
+        std::cerr << "Error al abrir el archivo de solicitudes." << std::endl;
+        return;
+    }
+
+    // Parsear el archivo JSON
+    json solicitudesJSON;
+    archivoJSON >> solicitudesJSON;
+
+    // Recorrer cada solicitud en el archivo JSON
+    for (const auto& solicitud : solicitudesJSON) {
+        std::string emisor = solicitud["emisor"];
+        std::string receptor = solicitud["receptor"];
+        std::string estado = solicitud["estado"];
+
+        std::cout << "Procesando solicitud: Emisor: " << emisor << ", Receptor: " << receptor << ", Estado: " << estado << std::endl;
+
+        // Verificar si ambos usuarios existen
+        Usuario* usuarioEmisor = listaUsuarios.buscarUsuarioPorCorreo(emisor);
+        Usuario* usuarioReceptor = listaUsuarios.buscarUsuarioPorCorreo(receptor);
+
+        if (usuarioEmisor == nullptr || usuarioReceptor == nullptr) {
+            std::cout << "Solicitud descartada: El emisor o receptor no existe en el sistema." << std::endl;
+            continue; // Saltar a la siguiente solicitud
+        }
+
+        // Verificar si ya existe una solicitud pendiente entre los usuarios
+        bool solicitudPendiente = listaSolicitudes.buscarSolicitud(emisor + "->" + receptor);
+        bool solicitudRecibida = usuarioReceptor->getSolicitudesRecibidas().buscarSolicitud(emisor);
+
+        if (estado == "ACEPTADA") {
+            if (solicitudPendiente) {
+                // Eliminar la solicitud de ambas partes
+                listaSolicitudes.eliminarSolicitud(emisor + "->" + receptor);
+                usuarioReceptor->getSolicitudesRecibidas().eliminarSolicitud(emisor);
+                usuarioEmisor->getSolicitudesEnviadas().eliminarSolicitud(receptor);
+
+                // Agregar la amistad a la matriz dispersa
+                if (!matriz.existeAmistad(emisor, receptor)) {
+                    matriz.agregarAmistad(emisor, receptor);
+                    matriz.agregarAmistad(receptor, emisor); // Agregar también la relación en el sentido contrario
+                }
+
+                std::cout << "Solicitud aceptada. Ahora " << emisor << " y " << receptor << " son amigos." << std::endl;
+            } else {
+                std::cout << "Solicitud aceptada no encontrada en la lista de solicitudes." << std::endl;
+            }
+        } else if (estado == "PENDIENTE") {
+            if (!solicitudPendiente && !solicitudRecibida) {
+                // Agregar la solicitud a la lista de solicitudes pendientes
+                usuarioEmisor->getSolicitudesEnviadas().agregarSolicitud(receptor);
+                usuarioReceptor->getSolicitudesRecibidas().push(emisor);
+
+                std::cout << "Solicitud pendiente: " << emisor << " ha enviado una solicitud a " << receptor << "." << std::endl;
+            } else {
+                std::cout << "Solicitud pendiente ya existente entre " << emisor << " y " << receptor << ". Solicitud descartada." << std::endl;
+            }
+        }
+    }
+
+    std::cout << "Carga de solicitudes completada." << std::endl;
+}
 
 
 // Prototipos
 void menu();
 void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones);
-void iniciarSesion(ListaEnlazada&, MatrizDispersa&, ListaDoblePublicaciones&);
+void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes);
 void registro(ListaEnlazada&);
-void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones);
+void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes);
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, MatrizDispersa& matriz);
 void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios);
@@ -909,6 +1035,7 @@ void menu() {
     ListaEnlazada listaUsuarios;
     MatrizDispersa matriz;
     ListaDoblePublicaciones listaPublicaciones;
+    ListaSimpleSolicitudes listaSolicitudes;
 
     do {
         cout << "\t-----Menu-----\n";
@@ -921,7 +1048,7 @@ void menu() {
 
         switch (opcion) {
             case 1:
-                iniciarSesion(listaUsuarios, matriz, listaPublicaciones);
+                iniciarSesion(listaUsuarios, matriz, listaPublicaciones, listaSolicitudes);
                 cout << "\n";
                 system("pause");
                 break;
@@ -951,7 +1078,7 @@ void menu() {
 }
 
 //función para el inicio de sesión
-void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones) {
+void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes) {
     string correo, contrasenia;
     cout << "Ingrese el correo: "; getline(cin, correo);
     cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
@@ -959,7 +1086,7 @@ void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePubli
     // Verificar si es el administrador
     if (correo == "admin" && contrasenia == "EDD") {
         cout << "Inicio de sesion como Administrador exitoso. Bienvenido, Administrador!" << endl;
-        menuAdmin(lista, matriz, listaPublicaciones);
+        menuAdmin(lista, matriz, listaPublicaciones, listaSolicitudes);
         return; // Salir de la función después de iniciar sesión como administrador
     }
 
@@ -1081,10 +1208,11 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
 }
 
 //función para mostrar el menú del administrador
-void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones){
+void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes){
     int opcion;
     string archivoJSON = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/usuarios.json";
     string archivoJSON1 = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/publicaciones.json";
+    string archivoSolicitudes = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/solicitudes.json";
 
     do {
         cout << "\t-----Menu ADMINISTRADOR-----\n";
@@ -1107,7 +1235,8 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
                 system("pause");
                 break;
             case 2:
-                cout<<"---------Relaciones---------"<<endl;
+                cout<<"---------Carga de relaciones---------"<<endl;
+                cargarSolicitudesDesdeArchivo(archivoSolicitudes, listaUsuarios, listaSolicitudes, matriz);
                 cout << "\n";
                 system("pause");
                 break;
