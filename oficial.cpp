@@ -331,6 +331,30 @@ public:
 
     PilaSolicitudes() : tope(nullptr) {}
 
+    void eliminarSolicitud(const string& solicitud) {
+    NodoPilaSolicitudes* actual = tope;
+    NodoPilaSolicitudes* anterior = nullptr;
+
+    while (actual != nullptr) {
+        if (actual->solicitud == solicitud) {
+            if (anterior == nullptr) {
+                // El nodo a eliminar es el tope de la pila
+                tope = actual->siguiente;
+            } else {
+                anterior->siguiente = actual->siguiente;
+            }
+            delete actual;
+            cout << "Solicitud eliminada: " << solicitud << endl;
+            return;
+        }
+        anterior = actual;
+        actual = actual->siguiente;
+    }
+
+    cout << "Solicitud no encontrada: " << solicitud << endl;
+}
+
+
     void push(const string& solicitud) {
         NodoPilaSolicitudes* nuevoNodo = new NodoPilaSolicitudes{solicitud, tope};
         tope = nuevoNodo;
@@ -338,11 +362,11 @@ public:
 
     void pop() {
     if (tope) {
-        cout << "Solicitud en el tope (dentro de pop): " << tope->solicitud << endl;
+        //cout << "Solicitud en el tope (dentro de pop): " << tope->solicitud << endl;
         NodoPilaSolicitudes* nodoAEliminar = tope;
         tope = tope->siguiente;
         delete nodoAEliminar;
-        cout << "Nodo eliminado correctamente." << endl;
+        //cout << "Nodo eliminado correctamente." << endl;
     } else {
         cout << "La pila está vacía, no se puede hacer pop." << endl;
     }
@@ -378,6 +402,32 @@ public:
             actual = actual->siguiente;
         }
     }
+
+    // Clase Iterador
+    class Iterador {
+    public:
+        Iterador(NodoPilaSolicitudes* nodo) : actual(nodo) {}
+
+        bool hasNext() const {
+            return actual != nullptr;
+        }
+
+        string next() {
+            if (hasNext()) {
+                string solicitud = actual->solicitud;
+                actual = actual->siguiente;
+                return solicitud;
+            }
+            throw std::out_of_range("No hay más elementos en la pila.");
+        }
+
+    private:
+        NodoPilaSolicitudes* actual;
+    };
+
+    Iterador obtenerIterador() const {
+        return Iterador(tope);
+    }
 };
 
 class NodoMatriz {
@@ -398,44 +448,54 @@ private:
 public:
     MatrizDispersa() : cabeza(nullptr) {}
 
-    void agregarAmistad(const string& nombre1, const string& nombre2) {
-        NodoMatriz* nodo1 = buscarNodo(nombre1);
-        NodoMatriz* nodo2 = buscarNodo(nombre2);
+    void agregarAmistad(const string& correo1, const string& correo2) {
+        NodoMatriz* nodo1 = buscarNodo(correo1);
+        NodoMatriz* nodo2 = buscarNodo(correo2);
 
         if (!nodo1) {
-            insertarNombre(nombre1);
-            nodo1 = buscarNodo(nombre1);
+            cout << "Nodo para " << correo1 << " no encontrado. Insertando nuevo nodo." << endl;
+            insertarNombre(correo1);
+            nodo1 = buscarNodo(correo1);
         }
         if (!nodo2) {
-            insertarNombre(nombre2);
-            nodo2 = buscarNodo(nombre2);
+            cout << "Nodo para " << correo2 << " no encontrado. Insertando nuevo nodo." << endl;
+            insertarNombre(correo2);
+            nodo2 = buscarNodo(correo2);
         }
 
         if (nodo1 && nodo2) {
-            nodo1->amigos.agregarAmigo(nombre2);
-            nodo2->amigos.agregarAmigo(nombre1);
-            cout << "Amistad entre " << nombre1 << " y " << nombre2 << " agregada a la matriz dispersa." << endl;
+            nodo1->amigos.agregarAmigo(correo2);
+            nodo2->amigos.agregarAmigo(correo1);
+            cout << "Amistad entre " << correo1 << " y " << correo2 << " agregada a la matriz dispersa." << endl;
+        } else {
+            cout << "Error al agregar amistad: uno o ambos nodos no se encontraron." << endl;
         }
     }
+
 
     NodoMatriz* buscarNodo(const string nombre) const {
-        NodoMatriz* actual = cabeza;
-        while (actual != nullptr) {
-            if (actual->nombre == nombre) {
-                return actual;
-            }
-            actual = actual->siguiente;
+    NodoMatriz* actual = cabeza;
+    while (actual != nullptr) {
+        if (actual->nombre == nombre) {
+            cout << "Nodo encontrado para " << nombre << endl;
+            return actual;
         }
-        return nullptr;
+        actual = actual->siguiente;
     }
+    cout << "Nodo no encontrado para " << nombre << endl;
+    return nullptr;
+}
 
-    void insertarNombre(const string& nombre) {
-        if (buscarNodo(nombre) == nullptr) {
-            NodoMatriz* nuevo = new NodoMatriz(nombre);
-            nuevo->siguiente = cabeza;
-            cabeza = nuevo;
-        }
+void insertarNombre(const string& correo) {
+    if (buscarNodo(correo) == nullptr) {
+        NodoMatriz* nuevo = new NodoMatriz(correo);
+        nuevo->siguiente = cabeza;
+        cabeza = nuevo;
+        cout << "Nodo insertado para " << correo << endl;
+    } else {
+        cout << "Nodo ya existe para " << correo << endl;
     }
+}
 
     void obtenerAmigos(const string& correoUsuario, ListaEnlazadaAmigos& amigosLista) const {
         NodoMatriz* nodoUsuario = buscarNodo(correoUsuario); // Encuentra el nodo del usuario en la matriz
@@ -451,11 +511,11 @@ public:
     }
 
     // Nuevo método para recorrer las relaciones de un usuario específico
-    void paraCadaRelacionDelUsuario(const string& nombreUsuario, const function<void(const string&, const string&)>& accion) const {
-        NodoMatriz* nodoUsuario = buscarNodo(nombreUsuario);
+    void paraCadaRelacionDelUsuario(const string& correoUsuario, const function<void(const string&, const string&)>& accion) const {
+        NodoMatriz* nodoUsuario = buscarNodo(correoUsuario);
         if (nodoUsuario) {
             nodoUsuario->amigos.paraCadaAmigo([&](const string& amigo) {
-                accion(nombreUsuario, amigo); // Relación entre el usuario conectado y sus amigos
+                accion(correoUsuario, amigo); // Relación entre el usuario conectado y sus amigos
             });
         }
     }
@@ -513,44 +573,37 @@ public:
 
     void mostrarSolicitudesRecibidas() const {
         cout << "Solicitudes recibidas por " << nombre << ":" << endl;
-        PilaSolicitudes copiaSolicitudesRecibidas = solicitudesRecibidas;  // Crear una copia para no modificar la pila original
-        //while (!copiaSolicitudesRecibidas.estaVacia()) {
-        cout << copiaSolicitudesRecibidas.obtenerTope() << endl;
-            //copiaSolicitudesRecibidas.pop();
-       // }
+
+        PilaSolicitudes::Iterador it = solicitudesRecibidas.obtenerIterador();
+
+        while (it.hasNext()) {
+            cout << it.next() << endl;
+        }
     }
 
     void aceptarSolicitud(Usuario* receptor, Usuario* emisor, MatrizDispersa& matriz) {
-    if (receptor == nullptr) {
-        cout << "Error: El puntero receptor es nulo." << endl;
-        return;
+        if (receptor == nullptr || emisor == nullptr) {
+            cout << "Error: Los punteros receptor o emisor son nulos." << endl;
+            return;
+        }
+
+        // Verificar si hay una solicitud pendiente
+        if (!receptor->getSolicitudesRecibidas().buscarSolicitud(emisor->getCorreo())) {
+            cout << "Error: No hay una solicitud de amistad pendiente de " << emisor->getCorreo() << " a " << receptor->getCorreo() << "." << endl;
+            return;
+        }
+
+        // Eliminar la solicitud de ambas partes
+        receptor->getSolicitudesRecibidas().eliminarSolicitud(emisor->getCorreo());
+        receptor->getSolicitudesEnviadas().eliminarSolicitud(emisor->getCorreo());
+        emisor->getSolicitudesEnviadas().eliminarSolicitud(receptor->getCorreo());
+        emisor->getSolicitudesRecibidas().eliminarSolicitud(receptor->getCorreo());
+
+        // Agregar la amistad a la matriz dispersa
+        matriz.agregarAmistad(receptor->getCorreo(), emisor->getCorreo());
+
+        cout << "Solicitud aceptada. Ahora son amigos." << endl;
     }
-
-    if (emisor == nullptr) {
-        cout << "Error: El puntero emisor es nulo." << endl;
-        return;
-    }
-
-    cout << "Receptor: " << receptor->getNombre() << " (" << receptor->getCorreo() << ")" << endl;
-    cout << "Emisor: " << emisor->getNombre() << " (" << emisor->getCorreo() << ")" << endl;
-
-    // Verificar el estado de la pila antes de hacer pop
-    cout << "Solicitud en el tope de la pila de solicitudes recibidas del receptor (antes de pop, estoy dentro de aceptar solicitud): " << receptor->solicitudesRecibidas.obtenerTope() << endl;
-
-    // Eliminar la solicitud de ambas partes
-    receptor->solicitudesRecibidas.pop();
-    cout << "Solicitud eliminada de la pila de solicitudes recibidas del receptor." << endl;
-    receptor->solicitudesEnviadas.eliminarSolicitud(emisor->getCorreo());
-
-    emisor->solicitudesEnviadas.eliminarSolicitud(receptor->getCorreo());
-    emisor->solicitudesRecibidas.pop();
-    cout << "Solicitud eliminada de la pila de solicitudes recibidas del emisor." << endl;
-
-    // Agregar la amistad a la matriz dispersa
-    matriz.agregarAmistad(receptor->getNombre(), emisor->getNombre());
-
-    cout << "Solicitud aceptada. Ahora son amigos." << endl;
-}
 
     void rechazarSolicitud(Usuario* receptor, Usuario* emisor) {
         if (receptor && emisor) {
@@ -686,6 +739,18 @@ public:
         return false; // Usuario no encontrado
     }
 
+    // Método en la clase ListaEnlazada para buscar el nombre a partir del correo
+    string buscarNombrePorCorreo(const string& correo) const {
+        Nodo* actual = cabeza.get(); // Usar .get() para obtener un puntero crudo desde el unique_ptr
+        while (actual) {
+            if (actual->usuario.getCorreo() == correo) {
+                return actual->usuario.getNombre();
+            }
+            actual = actual->siguiente.get(); // Obtener el siguiente nodo con .get()
+        }
+        return ""; // Retornar una cadena vacía si no se encuentra el usuario
+    }
+
 };
 
 // Método para cargar usuarios desde un archivo JSON
@@ -733,7 +798,7 @@ void menu();
 void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones);
 void iniciarSesion(ListaEnlazada&, MatrizDispersa&, ListaDoblePublicaciones&);
 void registro(ListaEnlazada&);
-void menuAdmin(ListaEnlazada& listaUsuarios);
+void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones);
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, MatrizDispersa& matriz);
 void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios);
@@ -742,7 +807,7 @@ void mostrarPublicacionesDeAmigos(Usuario& usuarioConectado, ListaDoblePublicaci
 void generarGraficoPilaSolicitudesRecibidas(const PilaSolicitudes& pilaSolicitudes);
 void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSolicitudes);
 void mostrarListaAmigos(const Usuario& usuarioConectado, MatrizDispersa& matrizAmigos);
-void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDispersa& matriz);
+void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDispersa& matriz, ListaEnlazada& listaUsuarios);
 void generarGraficoListaDoble(const ListaDoblePublicaciones& lista);
 
 // Definición fuera de la clase Usuario
@@ -852,7 +917,7 @@ void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePubli
     // Verificar si es el administrador
     if (correo == "admin" && contrasenia == "EDD") {
         cout << "Inicio de sesion como Administrador exitoso. Bienvenido, Administrador!" << endl;
-        menuAdmin(lista);
+        menuAdmin(lista, matriz, listaPublicaciones);
         return; // Salir de la función después de iniciar sesión como administrador
     }
 
@@ -941,7 +1006,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 mostrarListaAmigos(usuarioConectado, matriz);
 
                 // 3. Generar gráfico de la matriz de amistades
-                generarGraficoMatrizAmistades(usuarioConectado, matriz);
+                generarGraficoMatrizAmistades(usuarioConectado, matriz, lista);
 
                 // 4. Reinicializar la lista temporal antes de llenarla
                 listaPublicacionesTemp = ListaDoblePublicaciones();
@@ -974,7 +1039,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
 }
 
 //función para mostrar el menú del administrador
-void menuAdmin(ListaEnlazada& listaUsuarios){
+void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones){
     int opcion;
     string archivoJSON = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/usuarios.json";
 
@@ -1142,10 +1207,14 @@ void crearPublicacion(Usuario& usuarioConectado, ListaDoblePublicaciones& listaP
     getline(cin, contenido);
 
     // Crear una nueva publicación
-    shared_ptr<Publicacion> nuevaPublicacion = make_shared<Publicacion>(usuarioConectado.getCorreo(), contenido);
+    auto nuevaPublicacion = std::make_shared<Publicacion>(usuarioConectado.getCorreo(), contenido);
 
     // Agregar la publicación a la lista del usuario
     usuarioConectado.publicaciones.agregarPublicacion(nuevaPublicacion);
+
+    // Agregar la publicación al feed de amigos
+    // Supongamos que tienes una lista circular de publicaciones para el feed
+    listaPublicaciones.agregarPublicacion(nuevaPublicacion);
 
     cout << "Publicacion creada exitosamente." << endl;
     //system("pause");
@@ -1331,15 +1400,20 @@ void mostrarListaAmigos(const Usuario& usuarioConectado, MatrizDispersa& matrizA
     });
 }
 
-void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDispersa& matriz) {
+void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDispersa& matriz, ListaEnlazada& listaUsuarios) {
     ofstream archivo("matriz_amistades.dot");
     archivo << "digraph G {" << endl;
     archivo << "    node [shape=record];" << endl;
 
     // Recorrer toda la matriz para mostrar las relaciones de amistad del usuario conectado
-    matriz.paraCadaRelacionDelUsuario(usuarioConectado.getNombre(), [&](const string& usuario, const string& amigo) {
-        archivo << "    \"" << usuario << "\" -> \"" << amigo << "\";" << endl;
-        archivo << "    \"" << amigo << "\" -> \"" << usuario << "\";" << endl; // Flecha inversa
+    matriz.paraCadaRelacionDelUsuario(usuarioConectado.getCorreo(), [&](const string& correoUsuario, const string& correoAmigo) {
+        string nombreUsuario = listaUsuarios.buscarNombrePorCorreo(correoUsuario);
+        string nombreAmigo = listaUsuarios.buscarNombrePorCorreo(correoAmigo);
+
+        if (!nombreUsuario.empty() && !nombreAmigo.empty()) {
+            archivo << "    \"" << nombreUsuario << "\" -> \"" << nombreAmigo << "\";" << endl;
+            archivo << "    \"" << nombreAmigo << "\" -> \"" << nombreUsuario << "\";" << endl; // Flecha inversa
+        }
     });
 
     archivo << "}" << endl;
@@ -1348,6 +1422,7 @@ void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDisper
     // Generar la imagen a partir del archivo DOT
     system("dot -Tpng matriz_amistades.dot -o matriz_amistades.png");
 }
+
 
 void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
     ofstream archivo("lista_doble_publicaciones.dot");
