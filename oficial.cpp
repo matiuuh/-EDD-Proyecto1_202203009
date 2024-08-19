@@ -6,6 +6,8 @@
 #include <functional>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <sstream>
+#include <regex>
 
 
 using json = nlohmann::json;
@@ -80,6 +82,100 @@ public:
         return false;
     }
 
+};
+
+class NodoPublicaciones {
+public:
+    string correoUsuario;
+    int numeroPublicaciones;
+    unique_ptr<NodoPublicaciones> siguiente;
+
+    NodoPublicaciones(const string& correo, int publicaciones)
+        : correoUsuario(correo), numeroPublicaciones(publicaciones), siguiente(nullptr) {}
+};
+
+class ListaEnlazadaSimpleMayorPublicaciones {
+private:
+    unique_ptr<NodoPublicaciones> cabeza;
+
+public:
+    ListaEnlazadaSimpleMayorPublicaciones() : cabeza(nullptr) {}
+
+    void agregarUsuario(const string& correo, int publicaciones) {
+        auto nuevoNodo = make_unique<NodoPublicaciones>(correo, publicaciones);
+        if (!cabeza || publicaciones > cabeza->numeroPublicaciones) {
+            nuevoNodo->siguiente = move(cabeza);
+            cabeza = move(nuevoNodo);
+        } else {
+            NodoPublicaciones* actual = cabeza.get();
+            while (actual->siguiente && publicaciones <= actual->siguiente->numeroPublicaciones) {
+                actual = actual->siguiente.get();
+            }
+            nuevoNodo->siguiente = move(actual->siguiente);
+            actual->siguiente = move(nuevoNodo);
+        }
+    }
+
+    void mostrarTop5() const {
+        cout << "Top 5 usuarios con más publicaciones:" << endl;
+        NodoPublicaciones* actual = cabeza.get();
+        int count = 0;
+        while (actual && count < 5) {
+            cout << actual->correoUsuario << " (" << actual->numeroPublicaciones << " publicaciones)" << endl;
+            ++count;
+            actual = actual->siguiente.get();
+        }
+        if (count == 0) {
+            cout << "No hay suficientes usuarios para mostrar el top 5." << endl;
+        }
+    }
+};
+
+class NodoMenosAmigos {
+public:
+    string correoUsuario;
+    int numeroAmigos;
+    unique_ptr<NodoMenosAmigos> siguiente;
+
+    NodoMenosAmigos(const string& correo, int amigos)
+        : correoUsuario(correo), numeroAmigos(amigos), siguiente(nullptr) {}
+};
+
+class ListaEnlazadaSimpleMenosAmigos {
+private:
+    unique_ptr<NodoMenosAmigos> cabeza;
+
+public:
+    ListaEnlazadaSimpleMenosAmigos() : cabeza(nullptr) {}
+
+    void agregarUsuario(const string& correo, int amigos) {
+        auto nuevoNodo = make_unique<NodoMenosAmigos>(correo, amigos);
+        if (!cabeza || amigos < cabeza->numeroAmigos) {
+            nuevoNodo->siguiente = move(cabeza);
+            cabeza = move(nuevoNodo);
+        } else {
+            NodoMenosAmigos* actual = cabeza.get();
+            while (actual->siguiente && amigos >= actual->siguiente->numeroAmigos) {
+                actual = actual->siguiente.get();
+            }
+            nuevoNodo->siguiente = move(actual->siguiente);
+            actual->siguiente = move(nuevoNodo);
+        }
+    }
+
+    void mostrarTop5() const {
+        cout << "Top 5 usuarios con menos amigos:" << endl;
+        NodoMenosAmigos* actual = cabeza.get();
+        int count = 0;
+        while (actual && count < 5) {
+            cout << actual->correoUsuario << " (" << actual->numeroAmigos << " amigos)" << endl;
+            ++count;
+            actual = actual->siguiente.get();
+        }
+        if (count == 0) {
+            cout << "No hay suficientes usuarios para mostrar el top 5." << endl;
+        }
+    }
 };
 
 class Publicacion {
@@ -263,6 +359,21 @@ public:
         return false; // No se encontró la publicación
     }
 
+    // Contar el número de publicaciones asociadas a un correo específico
+    int contarPublicaciones(const string& correoUsuario) const {
+        int contador = 0;
+        if (!cabeza) return contador; // Lista vacía
+
+        auto temp = cabeza;
+        do {
+            if (temp->publicacion->getCorreoUsuario() == correoUsuario) {
+                contador++;
+            }
+            temp = temp->siguiente;
+        } while (temp != cabeza); // Se recorre hasta volver al inicio
+
+        return contador;
+    }
 };
 
 class Solicitud {
@@ -815,6 +926,14 @@ public:
         return ""; // Retornar una cadena vacía si no se encuentra el usuario
     }
 
+    // Método para iterar sobre cada usuario y aplicar una acción
+    void paraCadaUsuario(const function<void(Usuario*)>& accion) const {
+        Nodo* temp = cabeza.get();
+        while (temp) {
+            accion(&temp->usuario); // Aplicar la acción al usuario actual
+            temp = temp->siguiente.get(); // Mover al siguiente nodo
+        }
+    }
 };
 
 // Método para cargar usuarios desde un archivo JSON
@@ -977,6 +1096,10 @@ void generarGraficoColaSolicitudesEnviadas(const ListaSimpleSolicitudes& listaSo
 void mostrarListaAmigos(const Usuario& usuarioConectado, MatrizDispersa& matrizAmigos);
 void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDispersa& matriz, ListaEnlazada& listaUsuarios);
 void generarGraficoListaDoble(const ListaDoblePublicaciones& lista);
+void mostrarTop5UsuariosConMasPublicaciones(const ListaEnlazada& listaUsuarios, const ListaDoblePublicaciones& listaPublicaciones);
+void mostrarTop5UsuariosConMenosAmigos(const ListaEnlazada& listaUsuarios, const MatrizDispersa& matriz);
+void generarGraficoListaUsuarios(const ListaEnlazada& listaUsuarios);
+string sanearIdentificador(const std::string& id);
 
 // Definición fuera de la clase Usuario
 void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
@@ -1252,6 +1375,9 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
                 break;
             case 5:
                 cout << "----------Reportes----------" << endl;
+                generarGraficoListaUsuarios(listaUsuarios);
+                mostrarTop5UsuariosConMasPublicaciones(listaUsuarios, listaPublicaciones);
+                mostrarTop5UsuariosConMenosAmigos(listaUsuarios, matriz);
                 system("pause");
                 break;
             case 6:
@@ -1633,3 +1759,85 @@ void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
     system("dot -Tpng lista_doble_publicaciones.dot -o lista_doble_publicaciones.png");
 }
 
+void mostrarTop5UsuariosConMasPublicaciones(const ListaEnlazada& listaUsuarios, const ListaDoblePublicaciones& listaPublicaciones) {
+    ListaEnlazadaSimpleMayorPublicaciones listaOrdenada;
+
+    // Recorrer la lista de usuarios y contar las publicaciones
+    listaUsuarios.paraCadaUsuario([&](Usuario* usuario) {
+        int numeroPublicaciones = listaPublicaciones.contarPublicaciones(usuario->getCorreo());
+        listaOrdenada.agregarUsuario(usuario->getCorreo(), numeroPublicaciones);
+    });
+
+    // Mostrar los 5 usuarios con más publicaciones
+    listaOrdenada.mostrarTop5();
+}
+
+void mostrarTop5UsuariosConMenosAmigos(const ListaEnlazada& listaUsuarios, const MatrizDispersa& matriz) {
+    ListaEnlazadaSimpleMenosAmigos listaOrdenada;
+
+    // Recorrer la lista de usuarios y contar los amigos
+    listaUsuarios.paraCadaUsuario([&](Usuario* usuario) {
+        ListaEnlazadaAmigos amigosLista;
+        matriz.obtenerAmigos(usuario->getCorreo(), amigosLista);
+        int numeroAmigos = amigosLista.size();
+        listaOrdenada.agregarUsuario(usuario->getCorreo(), numeroAmigos);
+    });
+
+    // Mostrar los 5 usuarios con menos amigos
+    listaOrdenada.mostrarTop5();
+}
+
+void generarGraficoListaUsuarios(const ListaEnlazada& listaUsuarios) {
+    // Abrir el archivo DOT para escritura
+    std::ofstream archivoDOT("usuarios.dot");
+    if (!archivoDOT.is_open()) {
+        std::cerr << "No se pudo abrir el archivo DOT para escritura." << std::endl;
+        return;
+    }
+
+    // Escribir el encabezado del archivo DOT
+    archivoDOT << "digraph ListaUsuarios {\n";
+    archivoDOT << "    rankdir=LR;\n"; // Direccionalidad de izquierda a derecha
+    archivoDOT << "    node [shape=box];\n"; // Forma de los nodos
+
+    // Usar una variable para rastrear el nodo anterior
+    std::string idAnterior;
+
+    listaUsuarios.paraCadaUsuario([&](Usuario* usuario) {
+        std::ostringstream nodoID;
+        nodoID << "usuario_" << sanearIdentificador(usuario->getCorreo());
+
+        // Escribir el nodo para cada usuario
+        archivoDOT << "    " << nodoID.str() << " [label=\"" << usuario->getNombre() << "\"];\n";
+
+        // Conectar el nodo anterior al nodo actual
+        if (!idAnterior.empty()) {
+            archivoDOT << "    " << idAnterior << " -> " << nodoID.str() << ";\n";
+        }
+
+        // Actualizar idAnterior
+        idAnterior = nodoID.str();
+    });
+
+    // Escribir el pie del archivo DOT
+    archivoDOT << "}\n";
+
+    archivoDOT.close();
+
+    // Generar la imagen a partir del archivo DOT
+    std::string comando = "dot -Tpng usuarios.dot -o usuarios.png";
+    int resultado = std::system(comando.c_str());
+    if (resultado != 0) {
+        std::cerr << "Error al generar la imagen con Graphviz." << std::endl;
+    } else {
+        std::cout << "Imagen generada exitosamente como usuarios.png" << std::endl;
+    }
+}
+
+string sanearIdentificador(const std::string& id) {
+    // Reemplazar caracteres no válidos en los identificadores de nodos
+    std::string idSaneado = id;
+    std::regex caracteresNoValidos("[^a-zA-Z0-9_]"); // Solo caracteres alfanuméricos y guiones bajos
+    idSaneado = std::regex_replace(idSaneado, caracteresNoValidos, "_");
+    return idSaneado;
+}

@@ -1,5 +1,7 @@
 digraph G {
     node [shape=record];
-    "lara" -> "Juan";
-    "Juan" -> "lara";
+    "lara" -> "ss";
+    "ss" -> "lara";
+    "lara" -> "aa";
+    "aa" -> "lara";
 }
