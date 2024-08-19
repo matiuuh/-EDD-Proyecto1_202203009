@@ -13,6 +13,70 @@
 using json = nlohmann::json;
 using namespace std;
 
+
+class Relacion {
+public:
+    std::string usuario1;
+    std::string usuario2;
+
+    Relacion(const std::string& u1, const std::string& u2)
+        : usuario1(u1), usuario2(u2) {}
+};
+
+class NodoRelacion {
+public:
+    Relacion relacion;
+    NodoRelacion* siguiente;
+
+    NodoRelacion(const Relacion& r)
+        : relacion(r), siguiente(nullptr) {}
+};
+
+class ListaRelacionesCompleto {
+private:
+    NodoRelacion* cabeza;
+    NodoRelacion* cola;
+
+public:
+    ListaRelacionesCompleto() : cabeza(nullptr), cola(nullptr) {}
+
+    // Método para agregar una relación a la lista
+    void agregarRelacion(const std::string& usuario1, const std::string& usuario2) {
+        Relacion nuevaRelacion(usuario1, usuario2);
+        NodoRelacion* nuevoNodo = new NodoRelacion(nuevaRelacion);
+
+        if (!cabeza) {
+            cabeza = nuevoNodo;
+            cola = nuevoNodo;
+        } else {
+            cola->siguiente = nuevoNodo;
+            cola = nuevoNodo;
+        }
+    }
+
+    // Método para recorrer la lista y aplicar una función a cada nodo
+    void paraCadaRelacion(const std::function<void(const Relacion&)>& accion) const {
+        NodoRelacion* actual = cabeza;
+        while (actual) {
+            accion(actual->relacion);
+            actual = actual->siguiente;
+        }
+    }
+
+    // Destructor para liberar memoria
+    ~ListaRelacionesCompleto() {
+        NodoRelacion* actual = cabeza;
+        while (actual) {
+            NodoRelacion* siguiente = actual->siguiente;
+            delete actual;
+            actual = siguiente;
+        }
+    }
+};
+
+
+ListaRelacionesCompleto listaRelaciones;
+
 // Clase ListaEnlazadaAmigos para almacenar los correos de los amigos
 class ListaEnlazadaAmigos {
 private:
@@ -776,6 +840,8 @@ public:
 
         // Agregar la amistad a la matriz dispersa
         matriz.agregarAmistad(receptor->getCorreo(), emisor->getCorreo());
+        // Agregar la relación a la lista global de relaciones
+        listaRelaciones.agregarRelacion(receptor->getCorreo(), emisor->getCorreo());
 
         cout << "Solicitud aceptada. Ahora son amigos." << endl;
     }
@@ -1059,6 +1125,9 @@ void cargarSolicitudesDesdeArchivo(const std::string& archivo, ListaEnlazada& li
                     matriz.agregarAmistad(receptor, emisor); // Agregar también la relación en el sentido contrario
                 }
 
+                // Agregar la relación a la lista global de relaciones
+                listaRelaciones.agregarRelacion(emisor, receptor);
+
                 std::cout << "Solicitud aceptada. Ahora " << emisor << " y " << receptor << " son amigos." << std::endl;
             } else {
                 std::cout << "Solicitud aceptada no encontrada en la lista de solicitudes." << std::endl;
@@ -1100,6 +1169,7 @@ void mostrarTop5UsuariosConMasPublicaciones(const ListaEnlazada& listaUsuarios, 
 void mostrarTop5UsuariosConMenosAmigos(const ListaEnlazada& listaUsuarios, const MatrizDispersa& matriz);
 void generarGraficoListaUsuarios(const ListaEnlazada& listaUsuarios);
 string sanearIdentificador(const std::string& id);
+void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelaciones);
 
 // Definición fuera de la clase Usuario
 void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
@@ -1145,6 +1215,7 @@ int main() {
     // Instancias de las clases
     //ListaEnlazada listaUsuarios;
     //MatrizDispersa matrizDispersa;
+    ListaRelacionesCompleto listaRelaciones;
 
     menu();
     //system("pause");
@@ -1159,6 +1230,7 @@ void menu() {
     MatrizDispersa matriz;
     ListaDoblePublicaciones listaPublicaciones;
     ListaSimpleSolicitudes listaSolicitudes;
+
 
     do {
         cout << "\t-----Menu-----\n";
@@ -1330,6 +1402,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
     } while (opcion != 5);
 }
 
+
 //función para mostrar el menú del administrador
 void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes){
     int opcion;
@@ -1378,6 +1451,8 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
                 generarGraficoListaUsuarios(listaUsuarios);
                 mostrarTop5UsuariosConMasPublicaciones(listaUsuarios, listaPublicaciones);
                 mostrarTop5UsuariosConMenosAmigos(listaUsuarios, matriz);
+                // Aquí llamas al gráfico de la matriz dispersa
+                generarGraficoRelacionesAmistad(listaRelaciones);
                 system("pause");
                 break;
             case 6:
@@ -1840,4 +1915,31 @@ string sanearIdentificador(const std::string& id) {
     std::regex caracteresNoValidos("[^a-zA-Z0-9_]"); // Solo caracteres alfanuméricos y guiones bajos
     idSaneado = std::regex_replace(idSaneado, caracteresNoValidos, "_");
     return idSaneado;
+}
+
+void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelaciones) {
+    std::ofstream archivoDOT("matriz_amistades.dot");
+    if (!archivoDOT.is_open()) {
+        std::cerr << "No se pudo abrir el archivo DOT para escritura." << std::endl;
+        return;
+    }
+
+    archivoDOT << "digraph MatrizDispersa {\n";
+    archivoDOT << "    node [shape=box];\n";
+    archivoDOT << "    splines=true;\n"; // Para permitir curvas suaves en las flechas
+
+    listaRelaciones.paraCadaRelacion([&](const Relacion& relacion) {
+        archivoDOT << "    \"" << relacion.usuario1 << "\" -> \"" << relacion.usuario2 << "\" [label=\"amistad\"];\n";
+    });
+
+    archivoDOT << "}\n";
+    archivoDOT.close();
+
+    // Generar la imagen a partir del archivo DOT
+    int resultado = system("dot -Tpng matriz_amistades.dot -o matriz_amistades.png");
+    if (resultado != 0) {
+        std::cerr << "Error al generar la imagen con Graphviz." << std::endl;
+    } else {
+        std::cout << "Imagen generada exitosamente como matriz_amistades.png" << std::endl;
+    }
 }

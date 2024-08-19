@@ -1,7 +1,4 @@
-digraph G {
-    node [shape=record];
-    "lara" -> "ss";
-    "ss" -> "lara";
-    "lara" -> "aa";
-    "aa" -> "lara";
+digraph MatrizDispersa {
+    node [shape=box];
+    splines=true;
 }

@@ -1,15 +1,9 @@
 digraph ListaUsuarios {
     rankdir=LR;
     node [shape=box];
-    usuario_ee [label="ee"];
-    usuario_ss [label="ss"];
-    usuario_ee -> usuario_ss;
     usuario_juan_perez_example_com [label="Juan"];
-    usuario_ss -> usuario_juan_perez_example_com;
     usuario_sofgon_example_com [label="Sofia"];
     usuario_juan_perez_example_com -> usuario_sofgon_example_com;
     usuario_laraa [label="lara"];
     usuario_sofgon_example_com -> usuario_laraa;
-    usuario_rfrf [label="rfrf"];
-    usuario_laraa -> usuario_rfrf;
 }
