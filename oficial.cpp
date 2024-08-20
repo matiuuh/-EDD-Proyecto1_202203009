@@ -1430,7 +1430,6 @@ void menu() {
     } while (opcion != 4);
 }
 
-//función para el inicio de sesión
 void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal) {
     string correo, contrasenia;
     cout << "Ingrese el correo: "; getline(cin, correo);
