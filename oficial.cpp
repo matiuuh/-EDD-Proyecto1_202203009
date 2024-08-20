@@ -145,6 +145,14 @@ public:
         return false;
     }
 
+    // Método para mostrar los amigos en la lista
+    void mostrarAmigos() const {
+        Nodo* actual = cabeza.get();
+        while (actual) {
+            cout << actual->correo << endl;
+            actual = actual->siguiente.get();
+        }
+    }
 };
 
 class NodoPublicaciones {
@@ -534,6 +542,27 @@ public:
 
         return contador;
     }
+
+    void obtenerPublicaciones(const std::string& correoUsuario, ListaDoblePublicaciones& publicacionesUsuario) const {
+    // Primero, asegúrate de que `publicacionesUsuario` esté vacía
+    publicacionesUsuario = ListaDoblePublicaciones();
+
+    if (estaVacia()) {
+        // Si la lista original está vacía, simplemente salimos
+        return;
+    }
+
+    auto temp = cabeza;
+    do {
+        // Verificamos si la publicación pertenece al usuario
+        if (temp->publicacion->getCorreoUsuario() == correoUsuario) {
+            // Agregamos la publicación a la lista de publicaciones del usuario
+            publicacionesUsuario.agregarPublicacion(temp->publicacion);
+        }
+        temp = temp->siguiente;
+    } while (temp != cabeza); // Se recorre hasta volver al inicio
+}
+
 };
 
 class Solicitud {
@@ -1253,6 +1282,28 @@ void cargarSolicitudesDesdeArchivo(const std::string& archivo, ListaEnlazada& li
     std::cout << "Carga de solicitudes completada." << std::endl;
 }
 
+void mostrarInformacionUsuario(const Usuario& usuarioConectado) {
+    cout << "Nombre: " << usuarioConectado.getNombre() << endl;
+    cout << "Correo: " << usuarioConectado.getCorreo() << endl;
+    cout << "Fecha de nacimiento: " << usuarioConectado.getFechaNacimiento() << endl;
+    // Agregar más información según sea necesario
+}
+
+void mostrarAmigos(const MatrizDispersa& matrizAmigos, const Usuario& usuarioConectado) {
+    ListaEnlazadaAmigos amigosLista;
+    matrizAmigos.obtenerAmigos(usuarioConectado.getCorreo(), amigosLista);
+
+    cout << "Amigos de " << usuarioConectado.getNombre() << ":" << endl;
+    amigosLista.mostrarAmigos(); // Asegúrate de que `ListaEnlazadaAmigos` tenga un método `mostrarAmigos`
+}
+
+void mostrarPublicaciones(const ListaDoblePublicaciones& listaPublicaciones, const Usuario& usuarioConectado) {
+    ListaDoblePublicaciones publicacionesUsuario;
+    listaPublicaciones.obtenerPublicaciones(usuarioConectado.getCorreo(), publicacionesUsuario);
+
+    cout << "Publicaciones de " << usuarioConectado.getNombre() << ":" << endl;
+    publicacionesUsuario.mostrarPublicaciones(); // Asegúrate de que `ListaDoblePublicaciones` tenga un método `mostrarPublicaciones`
+}
 
 // Prototipos
 void menu();
@@ -1260,7 +1311,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
 void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal);
 void registro(ListaEnlazada&);
 void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal);
-void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
+void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado, MatrizDispersa& matrizAmigos, ListaDoblePublicaciones& listaPublicaciones);
 void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, MatrizDispersa& matriz);
 void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal);
 void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
@@ -1451,7 +1502,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
             case 1:
             cout<<"---------Perfil---------"<<endl;
                 cout << "Usuario Conectado: " << usuarioConectado.getNombre() << " " << usuarioConectado.getApellidos() << endl;
-                subMenuPerfil(lista, usuarioConectado);
+                subMenuPerfil(lista, usuarioConectado, matriz, listaPublicaciones);
                 cout << "\n";
                 system("pause");
                 break;
@@ -1573,7 +1624,7 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
 }
 
 //Se agregan los sub-menús del menú de perfil
-void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado){
+void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado, MatrizDispersa& matrizAmigos, ListaDoblePublicaciones& listaPublicaciones){
     char opcion;
     do{
         cout << "\ta. Ver perfil" << endl;
@@ -1585,6 +1636,9 @@ void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado){
         switch (opcion){
         case 'a':
             cout << "---------Ver Perfil---------" << endl;
+            mostrarInformacionUsuario(usuarioConectado);
+            mostrarAmigos(matrizAmigos, usuarioConectado);
+            mostrarPublicaciones(listaPublicaciones, usuarioConectado);
             system("pause");
             break;
         case 'b':
