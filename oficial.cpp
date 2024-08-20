@@ -1249,7 +1249,7 @@ void mostrarTop5UsuariosConMasPublicaciones(const ListaEnlazada& listaUsuarios, 
 void mostrarTop5UsuariosConMenosAmigos(const ListaEnlazada& listaUsuarios, const MatrizDispersa& matriz);
 void generarGraficoListaUsuarios(const ListaEnlazada& listaUsuarios);
 string sanearIdentificador(const std::string& id);
-void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelaciones);
+void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelaciones, const ListaEnlazada& listaUsuarios);
 void generarReportePublicacionesGlobal();
 void generarReportePublicacionesGlobal(ListaDoblePublicacionesGlobal& listaPublicacionesGlobal) ;
 
@@ -1296,8 +1296,6 @@ void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicacione
 
 int main() {
     // Instancias de las clases
-    //ListaEnlazada listaUsuarios;
-    //MatrizDispersa matrizDispersa;
     ListaRelacionesCompleto listaRelaciones;
 
     menu();
@@ -1532,7 +1530,7 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
                 mostrarTop5UsuariosConMasPublicaciones(listaUsuarios, listaPublicaciones);
                 mostrarTop5UsuariosConMenosAmigos(listaUsuarios, matriz);
                 // Aquí llamas al gráfico de la matriz dispersa
-                generarGraficoRelacionesAmistad(listaRelaciones);
+                generarGraficoRelacionesAmistad(listaRelaciones, listaUsuarios);
                 generarReportePublicacionesGlobal(listaPublicacionesGlobal);
                 system("pause");
                 break;
@@ -2006,7 +2004,7 @@ void generarReportePublicacionesGlobal(ListaDoblePublicacionesGlobal& listaPubli
     listaPublicacionesGlobal.generarGrafico("grafico_publicaciones_global.dot");
 }
 
-void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelaciones) {
+void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelaciones, const ListaEnlazada& listaUsuarios) {
     std::ofstream archivoDOT("matriz_amistades.dot");
     if (!archivoDOT.is_open()) {
         std::cerr << "No se pudo abrir el archivo DOT para escritura." << std::endl;
@@ -2017,8 +2015,19 @@ void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelacio
     archivoDOT << "    node [shape=box];\n";
     archivoDOT << "    splines=true;\n"; // Para permitir curvas suaves en las flechas
 
+    // Recorrer cada relación y escribir en el archivo DOT
     listaRelaciones.paraCadaRelacion([&](const Relacion& relacion) {
-        archivoDOT << "    \"" << relacion.usuario1 << "\" -> \"" << relacion.usuario2 << "\" [label=\"amistad\"];\n";
+        // Obtener los nombres de los usuarios a partir de sus correos
+        std::string nombre1 = listaUsuarios.buscarNombrePorCorreo(relacion.usuario1);
+        std::string nombre2 = listaUsuarios.buscarNombrePorCorreo(relacion.usuario2);
+
+        // Si alguno de los nombres está vacío, se puede registrar una advertencia o manejar el error
+        if (nombre1.empty()) nombre1 = "[Desconocido]";
+        if (nombre2.empty()) nombre2 = "[Desconocido]";
+
+        // Escribir la relación en el archivo DOT
+        archivoDOT << "    \"" << nombre1 << "\" -> \"" << nombre2 << "\" [label=\"\"];\n";
+        archivoDOT << "    \"" << nombre2 << "\" -> \"" << nombre1 << "\" [label=\"\"];\n";
     });
 
     archivoDOT << "}\n";
@@ -2032,3 +2041,4 @@ void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelacio
         std::cout << "Imagen generada exitosamente como matriz_amistades.png" << std::endl;
     }
 }
+

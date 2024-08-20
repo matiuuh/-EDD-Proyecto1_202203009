@@ -1,5 +1,6 @@
 digraph MatrizDispersa {
     node [shape=box];
     splines=true;
-    "sofgon@example.com" -> "juan.perez@example.com" [label="amistad"];
+    "Sofia" -> "Juan" [label=""];
+    "Juan" -> "Sofia" [label=""];
 }
