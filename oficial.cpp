@@ -1256,7 +1256,7 @@ void cargarSolicitudesDesdeArchivo(const std::string& archivo, ListaEnlazada& li
 
             // En ambos casos, se agrega la amistad a la matriz dispersa si no existe aún
             if (!matriz.existeAmistad(emisor, receptor)) {
-                matriz.agregarAmistad(emisor, receptor);
+                //matriz.agregarAmistad(emisor, receptor);
                 matriz.agregarAmistad(receptor, emisor); // Relación bidireccional
             }
 
@@ -2129,4 +2129,3 @@ void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelacio
         std::cout << "Imagen generada exitosamente como matriz_amistades.png" << std::endl;
     }
 }
-
