@@ -6,7 +6,7 @@ Este documento proporciona detalles técnicos sobre el sistema de gestión de re
 
 - **Lenguaje de programación:** C++
 - **Compilador recomendado:** TDM-GCC 9.2.0 / MinGW / Dev-C++
-- **Entorno de desarrollo:** Embarcadero Dev-C++
+- **Entorno de desarrollo:** Visual Studio Code
 - **Herramientas adicionales:**
   - [Graphviz](https://graphviz.org/): Para la generación de gráficos en formato `.dot`.
 
