@@ -1,3 +1,5 @@
-digraph G {
-    node [shape=record];
+digraph MatrizDispersa {
+    node [shape=box];
+    splines=true;
+    "sofgon@example.com" -> "juan.perez@example.com" [label="amistad"];
 }

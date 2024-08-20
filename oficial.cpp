@@ -13,7 +13,6 @@
 using json = nlohmann::json;
 using namespace std;
 
-
 class Relacion {
 public:
     std::string usuario1;
@@ -74,7 +73,7 @@ public:
     }
 };
 
-
+//ListaDoblePublicacionesGlobal listaPublicacionesGlobal;
 ListaRelacionesCompleto listaRelaciones;
 
 // Clase ListaEnlazadaAmigos para almacenar los correos de los amigos
@@ -290,6 +289,78 @@ public:
             fecha == otra.fecha &&
             hora == otra.hora;
     }
+};
+
+class ListaDoblePublicacionesGlobal {
+private:
+    struct Nodo {
+        std::shared_ptr<Publicacion> publicacion;
+        std::shared_ptr<Nodo> siguiente;
+        std::shared_ptr<Nodo> anterior;
+
+        Nodo(std::shared_ptr<Publicacion> pub) : publicacion(pub), siguiente(nullptr), anterior(nullptr) {}
+    };
+
+    std::shared_ptr<Nodo> cabeza;
+    std::shared_ptr<Nodo> cola;
+
+public:
+    ListaDoblePublicacionesGlobal() : cabeza(nullptr), cola(nullptr) {}
+
+    void agregarPublicacion(const std::shared_ptr<Publicacion>& publicacion) {
+        auto nuevoNodo = std::make_shared<Nodo>(publicacion);
+        if (cabeza == nullptr) {
+            cabeza = cola = nuevoNodo;
+        } else {
+            cola->siguiente = nuevoNodo;
+            nuevoNodo->anterior = cola;
+            cola = nuevoNodo;
+        }
+    }
+
+    void generarGrafico(const std::string& nombreArchivo) const {
+        std::ofstream archivo(nombreArchivo + ".dot");
+        if (!archivo.is_open()) {
+            std::cerr << "No se pudo abrir el archivo para generar el gráfico." << std::endl;
+            return;
+        }
+
+        archivo << "digraph G {" << std::endl;
+        archivo << "rankdir=LR;" << std::endl; // Establecer la orientación de izquierda a derecha
+        archivo << "node [shape=record];" << std::endl;
+
+        auto nodoActual = cabeza;
+        int contador = 0;
+
+        while (nodoActual != nullptr) {
+            archivo << "Nodo" << contador << " [label=\"{"
+                    << nodoActual->publicacion->getCorreoUsuario() << " | "
+                    << nodoActual->publicacion->getContenido() << " | "
+                    << nodoActual->publicacion->getFecha() << " | "
+                    << nodoActual->publicacion->getHora()
+                    << "}\"];" << std::endl;
+
+            if (nodoActual->siguiente != nullptr) {
+                archivo << "Nodo" << contador << " -> Nodo" << contador + 1 << " [dir=both];" << std::endl;
+            }
+
+            nodoActual = nodoActual->siguiente;
+            contador++;
+        }
+
+        archivo << "}" << std::endl;
+        archivo.close();
+
+        std::cout << "Gráfico generado en " << nombreArchivo << ".dot" << std::endl;
+
+        // Generar la imagen a partir del archivo DOT
+        std::string comando = "dot -Tpng " + nombreArchivo + ".dot -o " + nombreArchivo + ".png";
+        system(comando.c_str());
+
+        std::cout << "Imagen generada en " << nombreArchivo << ".png" << std::endl;
+    }
+
+
 };
 
 class NodoPublicacion {
@@ -1042,7 +1113,7 @@ void cargarUsuariosDesdeArchivo(const std::string& archivoJSON, ListaEnlazada& l
     std::cout << "Usuarios cargados con éxito." << std::endl;
 }
 
-void cargarPublicacionesDesdeArchivo(const std::string& archivo, ListaEnlazada& listaUsuarios, ListaDoblePublicaciones& listaPublicaciones) {
+void cargarPublicacionesDesdeArchivo(const std::string& archivo, ListaEnlazada& listaUsuarios, ListaDoblePublicaciones& listaPublicaciones, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal) {
     // Leer el archivo JSON
     ifstream archivoEntrada(archivo);
     if (!archivoEntrada.is_open()) {
@@ -1072,6 +1143,9 @@ void cargarPublicacionesDesdeArchivo(const std::string& archivo, ListaEnlazada& 
 
             // Agregar la publicación al feed general (lista circular de publicaciones)
             listaPublicaciones.agregarPublicacion(nuevaPublicacion);
+
+            // Agregar la publicación a la lista global
+            listaPublicacionesGlobal.agregarPublicacion(nuevaPublicacion);
         } else {
             // Si no se encontró el correo en la lista de usuarios
             cout << "El correo " << correo << " no existe en el sistema." << endl;
@@ -1157,13 +1231,13 @@ void cargarSolicitudesDesdeArchivo(const std::string& archivo, ListaEnlazada& li
 
 // Prototipos
 void menu();
-void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones);
-void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes);
+void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal);
+void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal);
 void registro(ListaEnlazada&);
-void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes);
+void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal);
 void subMenuPerfil(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void subMenuSolicitudes( Usuario& usuarioConectado, ListaEnlazada& lista, MatrizDispersa& matriz);
-void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios);
+void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal);
 void eliminarCuenta(ListaEnlazada& lista, const Usuario& usuarioConectado);
 void mostrarPublicacionesDeAmigos(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos);
 void generarGraficoPilaSolicitudesRecibidas(const PilaSolicitudes& pilaSolicitudes);
@@ -1176,6 +1250,9 @@ void mostrarTop5UsuariosConMenosAmigos(const ListaEnlazada& listaUsuarios, const
 void generarGraficoListaUsuarios(const ListaEnlazada& listaUsuarios);
 string sanearIdentificador(const std::string& id);
 void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelaciones);
+void generarReportePublicacionesGlobal();
+void generarReportePublicacionesGlobal(ListaDoblePublicacionesGlobal& listaPublicacionesGlobal) ;
+
 
 // Definición fuera de la clase Usuario
 void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios) {
@@ -1236,6 +1313,7 @@ void menu() {
     MatrizDispersa matriz;
     ListaDoblePublicaciones listaPublicaciones;
     ListaSimpleSolicitudes listaSolicitudes;
+    ListaDoblePublicacionesGlobal listaPublicacionesGlobal;
 
 
     do {
@@ -1249,7 +1327,7 @@ void menu() {
 
         switch (opcion) {
             case 1:
-                iniciarSesion(listaUsuarios, matriz, listaPublicaciones, listaSolicitudes);
+                iniciarSesion(listaUsuarios, matriz, listaPublicaciones, listaSolicitudes, listaPublicacionesGlobal);
                 cout << "\n";
                 system("pause");
                 break;
@@ -1279,7 +1357,7 @@ void menu() {
 }
 
 //función para el inicio de sesión
-void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes) {
+void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal) {
     string correo, contrasenia;
     cout << "Ingrese el correo: "; getline(cin, correo);
     cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
@@ -1287,7 +1365,7 @@ void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePubli
     // Verificar si es el administrador
     if (correo == "admin" && contrasenia == "EDD") {
         cout << "Inicio de sesion como Administrador exitoso. Bienvenido, Administrador!" << endl;
-        menuAdmin(lista, matriz, listaPublicaciones, listaSolicitudes);
+        menuAdmin(lista, matriz, listaPublicaciones, listaSolicitudes, listaPublicacionesGlobal);
         return; // Salir de la función después de iniciar sesión como administrador
     }
 
@@ -1297,7 +1375,7 @@ void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePubli
         // Verificar si la contraseña es correcta
         if(usuario->getContrasenia() == contrasenia){
             cout << "Inicio de sesion exitoso. Bienvenido, " << usuario->getNombre() << "!" << endl;
-            menuUsuario(lista, *usuario, matriz, listaPublicaciones);
+            menuUsuario(lista, *usuario, matriz, listaPublicaciones, listaPublicacionesGlobal);
         }else{
             cout << "Credenciales incorrectas" << endl;
         }
@@ -1329,7 +1407,7 @@ void registro(ListaEnlazada& lista) {
 }
 
 //función para mostrar el menú de usuario
-void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones){
+void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal){
     int opcion;
 
     ListaDoblePublicaciones listaPublicacionesTemp;  // Mueve la declaración aquí
@@ -1362,7 +1440,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
                 break;
             case 3:
                 cout << "---------Publicaciones---------" << endl;
-                subMenuPublicaciones(usuarioConectado, listaPublicaciones, matriz, lista);
+                subMenuPublicaciones(usuarioConectado, listaPublicaciones, matriz, lista, listaPublicacionesGlobal);
                 cout << "\n";
                 break;
             case 4:
@@ -1386,10 +1464,6 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
 
                 // 6. Agregar las publicaciones del usuario conectado a listaPublicacionesTemp
                 nodoPublicacion = usuarioConectado.publicaciones.obtenerCabeza();
-                //while (nodoPublicacion) {
-                //    listaPublicacionesTemp.agregarPublicacion(nodoPublicacion->publicacion);
-                //    nodoPublicacion = nodoPublicacion->siguiente;
-                //}
 
                 // 7. Generar el gráfico de la lista doblemente enlazada circular
                 generarGraficoListaDoble(listaPublicacionesTemp);
@@ -1410,7 +1484,7 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
 
 
 //función para mostrar el menú del administrador
-void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes){
+void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal){
     int opcion;
     string archivoJSON = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/usuarios.json";
     string archivoJSON1 = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/publicaciones.json";
@@ -1444,7 +1518,7 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
                 break;
             case 3:
                 cout << "---------Carga de publicaciones---------" << endl;
-                cargarPublicacionesDesdeArchivo(archivoJSON1, listaUsuarios, listaPublicaciones);
+                cargarPublicacionesDesdeArchivo(archivoJSON1, listaUsuarios, listaPublicaciones, listaPublicacionesGlobal);
                 cout << "\n";
                 system("pause");
                 break;
@@ -1459,6 +1533,7 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
                 mostrarTop5UsuariosConMenosAmigos(listaUsuarios, matriz);
                 // Aquí llamas al gráfico de la matriz dispersa
                 generarGraficoRelacionesAmistad(listaRelaciones);
+                generarReportePublicacionesGlobal(listaPublicacionesGlobal);
                 system("pause");
                 break;
             case 6:
@@ -1579,7 +1654,7 @@ void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios,
     } while (opcion != 'e');
 }
 
-void crearPublicacion(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones) {
+void crearPublicacion(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal) {
     string contenido;
     cout << "Ingrese el contenido de la publicacion: "; //cin.ignore();
     getline(cin, contenido);
@@ -1594,12 +1669,15 @@ void crearPublicacion(Usuario& usuarioConectado, ListaDoblePublicaciones& listaP
     // Supongamos que tienes una lista circular de publicaciones para el feed
     listaPublicaciones.agregarPublicacion(nuevaPublicacion);
 
+    // Agregar la publicación a la lista global
+    listaPublicacionesGlobal.agregarPublicacion(nuevaPublicacion);
+
     cout << "Publicacion creada exitosamente." << endl;
     //system("pause");
 }
 
 //sub-menú de publicaciones
-void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios){
+void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& listaPublicaciones, MatrizDispersa& matrizAmigos, ListaEnlazada& listaUsuarios, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal){
     char opcion;
     do{
         cout << "\ta. Ver todas" << endl;
@@ -1652,7 +1730,7 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
             break;
         case 'b':
             cout << "---------Crear---------" << endl;
-            crearPublicacion(usuarioConectado, listaPublicaciones);
+            crearPublicacion(usuarioConectado, listaPublicaciones, listaPublicacionesGlobal);
             break;
         case 'c':
             cout << "---------Eliminar---------" << endl;
@@ -1801,6 +1879,7 @@ void generarGraficoMatrizAmistades(const Usuario& usuarioConectado, MatrizDisper
     system("dot -Tpng matriz_amistades.dot -o matriz_amistades.png");
 }
 
+//lista circular
 void generarGraficoListaDoble(const ListaDoblePublicaciones& lista) {
     ofstream archivo("lista_doble_publicaciones.dot");
     archivo << "digraph G {" << endl;
@@ -1921,6 +2000,10 @@ string sanearIdentificador(const std::string& id) {
     std::regex caracteresNoValidos("[^a-zA-Z0-9_]"); // Solo caracteres alfanuméricos y guiones bajos
     idSaneado = std::regex_replace(idSaneado, caracteresNoValidos, "_");
     return idSaneado;
+}
+
+void generarReportePublicacionesGlobal(ListaDoblePublicacionesGlobal& listaPublicacionesGlobal) {
+    listaPublicacionesGlobal.generarGrafico("grafico_publicaciones_global.dot");
 }
 
 void generarGraficoRelacionesAmistad(const ListaRelacionesCompleto& listaRelaciones) {
