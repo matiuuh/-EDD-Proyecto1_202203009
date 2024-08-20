@@ -1559,9 +1559,10 @@ void menuUsuario(ListaEnlazada& lista, Usuario& usuarioConectado, MatrizDispersa
 //función para mostrar el menú del administrador
 void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDoblePublicaciones& listaPublicaciones, ListaSimpleSolicitudes& listaSolicitudes, ListaDoblePublicacionesGlobal& listaPublicacionesGlobal){
     int opcion;
-    string archivoJSON = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/usuarios.json";
-    string archivoJSON1 = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/publicaciones.json";
-    string archivoSolicitudes = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/solicitudes.json";
+    string rutaBase = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/";
+    //string archivoJSON = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/usuarios.json";
+    //string archivoJSON1 = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/publicaciones.json";
+    //string archivoSolicitudes = "C:/Users/estua/OneDrive/Documentos/Proyecto1EDD/solicitudes.json";
 
     do {
         cout << "\t-----Menu ADMINISTRADOR-----\n";
@@ -1575,31 +1576,46 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
         cin.ignore(); // Para limpiar el buffer de entrada después de leer un número
 
         switch (opcion) {
-            case 1:
+            case 1:{
             cout<<"---------Carga de usuarios---------"<<endl;
+                string nombreArchivo;
                 // Llamada a la función para cargar usuarios
+                cout << "Ingrese el nombre del archivo de usuarios (ej. usuarios.json): ";
+                getline(cin, nombreArchivo); // Leer el nombre del archivo
+
+                string archivoJSON = rutaBase + nombreArchivo; // Concatenar ruta base y nombre del archivo
                 cargarUsuariosDesdeArchivo(archivoJSON, listaUsuarios);
                 cout << "\n";
                 listaUsuarios.mostrarUsuarios(); // Mostrar usuarios cargados (opcional)
                 system("pause");
-                break;
-            case 2:
+                break;}
+            case 2:{
                 cout<<"---------Carga de relaciones---------"<<endl;
+                string nombreArchivo1;
+                cout << "Ingrese el nombre del archivo de relaciones (ej. solicitudes.json): ";
+                getline(cin, nombreArchivo1);
+
+                string archivoSolicitudes = rutaBase + nombreArchivo1;
                 cargarSolicitudesDesdeArchivo(archivoSolicitudes, listaUsuarios, listaSolicitudes, matriz);
                 cout << "\n";
                 system("pause");
-                break;
-            case 3:
+                break;}
+            case 3:{
                 cout << "---------Carga de publicaciones---------" << endl;
+                string nombreArchivo2;
+                cout << "Ingrese el nombre del archivo de publicaciones (ej. publicaciones.json): ";
+                getline(cin, nombreArchivo2);
+
+                string archivoJSON1 = rutaBase + nombreArchivo2;
                 cargarPublicacionesDesdeArchivo(archivoJSON1, listaUsuarios, listaPublicaciones, listaPublicacionesGlobal);
                 cout << "\n";
                 system("pause");
-                break;
-            case 4:
+                break;}
+            case 4:{
                 cout << "---------Gestion usuarios---------" << endl;
                 system("pause");
-                break;
-            case 5:
+                break;}
+            case 5:{
                 cout << "----------Reportes----------" << endl;
                 generarGraficoListaUsuarios(listaUsuarios);
                 mostrarTop5UsuariosConMasPublicaciones(listaUsuarios, listaPublicaciones);
@@ -1608,7 +1624,7 @@ void menuAdmin(ListaEnlazada& listaUsuarios, MatrizDispersa& matriz, ListaDobleP
                 generarGraficoRelacionesAmistad(listaRelaciones, listaUsuarios);
                 generarReportePublicacionesGlobal(listaPublicacionesGlobal);
                 system("pause");
-                break;
+                break;}
             case 6:
                 cout << "volviendo..." << endl;
                 system("pause");

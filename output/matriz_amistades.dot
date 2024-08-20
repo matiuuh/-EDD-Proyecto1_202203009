@@ -1,6 +1,4 @@
 digraph MatrizDispersa {
     node [shape=box];
     splines=true;
-    "Sofia" -> "Juan" [label=""];
-    "Juan" -> "Sofia" [label=""];
 }
