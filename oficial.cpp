@@ -1436,7 +1436,7 @@ void iniciarSesion(ListaEnlazada& lista, MatrizDispersa& matriz, ListaDoblePubli
     cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
 
     // Verificar si es el administrador
-    if (correo == "admin" && contrasenia == "EDD") {
+    if (correo == "admin@gmail.com" && contrasenia == "EDD2S2024") {
         cout << "Inicio de sesion como Administrador exitoso. Bienvenido, Administrador!" << endl;
         menuAdmin(lista, matriz, listaPublicaciones, listaSolicitudes, listaPublicacionesGlobal);
         return; // Salir de la función después de iniciar sesión como administrador
