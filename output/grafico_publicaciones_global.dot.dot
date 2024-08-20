@@ -1,9 +1,7 @@
 digraph G {
 rankdir=LR;
 node [shape=record];
-Nodo0 [label="{laraa | publicacion de lara | 25/08/2024 | 10:00}"];
+Nodo0 [label="{sofgon@example.com | publicacion de sofia | 26/09/2024 | 10:20}"];
 Nodo0 -> Nodo1 [dir=both];
-Nodo1 [label="{sofgon@example.com | publicacion de sofia | 26/09/2024 | 10:20}"];
-Nodo1 -> Nodo2 [dir=both];
-Nodo2 [label="{juan.perez@example.com | somos campeones | 18/12/2022 | 02:20}"];
+Nodo1 [label="{juan.perez@example.com | somos campeones | 18/12/2022 | 02:20}"];
 }

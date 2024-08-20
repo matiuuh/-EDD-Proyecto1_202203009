@@ -318,6 +318,31 @@ public:
         }
     }
 
+    bool eliminarPublicacion(const std::shared_ptr<Publicacion>& publicacion) {
+        auto actual = cabeza;
+        while (actual != nullptr) {
+            if (*actual->publicacion == *publicacion) {
+                // Publicación encontrada, eliminamos el nodo
+                if (actual == cabeza && actual == cola) {
+                    // Nodo único en la lista
+                    cabeza = cola = nullptr;
+                } else if (actual == cabeza) {
+                    cabeza = cabeza->siguiente;
+                    cabeza->anterior = nullptr;
+                } else if (actual == cola) {
+                    cola = cola->anterior;
+                    cola->siguiente = nullptr;
+                } else {
+                    actual->anterior->siguiente = actual->siguiente;
+                    actual->siguiente->anterior = actual->anterior;
+                }
+                return true; // Publicación eliminada con éxito
+            }
+            actual = actual->siguiente;
+        }
+        return false; // No se encontró la publicación
+    }
+
     void generarGrafico(const std::string& nombreArchivo) const {
         std::ofstream archivo(nombreArchivo + ".dot");
         if (!archivo.is_open()) {
@@ -462,7 +487,7 @@ public:
         } while (actual != cabeza); // Se recorre hasta volver al inicio
     }
 
-    bool eliminarPublicacion(const shared_ptr<Publicacion>& publicacion) {
+    bool eliminarPublicacion(const std::shared_ptr<Publicacion>& publicacion) {
         if (!cabeza) return false; // Lista vacía
 
         auto actual = cabeza;
@@ -1750,14 +1775,18 @@ void subMenuPublicaciones(Usuario& usuarioConectado, ListaDoblePublicaciones& li
                 }
 
                 if (actual && usuarioConectado.publicaciones.eliminarPublicacion(actual->publicacion)) {
-                    cout << "Publicación eliminada con éxito." << endl;
+                    // Elimina la publicación de la lista global
+                    if (listaPublicacionesGlobal.eliminarPublicacion(actual->publicacion)) {
+                        cout << "Publicación eliminada con éxito." << endl;
+                    } else {
+                        cout << "No se pudo eliminar la publicación de la lista global." << endl;
+                    }
                 } else {
                     cout << "No se pudo eliminar la publicación." << endl;
                 }
             } else {
                 cout << "Índice no válido." << endl;
             }
-            //eliminarCuenta(lista, usuarioConectado);//cambiar de lugar esto
             break;
         case 'd':
             cout<<"Saliendo del menu... "<<endl;
