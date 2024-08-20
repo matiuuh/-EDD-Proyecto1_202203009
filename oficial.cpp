@@ -1628,7 +1628,13 @@ void subMenuSolicitudes(Usuario& usuarioConectado, ListaEnlazada& listaUsuarios,
                 cin >> correoReceptor;
                 Usuario* receptor = listaUsuarios.buscarUsuarioPorCorreo(correoReceptor);
                 if (receptor) {
-                    usuarioConectado.enviarSolicitud(usuarioConectado, *receptor);
+                    // Verificar si el usuario conectado intenta enviarse una solicitud a sí mismo
+                    if (usuarioConectado.getCorreo() == receptor->getCorreo()) {
+                        cout << "No puedes enviarte una solicitud de amistad a ti mismo." << endl;
+                    } else {
+                        usuarioConectado.enviarSolicitud(usuarioConectado, *receptor);
+                        cout << "Solicitud de amistad enviada con éxito." << endl;
+                    }
                 } else {
                     cout << "Usuario no encontrado." << endl;
                 }
