@@ -1,4 +1,17 @@
 digraph G {
 rankdir=LR;
 node [shape=record];
+Nodo0 [label="{juan.perez@example.com | EDD no sale ;( | 27/07/2024 | 10:00}"];
+Nodo0 -> Nodo1 [dir=both];
+Nodo1 [label="{juan.perez@example.com | NO MOLESTEN ;( | 27/07/2024 | 12:00}"];
+Nodo1 -> Nodo2 [dir=both];
+Nodo2 [label="{maria.lopez@example.com | Hoy no ando de buen humor | 22/07/2024 | 12:30}"];
+Nodo2 -> Nodo3 [dir=both];
+Nodo3 [label="{daniel.garcia@example.com | ¡Listo para el fin de semana! | 24/07/2024 | 18:00}"];
+Nodo3 -> Nodo4 [dir=both];
+Nodo4 [label="{pedro.martinez@example.com | ¿Alguien quiere ir al cine? | 25/07/2024 | 20:15}"];
+Nodo4 -> Nodo5 [dir=both];
+Nodo5 [label="{sabrina.hernandez@example.com | Amo los días lluviosos | 26/07/2024 | 09:30}"];
+Nodo5 -> Nodo6 [dir=both];
+Nodo6 [label="{sabrina.hernandez@example.com | Mas cafe, mas gatos | 26/07/2024 | 09:30}"];
 }

@@ -266,10 +266,10 @@ public:
         time_t now = time(0);
         tm* ltm = localtime(&now);
 
-        // Formatear la fecha y la hora
-        fecha = to_string(1900 + ltm->tm_year) + "-" +
-                to_string(1 + ltm->tm_mon) + "-" +
-                to_string(ltm->tm_mday);
+        // Formatear la fecha en dd/mm/yyyy
+        fecha = (ltm->tm_mday < 10 ? "0" : "") + to_string(ltm->tm_mday) + "/" +
+                (1 + ltm->tm_mon < 10 ? "0" : "") + to_string(1 + ltm->tm_mon) + "/" +
+                to_string(1900 + ltm->tm_year);
 
         hora = to_string(ltm->tm_hour) + ":" +
                 to_string(ltm->tm_min) + ":" +
@@ -1179,12 +1179,21 @@ void cargarPublicacionesDesdeArchivo(const std::string& archivo, ListaEnlazada& 
     archivoEntrada >> jsonData;
     archivoEntrada.close();
 
+    // Expresión regular para validar la fecha en formato dd/mm/yy
+    regex formatoFecha("^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$"); // Regex para dd/mm/yy
+
     // Recorrer las publicaciones
     for (const auto& publicacionJson : jsonData) {
         string correo = publicacionJson["correo"];
         string contenido = publicacionJson["contenido"];
         string fecha = publicacionJson["fecha"];
         string hora = publicacionJson["hora"];
+
+        // Validar el formato de la fecha
+        if (!std::regex_match(fecha, formatoFecha)) {
+            cout << "Fecha inválida para la publicación con correo " << correo << ". Formato esperado: dd/mm/yy. Publicación omitida." << endl;
+            continue; // Omitir esta publicación si la fecha no tiene el formato correcto
+        }
 
         // Buscar al usuario por correo
         Usuario* usuario = listaUsuarios.buscarUsuarioPorCorreo(correo);
@@ -1463,7 +1472,21 @@ void registro(ListaEnlazada& lista) {
 
     cout << "Ingrese el nombre: "; getline(cin, nombre);
     cout << "Ingrese los apellidos: "; getline(cin, apellidos);
-    cout << "Ingrese la fecha de nacimiento (DD/MM/YYYY): "; getline(cin, fechaNacimiento);
+
+    // Validar la fecha de nacimiento con el formato DD/MM/YYYY
+    std::regex formatoFechaNacimiento("^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$");
+
+    while (true) {
+        cout << "Ingrese la fecha de nacimiento (DD/MM/YYYY): ";
+        getline(cin, fechaNacimiento);
+
+        if (std::regex_match(fechaNacimiento, formatoFechaNacimiento)) {
+            break; // Salir del bucle si la fecha tiene el formato correcto
+        } else {
+            cout << "Error: Formato de fecha incorrecto. Intente de nuevo (DD/MM/YYYY)." << endl;
+        }
+    }
+    
     cout << "Ingrese el correo: "; getline(cin, correo);
     cout << "Ingrese la contrasenia: "; getline(cin, contrasenia);
 
