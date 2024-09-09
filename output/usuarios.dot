@@ -1,21 +1,21 @@
 digraph ListaUsuarios {
     rankdir=LR;
     node [shape=box];
-    usuario_juan_perez_example_com [label="Juan"];
+    usuario_carlos_gomez_example_com [label="Carlos"];
     usuario_maria_lopez_example_com [label="Maria"];
-    usuario_juan_perez_example_com -> usuario_maria_lopez_example_com;
-    usuario_carlos_rodriguez_example_com [label="Carlos"];
-    usuario_maria_lopez_example_com -> usuario_carlos_rodriguez_example_com;
-    usuario_daniel_garcia_example_com [label="Daniel"];
-    usuario_carlos_rodriguez_example_com -> usuario_daniel_garcia_example_com;
-    usuario_pedro_martinez_example_com [label="Pedro"];
-    usuario_daniel_garcia_example_com -> usuario_pedro_martinez_example_com;
-    usuario_sabrina_hernandez_example_com [label="Sabrina"];
-    usuario_pedro_martinez_example_com -> usuario_sabrina_hernandez_example_com;
-    usuario_jacobo_noriega_example_com [label="Jacobo"];
-    usuario_sabrina_hernandez_example_com -> usuario_jacobo_noriega_example_com;
-    usuario_samantha_cruz_example_com [label="Samantha"];
-    usuario_jacobo_noriega_example_com -> usuario_samantha_cruz_example_com;
-    usuario_mart_luna_example_com [label="MartaMa"];
-    usuario_samantha_cruz_example_com -> usuario_mart_luna_example_com;
+    usuario_carlos_gomez_example_com -> usuario_maria_lopez_example_com;
+    usuario_juan_martinez_example_com [label="Juan"];
+    usuario_maria_lopez_example_com -> usuario_juan_martinez_example_com;
+    usuario_ana_hernandez_example_com [label="Ana"];
+    usuario_juan_martinez_example_com -> usuario_ana_hernandez_example_com;
+    usuario_luis_perez_example_com [label="Luis"];
+    usuario_ana_hernandez_example_com -> usuario_luis_perez_example_com;
+    usuario_laura_ramirez_example_com [label="Laura"];
+    usuario_luis_perez_example_com -> usuario_laura_ramirez_example_com;
+    usuario_jose_garcia_example_com [label="Jose"];
+    usuario_laura_ramirez_example_com -> usuario_jose_garcia_example_com;
+    usuario_miguel_rodriguez_example_com [label="Miguel"];
+    usuario_jose_garcia_example_com -> usuario_miguel_rodriguez_example_com;
+    usuario_sofia_gonzalez_example_com [label="Sofia"];
+    usuario_miguel_rodriguez_example_com -> usuario_sofia_gonzalez_example_com;
 }
