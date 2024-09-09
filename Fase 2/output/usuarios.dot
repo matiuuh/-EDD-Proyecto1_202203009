@@ -1,0 +1,5 @@
+digraph ListaUsuarios {
+    rankdir=LR;
+    node [shape=box];
+    usuario_aa [label="aa"];
+}

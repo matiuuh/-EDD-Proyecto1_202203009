@@ -1,0 +1,5 @@
+digraph G {
+rankdir=LR;
+node [shape=record];
+Nodo0 [label="{aa | hiola} | 09/09/2024 | 0:6:32}"];
+}

@@ -1,0 +1,7 @@
+digraph G {
+    node [shape=box];
+    rankdir=LR;
+    "0x237aa9712b0" [label="hiola}"];
+    "0x237aa9712b0" -> "0x237aa9712b0" [dir=both];
+    "0x237aa9712b0" -> "0x237aa9712b0" [dir=both];
+}
