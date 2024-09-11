@@ -1,5 +1,23 @@
 digraph ListaUsuarios {
     rankdir=LR;
     node [shape=box];
-    usuario_aa [label="aa"];
+    usuario_carlos_gomez_example_com [label="Carlos"];
+    usuario_maria_lopez_example_com [label="Maria"];
+    usuario_carlos_gomez_example_com -> usuario_maria_lopez_example_com;
+    usuario_juan_martinez_example_com [label="Juan"];
+    usuario_maria_lopez_example_com -> usuario_juan_martinez_example_com;
+    usuario_ana_hernandez_example_com [label="Ana"];
+    usuario_juan_martinez_example_com -> usuario_ana_hernandez_example_com;
+    usuario_luis_perez_example_com [label="Luis"];
+    usuario_ana_hernandez_example_com -> usuario_luis_perez_example_com;
+    usuario_laura_ramirez_example_com [label="Laura"];
+    usuario_luis_perez_example_com -> usuario_laura_ramirez_example_com;
+    usuario_jose_garcia_example_com [label="Jose"];
+    usuario_laura_ramirez_example_com -> usuario_jose_garcia_example_com;
+    usuario_elena_torres_example_com [label="Elena"];
+    usuario_jose_garcia_example_com -> usuario_elena_torres_example_com;
+    usuario_miguel_rodriguez_example_com [label="Miguel"];
+    usuario_elena_torres_example_com -> usuario_miguel_rodriguez_example_com;
+    usuario_sofia_gonzalez_example_com [label="Sofia"];
+    usuario_miguel_rodriguez_example_com -> usuario_sofia_gonzalez_example_com;
 }
