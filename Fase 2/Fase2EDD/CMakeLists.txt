@@ -24,6 +24,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         usuario.h usuario.cpp
+        moduloentrada.h moduloentrada.cpp moduloentrada.ui
+        moduloadministrador.h moduloadministrador.cpp moduloadministrador.ui
         #Oficial.cpp
 
     )
