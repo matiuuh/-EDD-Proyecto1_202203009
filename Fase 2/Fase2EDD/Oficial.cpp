@@ -1378,14 +1378,14 @@ void mostrarPublicacionesDeAmigos(const Usuario& usuario, ListaDoblePublicacione
 }
 
 
-int main() {
+/*int main() {
     // Instancias de las clases
     ListaRelacionesCompleto listaRelaciones;
 
     menu();
     //system("pause");
     return 0;
-}
+}*/
 
 //función del menú principal
 void menu() {

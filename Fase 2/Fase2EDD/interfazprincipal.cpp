@@ -1,5 +1,6 @@
 #include "interfazprincipal.h"
 #include "./ui_interfazprincipal.h"
+//#include "Oficial.cpp"
 
 InterfazPrincipal::InterfazPrincipal(QWidget *parent)
     : QMainWindow(parent)
