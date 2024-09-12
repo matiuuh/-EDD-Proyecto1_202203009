@@ -14,7 +14,7 @@
    <string>DockWidget</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="QTextEdit" name="txt_correo">
     <property name="geometry">
      <rect>
       <x>160</x>
@@ -78,7 +78,7 @@
      <string>Contraseña</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="textEdit_2">
+   <widget class="QTextEdit" name="txt_contrasenia">
     <property name="geometry">
      <rect>
       <x>160</x>
@@ -88,7 +88,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="btn_iniciar">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -101,7 +101,7 @@
      <string>Iniciar Sesion</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="btn_registrar">
     <property name="geometry">
      <rect>
       <x>280</x>

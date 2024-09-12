@@ -312,7 +312,7 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="btn_cerrarSesion">
     <property name="geometry">
      <rect>
       <x>640</x>

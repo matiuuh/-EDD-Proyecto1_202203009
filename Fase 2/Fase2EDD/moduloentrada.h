@@ -15,6 +15,9 @@ public:
     explicit ModuloEntrada(QWidget *parent = nullptr);
     ~ModuloEntrada();
 
+private slots:
+    void verificarCredenciales();  // Declaramos la función aquí
+
 private:
     Ui::ModuloEntrada *ui;
 };

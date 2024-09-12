@@ -15,6 +15,9 @@ public:
     explicit ModuloAdministrador(QWidget *parent = nullptr);
     ~ModuloAdministrador();
 
+private slots:
+    void cerrarSesion();  // Declaramos la función aquí
+
 private:
     Ui::ModuloAdministrador *ui;
 };
