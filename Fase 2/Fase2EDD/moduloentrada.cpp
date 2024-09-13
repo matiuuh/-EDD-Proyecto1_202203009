@@ -1,7 +1,9 @@
 #include "moduloentrada.h"
 #include "ui_moduloentrada.h"
+#include "interfazprincipal.h"
 #include "moduloadministrador.h"  // Incluir la clase del módulo administrador
 #include "registrousuario.h"  // Incluir la clase del módulo administrador
+#include "EstructurasAdmin/avlusuarios.h"  // Asegúrate de incluir el AVL de usuarios
 #include <QMessageBox>  // Para mostrar mensajes de error o éxito
 #include <iostream>     /* Para mostrar en consola  */
 #include <string>       /* Para manejar cadenas de texto */
@@ -32,8 +34,8 @@ void ModuloEntrada::verificarCredenciales()
     QString correo = ui->txt_correo->toPlainText();
     QString contrasenia = ui->txt_contrasenia->toPlainText();
 
-    // Aquí debes implementar la lógica para verificar el correo y la contraseña.
-    // Suponiendo que tienes una lista de usuarios o base de datos:
+    // Acceder a la instancia única del árbol AVL
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
 
     if (correo.isEmpty() || contrasenia.isEmpty()) {
         QMessageBox::warning(this, "Error", "Por favor ingresa tu correo y contraseña.");
@@ -44,6 +46,14 @@ void ModuloEntrada::verificarCredenciales()
         adminWindow->show();  // Mostrar la ventana del módulo administrador
         this->close();  // Cerrar la ventana actual (opcional)
         return;
+    }else if(avlUsuarios.validarCredenciales(correo.toStdString(), contrasenia.toStdString())) {
+        // Credenciales válidas, abrir la interfaz principal de usuario
+        InterfazPrincipal *interfazUsuario = new InterfazPrincipal(nullptr);
+        interfazUsuario->show();
+        this->close();
+    } else {
+        // Mostrar un mensaje de error si las credenciales no son válidas
+        QMessageBox::warning(this, "Error", "Correo o contraseña incorrectos.");
     }
 }
 

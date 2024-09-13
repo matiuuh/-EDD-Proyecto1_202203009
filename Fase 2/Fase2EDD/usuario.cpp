@@ -49,3 +49,8 @@ std::string Usuario::getNombre() const {
 std::string Usuario::getCorreo() const {
     return correo;
 }
+
+// Obtener el correo del usuario
+std::string Usuario::getContrasenia() const {
+    return contrasenia;
+}

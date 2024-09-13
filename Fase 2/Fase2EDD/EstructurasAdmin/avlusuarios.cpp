@@ -61,6 +61,24 @@ NodoAVL* AVLUsuarios::rotacionDerecha(NodoAVL* y) {
     return x;
 }
 
+// Nuevo método para validar las credenciales del usuario
+bool AVLUsuarios::validarCredenciales(const std::string& correo, const std::string& contrasenia) {
+    // Buscar el nodo del usuario por correo
+    Usuario* usuarioEncontrado = buscar(correo);
+
+    if (usuarioEncontrado) {
+        // Verificar si la contraseña coincide
+        if (usuarioEncontrado->getContrasenia() == contrasenia) {
+            return true;  // Credenciales válidas
+        } else {
+            std::cout << "Contraseña incorrecta para el correo: " << correo << std::endl;
+            return false;  // Contraseña incorrecta
+        }
+    }
+    std::cout << "Usuario no encontrado con el correo: " << correo << std::endl;
+    return false;  // Usuario no encontrado
+}
+
 NodoAVL* AVLUsuarios::rotacionIzquierda(NodoAVL* x) {
     std::cout << "Realizando rotación izquierda sobre: " << x->usuario->getCorreo() << std::endl;
     NodoAVL* y = x->derecha;

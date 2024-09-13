@@ -22,6 +22,7 @@ public:
     void insertar(Usuario* usuario);
     Usuario* buscar(const std::string& correo);
     void mostrarUsuarios() const;
+    bool validarCredenciales(const std::string& correo, const std::string& contrasenia);
 
 private:
     AVLUsuarios();  // Constructor privado para evitar instanciación externa

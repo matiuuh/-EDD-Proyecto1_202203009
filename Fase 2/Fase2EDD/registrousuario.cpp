@@ -2,7 +2,6 @@
 #include "ui_registrousuario.h"
 #include "moduloentrada.h"
 #include "EstructurasAdmin/avlusuarios.h"
-//#include "../EstructurasAdmin/avlusuarios.h"  // Incluir el archivo de encabezado del árbol AVL
 
 RegistroUsuario::RegistroUsuario(QWidget *parent)
     : QDockWidget(parent)

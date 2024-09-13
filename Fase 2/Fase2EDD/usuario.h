@@ -21,6 +21,7 @@ public:
     // Datos del usuario
     std::string getNombre() const;
     std::string getCorreo() const;
+    std::string getContrasenia() const;
 
 private:
     std::string nombre;
