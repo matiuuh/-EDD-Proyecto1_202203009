@@ -26,6 +26,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         usuario.h usuario.cpp
         moduloentrada.h moduloentrada.cpp moduloentrada.ui
         moduloadministrador.h moduloadministrador.cpp moduloadministrador.ui
+
+        pila.h pila.cpp
+        listasimple.h listasimple.cpp
+        listadoble.h listadoble.cpp
+        bstpublicaciones.h bstpublicaciones.cpp
+        EstructurasAdmin/avlusuarios.h EstructurasAdmin/avlusuarios.cpp
+        EstructurasAdmin/listadoblepublicacionesglobal.h EstructurasAdmin/listadoblepublicacionesglobal.cpp
+        registrousuario.h registrousuario.cpp registrousuario.ui
+
         #Oficial.cpp
 
     )

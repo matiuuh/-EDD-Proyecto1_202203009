@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -109,17 +109,17 @@
      <attribute name="title">
       <string>Cargas Masivas</string>
      </attribute>
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="btn_cargarUsuarios">
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>60</x>
         <y>320</y>
         <width>111</width>
         <height>29</height>
        </rect>
       </property>
       <property name="text">
-       <string>Generar reportes</string>
+       <string>Cargar usuarios</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
@@ -140,7 +140,7 @@
        <string>Solicitudes</string>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_3">
+     <widget class="QFrame" name="frame_usuarios">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -222,6 +222,32 @@
       </property>
       <property name="text">
        <string>Publicaciones</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_cargarSolicitudes">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>320</y>
+        <width>111</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cargar solicitudes</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_cargarPublicaciones">
+      <property name="geometry">
+       <rect>
+        <x>550</x>
+        <y>320</y>
+        <width>121</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cargar publicaciones</string>
       </property>
      </widget>
     </widget>

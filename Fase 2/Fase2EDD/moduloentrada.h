@@ -17,6 +17,7 @@ public:
 
 private slots:
     void verificarCredenciales();  // Declaramos la función aquí
+    void registrarUsuario();
 
 private:
     Ui::ModuloEntrada *ui;

@@ -1,6 +1,7 @@
 #include "moduloentrada.h"
 #include "ui_moduloentrada.h"
 #include "moduloadministrador.h"  // Incluir la clase del módulo administrador
+#include "registrousuario.h"  // Incluir la clase del módulo administrador
 #include <QMessageBox>  // Para mostrar mensajes de error o éxito
 #include <iostream>     /* Para mostrar en consola  */
 #include <string>       /* Para manejar cadenas de texto */
@@ -13,6 +14,9 @@ ModuloEntrada::ModuloEntrada(QWidget *parent)
 
     // Conectar el botón "Iniciar" con la función de verificación
     connect(ui->btn_iniciar, &QPushButton::clicked, this, &ModuloEntrada::verificarCredenciales);
+
+    // Conectar el botón "Iniciar" con la función de verificación
+    connect(ui->btn_registrar, &QPushButton::clicked, this, &ModuloEntrada::registrarUsuario);
 
 }
 
@@ -41,20 +45,11 @@ void ModuloEntrada::verificarCredenciales()
         this->close();  // Cerrar la ventana actual (opcional)
         return;
     }
+}
 
-
-    // Ejemplo básico de cómo podrías verificar los usuarios.
-    // Aquí usarías tu estructura de datos o clase de usuarios para hacer la validación.
-    // Supongamos que tienes un método como verificarUsuario(correo, contrasenia)
-
-    bool loginExitoso = false;  // Cambia esto según tu lógica de verificación
-    // loginExitoso = verificarUsuario(correo.toStdString(), contrasenia.toStdString());
-
-    // Si el login es exitoso
-    if (loginExitoso) {
-        QMessageBox::information(this, "Login Exitoso", "¡Bienvenido!");
-        // Aquí podrías redirigir a la siguiente ventana o sección de la aplicación
-    } else {
-        QMessageBox::warning(this, "Error", "Correo o contraseña incorrectos.");
-    }
+void ModuloEntrada::registrarUsuario(){
+    RegistroUsuario *abrirRegistro= new RegistroUsuario(nullptr);
+    abrirRegistro->show();  // Mostrar la ventana del módulo administrador
+    this->close();  // Cerrar la ventana actual (opcional)
+    return;
 }
