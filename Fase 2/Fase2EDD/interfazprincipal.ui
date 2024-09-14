@@ -14,7 +14,7 @@
    <string>InterfazPrincipal</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="btn_cerrar">
     <property name="geometry">
      <rect>
       <x>680</x>
@@ -37,7 +37,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="sss">
      <attribute name="title">
@@ -472,7 +472,7 @@
            <height>179</height>
           </rect>
          </property>
-         <widget class="QTableView" name="tableView_3">
+         <widget class="QTableView" name="tabla_enviarSolicitud">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -505,7 +505,7 @@
            <height>219</height>
           </rect>
          </property>
-         <widget class="QTableView" name="tableView">
+         <widget class="QTableView" name="tabla_recibidas">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -538,7 +538,7 @@
            <height>219</height>
           </rect>
          </property>
-         <widget class="QTableView" name="tableView_2">
+         <widget class="QTableView" name="tabla_enviadas">
           <property name="geometry">
            <rect>
             <x>10</x>

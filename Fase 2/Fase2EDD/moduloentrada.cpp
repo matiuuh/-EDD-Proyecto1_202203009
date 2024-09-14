@@ -48,7 +48,7 @@ void ModuloEntrada::verificarCredenciales()
         return;
     }else if(avlUsuarios.validarCredenciales(correo.toStdString(), contrasenia.toStdString())) {
         // Credenciales válidas, abrir la interfaz principal de usuario
-        InterfazPrincipal *interfazUsuario = new InterfazPrincipal(nullptr);
+        InterfazPrincipal *interfazUsuario = new InterfazPrincipal(nullptr, correo);
         interfazUsuario->show();
         this->close();
     } else {

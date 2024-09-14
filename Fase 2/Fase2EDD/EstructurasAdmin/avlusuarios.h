@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include "../usuario.h"
+#include "../EstructurasUsuario/listadobleusuariosdisponibles.h"
 
 class NodoAVL {
 public:
@@ -23,6 +24,8 @@ public:
     Usuario* buscar(const std::string& correo);
     void mostrarUsuarios() const;
     bool validarCredenciales(const std::string& correo, const std::string& contrasenia);
+    void obtenerUsuariosDisponibles(ListaDobleUsuariosDisponibles& lista, const std::string& correoConectado);
+    void obtenerUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista, const std::string& correoConectado);
 
 private:
     AVLUsuarios();  // Constructor privado para evitar instanciación externa

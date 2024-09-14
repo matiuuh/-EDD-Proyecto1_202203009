@@ -60,7 +60,7 @@ void RegistroUsuario::registrarUsuario()
         return;
     }
 
-    QMessageBox::warning(this, "Éxito", "antes de verificar");
+    //QMessageBox::warning(this, "Éxito", "antes de verificar");
 
     // Acceder a la instancia única del árbol AVL
     AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
@@ -71,14 +71,14 @@ void RegistroUsuario::registrarUsuario()
         return;
     }
 
-    QMessageBox::warning(this, "Éxito", "antes de crear el objeto");
+    //QMessageBox::warning(this, "Éxito", "antes de crear el objeto");
 
     // Crear un nuevo objeto Usuario (suponiendo que tienes una clase Usuario)
     Usuario* nuevoUsuario = new Usuario(nombre.toStdString(), apellido.toStdString(),
                                         fechaNacimiento.toStdString(), correo.toStdString(),
                                         contrasenia.toStdString());
 
-    QMessageBox::warning(this, "Éxito", "estamos antes de insertar");
+    //QMessageBox::warning(this, "Éxito", "estamos antes de insertar");
 
     // Insertar el nuevo usuario en el árbol AVL
     avlUsuarios.insertar(nuevoUsuario);

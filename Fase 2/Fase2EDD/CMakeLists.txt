@@ -34,6 +34,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         EstructurasAdmin/avlusuarios.h EstructurasAdmin/avlusuarios.cpp
         EstructurasAdmin/listadoblepublicacionesglobal.h EstructurasAdmin/listadoblepublicacionesglobal.cpp
         registrousuario.h registrousuario.cpp registrousuario.ui
+        EstructurasUsuario/listadobleusuariosdisponibles.h EstructurasUsuario/listadobleusuariosdisponibles.cpp
 
         #Oficial.cpp
 

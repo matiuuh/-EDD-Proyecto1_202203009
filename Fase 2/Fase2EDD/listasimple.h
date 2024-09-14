@@ -34,6 +34,8 @@ public:
     // Verificar si la lista está vacía
     bool estaVacia() const;
 
+    bool solicitudPendiente(const std::string& correo) const;
+
 private:
     NodoSimple* cabeza; // Apuntador a la cabeza de la lista
 };

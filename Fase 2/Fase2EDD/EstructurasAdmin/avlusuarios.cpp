@@ -1,6 +1,7 @@
 #include "avlusuarios.h"
 #include <windows.h>
 #include <algorithm>
+//#include "../EstructurasUsuario/listadobleusuariosdisponibles.h"
 
 // Inicialización de la instancia estática
 AVLUsuarios* AVLUsuarios::instance = nullptr;
@@ -173,5 +174,24 @@ void AVLUsuarios::mostrarRecursivo(NodoAVL* nodo) const {
         std::cout << "Mostrando usuario: " << nodo->usuario->getNombre() << " - " << nodo->usuario->getCorreo() << std::endl;
         mostrarRecursivo(nodo->derecha);
     }
+}
+
+//-----------métodos para obtener los usuarios para la tabla-----------
+void AVLUsuarios::obtenerUsuariosDisponibles(ListaDobleUsuariosDisponibles& lista, const std::string& correoConectado) {
+    obtenerUsuariosRecursivo(raiz, lista, correoConectado);
+}
+
+void AVLUsuarios::obtenerUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista, const std::string& correoConectado) {
+    if (!nodo) return;
+
+    // Recorrer los nodos en orden (izquierda, raíz, derecha)
+    obtenerUsuariosRecursivo(nodo->izquierda, lista, correoConectado);
+
+    // Si el correo del nodo no es el del usuario conectado, lo agregamos a la lista
+    if (nodo->usuario->getCorreo() != correoConectado) {
+        lista.agregarCorreo(nodo->usuario->getCorreo());
+    }
+
+    obtenerUsuariosRecursivo(nodo->derecha, lista, correoConectado);
 }
 

@@ -23,6 +23,10 @@ public:
     std::string getCorreo() const;
     std::string getContrasenia() const;
 
+    Pila& getPilaSolicitudes() { return solicitudesRecibidas; }
+    ListaSimple& getListaSolicitudesEnviadas() { return solicitudesEnviadas; }
+
+
 private:
     std::string nombre;
     std::string apellidos;

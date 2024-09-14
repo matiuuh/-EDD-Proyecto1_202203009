@@ -68,3 +68,7 @@ bool ListaSimple::buscarPorCorreo(const std::string& correo) const {
 bool ListaSimple::estaVacia() const {
     return cabeza == nullptr;
 }
+
+bool ListaSimple::solicitudPendiente(const std::string& correo) const {
+    return buscarPorCorreo(correo);
+}
