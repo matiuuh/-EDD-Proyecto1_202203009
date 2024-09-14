@@ -69,6 +69,11 @@ bool ListaSimple::estaVacia() const {
     return cabeza == nullptr;
 }
 
+// Obtener la cabeza de la lista (primer nodo)
+NodoSimple* ListaSimple::obtenerPrimero() const {
+    return cabeza;  // Retorna el puntero a la cabeza de la lista
+}
+
 bool ListaSimple::solicitudPendiente(const std::string& correo) const {
     return buscarPorCorreo(correo);
 }

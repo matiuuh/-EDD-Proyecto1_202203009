@@ -56,5 +56,3 @@ std::string Usuario::getContrasenia() const {
     return contrasenia;
 }
 
-
-//----------PARA OBTENER ESTRUCTURAS DE SOLICITUDES-----------------

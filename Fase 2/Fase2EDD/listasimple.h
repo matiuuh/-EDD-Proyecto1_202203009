@@ -34,6 +34,9 @@ public:
     // Verificar si la lista está vacía
     bool estaVacia() const;
 
+    // Obtener la cabeza de la lista (primer nodo)
+    NodoSimple* obtenerPrimero() const;  // <-- Nuevo método agregado
+
     bool solicitudPendiente(const std::string& correo) const;
 
 private:

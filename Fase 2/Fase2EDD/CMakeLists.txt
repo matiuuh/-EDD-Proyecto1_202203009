@@ -36,6 +36,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         registrousuario.h registrousuario.cpp registrousuario.ui
         EstructurasUsuario/listadobleusuariosdisponibles.h EstructurasUsuario/listadobleusuariosdisponibles.cpp
         TablasModUsuario/buttondelegatesolicitudes.h TablasModUsuario/buttondelegatesolicitudes.cpp
+        TablasModUsuario/buttondelegateenviadas.h TablasModUsuario/buttondelegateenviadas.cpp
 
         #Oficial.cpp
 

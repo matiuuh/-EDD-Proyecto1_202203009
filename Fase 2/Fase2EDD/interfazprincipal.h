@@ -24,6 +24,7 @@ private slots:
     void manejarSolicitud(const QModelIndex &index);
     void aceptarSolicitud(const std::string& correoRemitente);
     void rechazarSolicitud(const std::string& correoRemitente);
+    void llenarTablaSolicitudesEnviadas();
     //void llenarTablaSolicitudesRecibidas();
     //void aceptarSolicitud(const QString& correo);
     //void rechazarSolicitud(const QString& correo);
