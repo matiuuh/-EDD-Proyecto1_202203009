@@ -1,5 +1,6 @@
 #include "usuario.h"
 #include <iostream>
+//#include "/EstructurasAdmin/avlusuarios.h"
 
 using namespace std;
 
@@ -54,3 +55,6 @@ std::string Usuario::getCorreo() const {
 std::string Usuario::getContrasenia() const {
     return contrasenia;
 }
+
+
+//----------PARA OBTENER ESTRUCTURAS DE SOLICITUDES-----------------

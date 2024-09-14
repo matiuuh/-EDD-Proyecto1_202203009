@@ -4,6 +4,7 @@
 #include "EstructurasAdmin/avlusuarios.h"
 #include "pila.h"
 #include "listasimple.h"
+#include "TablasModUsuario/buttondelegatesolicitudes.h"
 
 #include <QStandardItemModel>
 #include <QPushButton>
@@ -11,6 +12,7 @@
 #include <QStandardItem>
 #include <QMessageBox>  // Para mostrar mensajes de error o éxito
 #include <QStyledItemDelegate>
+#include <QModelIndex>
 
 InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuario)
     : QMainWindow(parent)
@@ -24,6 +26,7 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
 
     // Llenar la tabla de usuarios cuando se abre la ventana
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
+    llenarTablaSolicitudesRecibidas();
 }
 
 InterfazPrincipal::~InterfazPrincipal()
@@ -65,6 +68,8 @@ public:
     }
 };
 
+
+//----------PARA LA TABLA DE USUARIOS DE ENVIAR SOLICITUD---------------
 void InterfazPrincipal::llenarTablaUsuarios() {
     AVLUsuarios& avl = AVLUsuarios::getInstance();
     ListaDobleUsuariosDisponibles listaUsuariosDisponibles;
@@ -151,4 +156,108 @@ void InterfazPrincipal::enviarSolicitud(const QString& correo, const std::string
 
     // Mostrar mensaje de éxito
     QMessageBox::information(this, "Solicitud Enviada", "La solicitud de amistad ha sido enviada.");
+}
+
+//--------PARA LAS TABLAS DE SOLICITUDES-------------
+void InterfazPrincipal::llenarTablaSolicitudesRecibidas() {
+    AVLUsuarios& avl = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avl.buscar(correoConectado.toStdString());
+
+    if (!usuarioConectado) {
+        std::cerr << "Error: No se encontró el usuario conectado." << std::endl;
+        return;
+    }
+
+    Pila& pilaSolicitudesRecibidas = usuarioConectado->getPilaSolicitudes();
+    QStandardItemModel* model = new QStandardItemModel();
+    model->setColumnCount(3);
+    model->setHorizontalHeaderLabels(QStringList() << "Correo del Remitente" << "Aceptar" << "Rechazar");
+
+    // Llenar la tabla con las solicitudes recibidas
+    while (!pilaSolicitudesRecibidas.estaVacia()) {
+        std::unique_ptr<NodoSolicitud> solicitud = pilaSolicitudesRecibidas.pop();
+        QList<QStandardItem*> fila;
+
+        QStandardItem* itemCorreo = new QStandardItem(QString::fromStdString(solicitud->correo));
+        fila.append(itemCorreo);
+
+        // Botón Aceptar
+        QStandardItem* itemAceptar = new QStandardItem();
+        itemAceptar->setData(QVariant::fromValue(solicitud->correo), Qt::UserRole);
+        fila.append(itemAceptar);
+
+        // Botón Rechazar
+        QStandardItem* itemRechazar = new QStandardItem();
+        itemRechazar->setData(QVariant::fromValue(solicitud->correo), Qt::UserRole);
+        fila.append(itemRechazar);
+
+        model->appendRow(fila);
+    }
+
+    ui->tabla_recibidas->setModel(model);
+
+    // Crear delegados para las acciones de aceptar y rechazar solicitudes
+    ButtonDelegateSolicitudes *delegateAceptar = new ButtonDelegateSolicitudes(this, "Aceptar");
+    ButtonDelegateSolicitudes *delegateRechazar = new ButtonDelegateSolicitudes(this, "Rechazar");
+
+    ui->tabla_recibidas->setItemDelegateForColumn(1, delegateAceptar);  // Columna de aceptar
+    ui->tabla_recibidas->setItemDelegateForColumn(2, delegateRechazar); // Columna de rechazar
+
+    connect(ui->tabla_recibidas, &QTableView::clicked, this, &InterfazPrincipal::manejarSolicitud);
+}
+
+// Manejar la acción cuando se acepta o rechaza una solicitud
+void InterfazPrincipal::manejarSolicitud(const QModelIndex &index) {
+    if (index.column() == 1) {  // Aceptar solicitud
+        QString correo = index.sibling(index.row(), 0).data().toString();
+        aceptarSolicitud(correo.toStdString());
+    } else if (index.column() == 2) {  // Rechazar solicitud
+        QString correo = index.sibling(index.row(), 0).data().toString();
+        rechazarSolicitud(correo.toStdString());
+    }
+}
+
+// Aceptar solicitud
+void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+    Usuario* remitente = avlUsuarios.buscar(correoRemitente);
+
+    if (!usuarioConectado || !remitente) {
+        QMessageBox::warning(this, "Error", "Hubo un problema al procesar la solicitud.");
+        return;
+    }
+
+    /*
+    // Agregar la amistad en ambas direcciones
+    usuarioConectado->getListaAmigos().agregar(remitente->getNombre(), remitente->getCorreo());
+    remitente->getListaAmigos().agregar(usuarioConectado->getNombre(), usuarioConectado->getCorreo());*/
+
+    // Eliminar la solicitud de la pila de recibidas y de la lista de enviadas
+    usuarioConectado->getPilaSolicitudes().eliminarPorCorreo(correoRemitente);
+    remitente->getListaSolicitudesEnviadas().eliminarPorCorreo(correoConectado.toStdString());
+
+    // Mostrar mensaje de éxito
+    QMessageBox::information(this, "Solicitud Aceptada", "La solicitud ha sido aceptada.");
+    llenarTablaSolicitudesRecibidas();  // Actualizar la tabla
+}
+
+// Rechazar solicitud
+void InterfazPrincipal::rechazarSolicitud(const std::string& correoRemitente) {
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+    Usuario* remitente = avlUsuarios.buscar(correoRemitente);
+
+    if (!usuarioConectado || !remitente) {
+        QMessageBox::warning(this, "Error", "Hubo un problema al procesar la solicitud.");
+        return;
+    }
+
+    // Eliminar la solicitud de la pila de recibidas y de la lista de enviadas
+    usuarioConectado->getPilaSolicitudes().eliminarPorCorreo(correoRemitente);
+    remitente->getListaSolicitudesEnviadas().eliminarPorCorreo(correoConectado.toStdString());
+
+    // Mostrar mensaje de éxito
+    QMessageBox::information(this, "Solicitud Rechazada", "La solicitud ha sido rechazada.");
+    llenarTablaSolicitudesRecibidas();  // Actualizar la tabla
 }
