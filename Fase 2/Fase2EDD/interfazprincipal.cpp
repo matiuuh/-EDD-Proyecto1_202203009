@@ -6,6 +6,7 @@
 #include "listasimple.h"
 #include "TablasModUsuario/buttondelegatesolicitudes.h"
 #include "TablasModUsuario/buttondelegateenviadas.h"
+#include "EstructurasUsuario/matrizdispersaamigos.h"
 
 #include <QStandardItemModel>
 #include <QPushButton>
@@ -145,6 +146,12 @@ void InterfazPrincipal::enviarSolicitud(const QString& correo, const std::string
         return;
     }
 
+    //verifica si el usuario conectado ya es amigo del receptor
+    MatrizDispersaAmigos& matrizUsuarioConectado = usuarioConectado->getMatrizAmigos(); // Pila del usuario conectado
+    if (matrizUsuarioConectado.buscarAmistad(usuarioReceptor->getCorreo())) {
+        QMessageBox::warning(this, "Amistad existente", "Ya son amigos con este usuario.");
+        return;
+    }
 
     // Verificar si el usuario receptor ya tiene una solicitud pendiente del usuario conectado
     Pila& pilaReceptor = usuarioReceptor->getPilaSolicitudes();
@@ -250,11 +257,14 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
         return;
     }
 
-    /*
-    // Agregar la amistad en ambas direcciones
-    usuarioConectado->getListaAmigos().agregar(remitente->getNombre(), remitente->getCorreo());
-    remitente->getListaAmigos().agregar(usuarioConectado->getNombre(), usuarioConectado->getCorreo());*/
+    // Obtener las instancias de MatrizDispersaAmigos para el usuario conectado y el remitente
+    MatrizDispersaAmigos& matrizAmigosUsuarioConectado = usuarioConectado->getMatrizAmigos();
+    MatrizDispersaAmigos& matrizAmigosRemitente = remitente->getMatrizAmigos();
 
+
+    // Agregar la amistad en ambas direcciones
+    matrizAmigosUsuarioConectado.agregarAmistad( remitente->getCorreo());
+    matrizAmigosRemitente.agregarAmistad(usuarioConectado->getCorreo());
 
     // Imprimir las solicitudes antes de la eliminación
     std::cout << "Solicitudes antes de aceptar:" << std::endl;
