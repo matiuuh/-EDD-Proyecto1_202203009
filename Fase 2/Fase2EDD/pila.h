@@ -23,7 +23,7 @@ public:
     void push(const std::string& correo, const std::string& solicitud);
 
     // Obtener y eliminar la solicitud en la parte superior
-    std::unique_ptr<NodoSolicitud> pop();
+    std::shared_ptr<NodoSolicitud> pop();
 
     // Eliminar una solicitud específica por correo
     bool eliminarPorCorreo(const std::string& correo);
@@ -34,8 +34,10 @@ public:
     // Verificar si la pila está vacía
     bool estaVacia() const;
 
+    void imprimir() const;
+
 private:
-    std::stack<std::unique_ptr<NodoSolicitud>> pila;
+    std::stack<std::shared_ptr<NodoSolicitud>> pila;
 };
 
 #endif // PILA_H

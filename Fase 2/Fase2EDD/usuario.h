@@ -17,7 +17,7 @@ public:
     void agregarPublicacion(const std::string& contenido, const std::string& fecha, const std::string& hora);
     void mostrarPublicaciones();
     void buscarPublicacionesPorFecha(const std::string& fecha);
-    //Usuario* buscarUsuarioPorCorreo(const std::string& correo);
+    bool existeSolicitudPendiente(const Usuario& usuarioDestino);
 
     // Datos del usuario
     std::string getNombre() const;

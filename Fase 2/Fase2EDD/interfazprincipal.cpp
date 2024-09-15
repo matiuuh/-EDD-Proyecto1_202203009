@@ -5,6 +5,7 @@
 #include "pila.h"
 #include "listasimple.h"
 #include "TablasModUsuario/buttondelegatesolicitudes.h"
+#include "TablasModUsuario/buttondelegateenviadas.h"
 
 #include <QStandardItemModel>
 #include <QPushButton>
@@ -137,10 +138,25 @@ void InterfazPrincipal::enviarSolicitud(const QString& correo, const std::string
         return;
     }
 
+    // Verificar si el usuario conectado ya tiene una solicitud pendiente del receptor
+    Pila& pilaUsuarioConectado = usuarioConectado->getPilaSolicitudes(); // Pila del usuario conectado
+    if (pilaUsuarioConectado.buscarPorCorreo(usuarioReceptor->getCorreo())) {
+        QMessageBox::warning(this, "Solicitud Pendiente", "Ya tienes una solicitud pendiente de este usuario.");
+        return;
+    }
+
+
     // Verificar si el usuario receptor ya tiene una solicitud pendiente del usuario conectado
     Pila& pilaReceptor = usuarioReceptor->getPilaSolicitudes();
     if (pilaReceptor.buscarPorCorreo(correoConectado)) {
         QMessageBox::warning(this, "Solicitud Pendiente", "El usuario ya tiene una solicitud pendiente de ti.");
+        return;
+    }
+
+    // Verificar si el usuario conectado tiene una solicitud pendiente del receptor
+    ListaSimple& listaSolicitudesEnviadasReceptor = usuarioReceptor->getListaSolicitudesEnviadas();
+    if (listaSolicitudesEnviadasReceptor.solicitudPendiente(correoConectado)) {
+        QMessageBox::warning(this, "Solicitud Enviada", "Tienes una solicitud pendiente de este usuario");
         return;
     }
 
@@ -157,6 +173,8 @@ void InterfazPrincipal::enviarSolicitud(const QString& correo, const std::string
 
     // Mostrar mensaje de éxito
     QMessageBox::information(this, "Solicitud Enviada", "La solicitud de amistad ha sido enviada.");
+    llenarTablaSolicitudesRecibidas();
+    llenarTablaSolicitudesEnviadas();
 }
 
 //--------PARA LAS TABLAS DE SOLICITUDES RECIBIDAS POR EL USUARIO CONECTADO-------------
@@ -174,9 +192,12 @@ void InterfazPrincipal::llenarTablaSolicitudesRecibidas() {
     model->setColumnCount(3);
     model->setHorizontalHeaderLabels(QStringList() << "Correo del Remitente" << "Aceptar" << "Rechazar");
 
+    // Crear una copia de la pila original para no modificarla
+    Pila pilaCopia = pilaSolicitudesRecibidas;
+
     // Llenar la tabla con las solicitudes recibidas
-    while (!pilaSolicitudesRecibidas.estaVacia()) {
-        std::unique_ptr<NodoSolicitud> solicitud = pilaSolicitudesRecibidas.pop();
+    while (!pilaCopia.estaVacia()) {
+        std::shared_ptr<NodoSolicitud> solicitud = pilaCopia.pop();
         QList<QStandardItem*> fila;
 
         QStandardItem* itemCorreo = new QStandardItem(QString::fromStdString(solicitud->correo));
@@ -234,9 +255,18 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     usuarioConectado->getListaAmigos().agregar(remitente->getNombre(), remitente->getCorreo());
     remitente->getListaAmigos().agregar(usuarioConectado->getNombre(), usuarioConectado->getCorreo());*/
 
+
+    // Imprimir las solicitudes antes de la eliminación
+    std::cout << "Solicitudes antes de aceptar:" << std::endl;
+    usuarioConectado->getPilaSolicitudes().imprimir();
+
     // Eliminar la solicitud de la pila de recibidas y de la lista de enviadas
     usuarioConectado->getPilaSolicitudes().eliminarPorCorreo(correoRemitente);
     remitente->getListaSolicitudesEnviadas().eliminarPorCorreo(correoConectado.toStdString());
+
+    // Imprimir las solicitudes después de la eliminación
+    std::cout << "Solicitudes después de aceptar:" << std::endl;
+    usuarioConectado->getPilaSolicitudes().imprimir();
 
     // Mostrar mensaje de éxito
     QMessageBox::information(this, "Solicitud Aceptada", "La solicitud ha sido aceptada.");
@@ -293,24 +323,9 @@ void InterfazPrincipal::llenarTablaSolicitudesEnviadas() {
         QStandardItem* itemEstado = new QStandardItem(QString::fromStdString("Pendiente"));
         fila.append(itemEstado);
 
-        // Columna del botón para cancelar la solicitud
-        QPushButton* botonCancelar = new QPushButton("Cancelar");
-        connect(botonCancelar, &QPushButton::clicked, this, [this, nodo]() {
-            // Aquí se podría programar la lógica para cancelar la solicitud
-            std::cout << "Cancelando solicitud para: " << nodo->correo << std::endl;
-        });
-        QWidget* widget = new QWidget();
-        QHBoxLayout* layout = new QHBoxLayout(widget);
-        layout->addWidget(botonCancelar);
-        layout->setAlignment(Qt::AlignCenter);
-        layout->setContentsMargins(0, 0, 0, 0);
-        widget->setLayout(layout);
+        // Columna vacía para el botón (el delegado lo manejará)
+        fila.append(new QStandardItem());
 
-        // Agregar el widget del botón a la tabla
-        QStandardItem* itemAccion = new QStandardItem();
-        ui->tabla_enviadas->setIndexWidget(model->index(model->rowCount(), 2), widget);
-
-        fila.append(itemAccion);
         model->appendRow(fila);
 
         // Avanzar al siguiente nodo
@@ -320,11 +335,50 @@ void InterfazPrincipal::llenarTablaSolicitudesEnviadas() {
     // Asignar el modelo a la tabla
     ui->tabla_enviadas->setModel(model);
 
-    int totalWidth = 310;
-    int columnWidth = totalWidth / 3;  // Dividir el espacio en 3 columnas iguales
+    // Crear el delegado para el botón de cancelar
+    ButtonDelegateEnviadas* delegateCancelar = new ButtonDelegateEnviadas(this, "Cancelar");
+    ui->tabla_enviadas->setItemDelegateForColumn(2, delegateCancelar); // Columna de "Acción"
+
+    // Conectar la señal del delegado al método de manejar la cancelación
+    connect(delegateCancelar, &ButtonDelegateEnviadas::solicitudCancelada, this, &InterfazPrincipal::manejarCancelacionSolicitud);
 
     // Establecer el ancho de las columnas
-    ui->tabla_enviadas->setColumnWidth(0, columnWidth);  // Columna "Correo del Receptor"
-    ui->tabla_enviadas->setColumnWidth(1, columnWidth);  // Columna "Estado"
-    ui->tabla_enviadas->setColumnWidth(2, columnWidth);  // Columna "Acción"
+    ui->tabla_enviadas->setColumnWidth(0, 150);  // Columna "Correo del Receptor"
+    ui->tabla_enviadas->setColumnWidth(1, 100);  // Columna "Estado"
+    ui->tabla_enviadas->setColumnWidth(2, 60);   // Columna "Acción"
 }
+
+void InterfazPrincipal::manejarCancelacionSolicitud(const QModelIndex &index) {
+    // Obtener el correo del receptor en la fila seleccionada
+    QString correo = index.sibling(index.row(), 0).data().toString();
+    std::cout << "Cancelar solicitud enviada a: " << correo.toStdString() << std::endl;
+
+    // Lógica para cancelar la solicitud
+    AVLUsuarios& avl = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avl.buscar(correoConectado.toStdString());
+
+    if (usuarioConectado) {
+        Usuario* destinatario = avl.buscar(correo.toStdString());
+        if (destinatario) {
+            // Eliminar la solicitud de la pila del destinatario
+            bool eliminadaDePila = destinatario->getPilaSolicitudes().eliminarPorCorreo(correoConectado.toStdString());
+            if (eliminadaDePila) {
+                std::cout << "Solicitud eliminada de la pila de " << correo.toStdString() << std::endl;
+            } else {
+                std::cerr << "Error: No se encontró la solicitud en la pila del destinatario." << std::endl;
+            }
+        }
+
+        // Eliminar la solicitud de la lista del usuario conectado
+        bool eliminadaDeLista = usuarioConectado->getListaSolicitudesEnviadas().eliminarPorCorreo(correo.toStdString());
+        if (eliminadaDeLista) {
+            std::cout << "Solicitud eliminada de la lista de " << correoConectado.toStdString() << std::endl;
+        }
+
+        // Actualizar la tabla después de la eliminación
+        llenarTablaSolicitudesEnviadas();
+    } else {
+        std::cerr << "Error: No se encontró al usuario conectado." << std::endl;
+    }
+}
+

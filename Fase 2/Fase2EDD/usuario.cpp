@@ -56,3 +56,8 @@ std::string Usuario::getContrasenia() const {
     return contrasenia;
 }
 
+// Método en Usuario para verificar si hay una solicitud pendiente del usuario destino
+bool Usuario::existeSolicitudPendiente(const Usuario& usuarioDestino) {
+    // Verificar si la pila de solicitudes recibidas contiene una solicitud del usuario destino
+    return solicitudesRecibidas.buscarPorCorreo(usuarioDestino.getCorreo());
+}

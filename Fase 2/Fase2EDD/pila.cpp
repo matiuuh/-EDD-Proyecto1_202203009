@@ -1,15 +1,18 @@
 #include "pila.h"
+#include <memory>
+#include <iostream>
+#include <stack>
 
 // Constructor
 Pila::Pila() {}
 
 // Agregar una solicitud a la pila
 void Pila::push(const std::string& correo, const std::string& solicitud) {
-    pila.push(std::make_unique<NodoSolicitud>(correo, solicitud));
+    pila.push(std::make_shared<NodoSolicitud>(correo, solicitud));
 }
 
 // Obtener y eliminar la solicitud en la parte superior
-std::unique_ptr<NodoSolicitud> Pila::pop() {
+std::shared_ptr<NodoSolicitud> Pila::pop() {
     if (pila.empty()) return nullptr;
 
     auto topSolicitud = std::move(pila.top());
@@ -19,7 +22,7 @@ std::unique_ptr<NodoSolicitud> Pila::pop() {
 
 // Eliminar una solicitud específica por correo
 bool Pila::eliminarPorCorreo(const std::string& correo) {
-    std::stack<std::unique_ptr<NodoSolicitud>> pilaTemporal;
+    std::stack<std::shared_ptr<NodoSolicitud>> pilaTemporal;
 
     bool encontrada = false;
     while (!pila.empty()) {
@@ -46,7 +49,7 @@ bool Pila::eliminarPorCorreo(const std::string& correo) {
 
 // Buscar una solicitud por correo del remitente
 bool Pila::buscarPorCorreo(const std::string& correo) {
-    std::stack<std::unique_ptr<NodoSolicitud>> pilaTemporal;
+    std::stack<std::shared_ptr<NodoSolicitud>> pilaTemporal;
     bool encontrada = false;
 
     // Recorrer la pila sin modificarla para buscar la solicitud
@@ -74,3 +77,14 @@ bool Pila::buscarPorCorreo(const std::string& correo) {
 bool Pila::estaVacia() const {
     return pila.empty();
 }
+
+// Imprimir el contenido de la pila
+// Verificar si la pila está vacía
+void Pila::imprimir() const {
+    if (estaVacia()) {
+        std::cout << "La pila está vacía." << std::endl;
+    } else {
+        std::cout << "La pila contiene elementos." << std::endl;
+    }
+}
+

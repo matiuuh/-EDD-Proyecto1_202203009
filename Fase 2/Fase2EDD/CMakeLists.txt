@@ -37,6 +37,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         EstructurasUsuario/listadobleusuariosdisponibles.h EstructurasUsuario/listadobleusuariosdisponibles.cpp
         TablasModUsuario/buttondelegatesolicitudes.h TablasModUsuario/buttondelegatesolicitudes.cpp
         TablasModUsuario/buttondelegateenviadas.h TablasModUsuario/buttondelegateenviadas.cpp
+        EstructurasUsuario/matrizdispersaamigos.h EstructurasUsuario/matrizdispersaamigos.cpp
 
         #Oficial.cpp
 
