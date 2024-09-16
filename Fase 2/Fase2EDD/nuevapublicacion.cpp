@@ -101,7 +101,10 @@ void NuevaPublicacion::publicar()
     usuarioConectado->getListaPublicacionesPropias().mostrar();
 
     // Ahora almacenamos la publicación en el BST de publicaciones del usuario y amigos
-    //usuarioConectado->getBSTPublicacionesAmigos().insertar(nuevaPublicacion);
+    usuarioConectado->getBSTPublicacionesAmigos().insertar(nuevaPublicacion);
+
+    std::cout<<"mostrando publicaciones del BST: "<<std::endl;
+    usuarioConectado->getBSTPublicacionesAmigos().mostrarPublicaciones();
 
     // Confirmar que la publicación se ha creado correctamente
     QMessageBox::information(this, "Éxito", "Tu publicación ha sido creada.");

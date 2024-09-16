@@ -54,3 +54,7 @@ void ListaDoble::mostrar() const {
         actual = actual->siguiente;
     }
 }
+
+bool ListaDoble::estaVacia() const {
+    return cabeza == nullptr;  // La lista está vacía si la cabeza es nullptr
+}

@@ -23,6 +23,7 @@ public:
     void eliminar(const std::string& idPublicacion);  // Añadir parámetros necesarios
     void mostrar() const;
     //Publicacion buscar(const std::string& idPublicacion) const;  // Añadir parámetros necesarios
+    bool estaVacia() const;  // Agregar la declaración del método
 
 private:
     NodoDoble* cabeza;  // Nodo cabeza de la lista
