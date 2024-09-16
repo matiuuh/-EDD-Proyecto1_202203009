@@ -1,7 +1,6 @@
 #ifndef BSTPUBLICACIONES_H
 #define BSTPUBLICACIONES_H
 
-#include <iostream>
 #include <string>
 #include "listasimple.h"
 
@@ -24,7 +23,6 @@ public:
 
 private:
     NodoBST* raiz;
-
     NodoBST* insertarRecursivo(NodoBST* nodo, const std::string& fecha, const std::string& contenido);
     NodoBST* buscarRecursivo(NodoBST* nodo, const std::string& fecha) const;
 };

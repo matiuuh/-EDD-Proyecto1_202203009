@@ -37,7 +37,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="sss">
      <attribute name="title">
@@ -247,7 +247,7 @@
         </rect>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="btn_aplicarFecha">
        <property name="geometry">
         <rect>
          <x>60</x>
@@ -344,7 +344,7 @@
         <string>Cantidad</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_5">
+      <widget class="QPushButton" name="btn_aplicarRecorridoLimitado">
        <property name="geometry">
         <rect>
          <x>70</x>
@@ -412,7 +412,7 @@
        <string>Recorrido limitado</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_6">
+     <widget class="QPushButton" name="btn_crearPublicacion">
       <property name="geometry">
        <rect>
         <x>250</x>

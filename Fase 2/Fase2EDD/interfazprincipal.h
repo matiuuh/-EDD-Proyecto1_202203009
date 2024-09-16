@@ -18,6 +18,8 @@ public:
 
 private slots:
     void cerrarSesion();  // Declaramos la función aquí
+
+    //Solicitudes
     void llenarTablaUsuarios();
     void enviarSolicitud(const QString& correo, const std::string& correoConectado);
     void llenarTablaSolicitudesRecibidas();
@@ -26,9 +28,9 @@ private slots:
     void rechazarSolicitud(const std::string& correoRemitente);
     void manejarCancelacionSolicitud(const QModelIndex &index);
     void llenarTablaSolicitudesEnviadas();
-    //void llenarTablaSolicitudesRecibidas();
-    //void aceptarSolicitud(const QString& correo);
-    //void rechazarSolicitud(const QString& correo);
+
+    //Publicaciones
+    void crearPublicacion();
 
 private:
     Ui::InterfazPrincipal *ui;

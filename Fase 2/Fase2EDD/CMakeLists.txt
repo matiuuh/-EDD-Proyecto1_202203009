@@ -38,6 +38,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         TablasModUsuario/buttondelegatesolicitudes.h TablasModUsuario/buttondelegatesolicitudes.cpp
         TablasModUsuario/buttondelegateenviadas.h TablasModUsuario/buttondelegateenviadas.cpp
         EstructurasUsuario/matrizdispersaamigos.h EstructurasUsuario/matrizdispersaamigos.cpp
+        nuevapublicacion.h nuevapublicacion.cpp nuevapublicacion.ui
+        Publicaciones/publicacion.h Publicaciones/publicacion.cpp
+        Publicaciones/Comentarios/comentario.h Publicaciones/Comentarios/comentario.cpp
+        Publicaciones/Comentarios/arbolbcomentarios.h Publicaciones/Comentarios/arbolbcomentarios.cpp
 
         #Oficial.cpp
 

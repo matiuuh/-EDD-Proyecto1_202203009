@@ -7,6 +7,7 @@
 #include "TablasModUsuario/buttondelegatesolicitudes.h"
 #include "TablasModUsuario/buttondelegateenviadas.h"
 #include "EstructurasUsuario/matrizdispersaamigos.h"
+#include "nuevapublicacion.h"
 
 #include <QStandardItemModel>
 #include <QPushButton>
@@ -25,6 +26,9 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
 
     // Conectar el botón "Cerrar Sesión" con la función que manejará el cierre de sesión
     connect(ui->btn_cerrar, &QPushButton::clicked, this, &InterfazPrincipal::cerrarSesion);
+
+    // Conectar el botón "Cerrar Sesión" con la función que manejará el cierre de sesión
+    connect(ui->btn_crearPublicacion, &QPushButton::clicked, this, &InterfazPrincipal::crearPublicacion);
 
     // Llenar la tabla de usuarios cuando se abre la ventana
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
@@ -71,7 +75,7 @@ public:
     }
 };
 
-
+//*******************************SOLICITUDES***********************************
 //----------PARA LA TABLA DE USUARIOS DE ENVIAR SOLICITUD---------------
 void InterfazPrincipal::llenarTablaUsuarios() {
     AVLUsuarios& avl = AVLUsuarios::getInstance();
@@ -392,3 +396,14 @@ void InterfazPrincipal::manejarCancelacionSolicitud(const QModelIndex &index) {
     }
 }
 
+//***************************PUBLICACIONES**********************************
+// Función para manejar el cierre de sesión
+void InterfazPrincipal::crearPublicacion()
+{
+    // Crear una nueva instancia del módulo de entrada
+    NuevaPublicacion *crear = new NuevaPublicacion(nullptr, correoConectado);
+    crear->show();
+
+    // Cerrar la ventana actual
+    this->close();
+}

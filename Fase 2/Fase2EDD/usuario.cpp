@@ -8,26 +8,6 @@ using namespace std;
 Usuario::Usuario(const std::string& nombre, const std::string& apellidos, const std::string& fechaNacimiento, const std::string& correo, const std::string& contrasenia)
     : nombre(nombre), apellidos(apellidos), fechaNacimiento(fechaNacimiento), correo(correo), contrasenia(contrasenia) {}
 
-// Métodos para interactuar con las estructuras de datos
-
-// Recibir una solicitud de amistad
-void Usuario::recibirSolicitud(const std::string& remitente) {
-    solicitudesRecibidas.push(correo, remitente);
-    cout << "Solicitud de amistad recibida de: " << remitente << endl;
-}
-
-// Enviar una solicitud de amistad
-void Usuario::enviarSolicitud(const std::string& destinatario) {
-    solicitudesEnviadas.agregar(nombre, correo);
-    cout << "Solicitud de amistad enviada a: " << destinatario << endl;
-}
-/*
-// Agregar una publicación propia
-void Usuario::agregarPublicacion(const std::string& contenido, const std::string& fecha, const std::string& hora) {
-    Publicacion nuevaPublicacion(correo, contenido, fecha, hora);
-    publicacionesPropias.agregar(nuevaPublicacion);
-    cout << "Publicación agregada: " << contenido << " en fecha: " << fecha << " a las: " << hora << endl;
-}*/
 
 // Mostrar todas las publicaciones propias
 void Usuario::mostrarPublicaciones() {
@@ -35,11 +15,12 @@ void Usuario::mostrarPublicaciones() {
     publicacionesPropias.mostrar();
 }
 
+/*
 // Buscar publicaciones por fecha en el BST de publicaciones de amigos
 void Usuario::buscarPublicacionesPorFecha(const std::string& fecha) {
     cout << "Buscando publicaciones en la fecha: " << fecha << endl;
     publicacionesAmigos.buscarPorFecha(fecha);
-}
+}*/
 
 // Obtener el nombre del usuario
 std::string Usuario::getNombre() const {
@@ -60,4 +41,12 @@ std::string Usuario::getContrasenia() const {
 bool Usuario::existeSolicitudPendiente(const Usuario& usuarioDestino) {
     // Verificar si la pila de solicitudes recibidas contiene una solicitud del usuario destino
     return solicitudesRecibidas.buscarPorCorreo(usuarioDestino.getCorreo());
+}
+
+ListaDoble& Usuario::getListaPublicacionesPropias() {
+    return publicacionesPropias;
+}
+
+BSTPublicaciones& Usuario::getBSTPublicacionesAmigos() {
+    return publicacionesAmigos;
 }

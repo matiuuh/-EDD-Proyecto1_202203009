@@ -29,6 +29,9 @@ public:
     ListaSimple& getListaSolicitudesEnviadas() { return solicitudesEnviadas; }
     MatrizDispersaAmigos& getMatrizAmigos() { return matrizAmigos; }  // Método para obtener la matriz dispersa de amigos
 
+    ListaDoble& getListaPublicacionesPropias();
+    BSTPublicaciones& getBSTPublicacionesAmigos();
+
 
 private:
     std::string nombre;
