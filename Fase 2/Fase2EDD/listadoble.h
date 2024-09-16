@@ -1,30 +1,32 @@
 #ifndef LISTADOBLE_H
 #define LISTADOBLE_H
 
-#include <iostream>
+#include "Publicaciones/publicacion.h"
 #include <string>
 
 class NodoDoble {
 public:
-    std::string contenido;
-    std::string fecha;
-    std::string hora;
+    Publicacion publicacion;
     NodoDoble* siguiente;
     NodoDoble* anterior;
 
-    NodoDoble(const std::string& cont, const std::string& fec, const std::string& hor)
-        : contenido(cont), fecha(fec), hora(hor), siguiente(nullptr), anterior(nullptr) {}
+    NodoDoble(const Publicacion& pub)
+        : publicacion(pub), siguiente(nullptr), anterior(nullptr) {}
 };
 
-class ListaDoble {
+class ListaDoble
+{
 public:
     ListaDoble();
-    void insertar(const std::string& contenido, const std::string& fecha, const std::string& hora);
+
+    void insertar(const Publicacion& publicacion);
+    void eliminar(const std::string& idPublicacion);  // Añadir parámetros necesarios
     void mostrar() const;
+    //Publicacion buscar(const std::string& idPublicacion) const;  // Añadir parámetros necesarios
 
 private:
-    NodoDoble* cabeza;
-    NodoDoble* cola;
+    NodoDoble* cabeza;  // Nodo cabeza de la lista
+    NodoDoble* cola;    // Nodo cola de la lista
 };
 
 #endif // LISTADOBLE_H

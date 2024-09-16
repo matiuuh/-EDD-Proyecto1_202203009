@@ -96,7 +96,9 @@ void NuevaPublicacion::publicar()
     listaPublicacionesGlobal.mostrar();
 
     // Insertar la publicación en la lista de publicaciones del usuario conectado
-    //usuarioConectado->getListaPublicacionesPropias().insertar(nuevaPublicacion);
+    usuarioConectado->getListaPublicacionesPropias().insertar(nuevaPublicacion);
+    std::cout<<"mostrando publicaciones propias: "<<std::endl;
+    usuarioConectado->getListaPublicacionesPropias().mostrar();
 
     // Ahora almacenamos la publicación en el BST de publicaciones del usuario y amigos
     //usuarioConectado->getBSTPublicacionesAmigos().insertar(nuevaPublicacion);
@@ -104,6 +106,9 @@ void NuevaPublicacion::publicar()
     // Confirmar que la publicación se ha creado correctamente
     QMessageBox::information(this, "Éxito", "Tu publicación ha sido creada.");
 
-    // Limpiar el formulario o cerrar la ventana
-    this->close();
+    // Limpiar el formulario para una nueva publicación
+    ui->txt_entradaPublicacion->clear();  // Limpiar el campo de texto de la publicación
+
+    // Limpiar la ruta de la imagen cargada (si deseas resetear también la imagen)
+    rutaImagenGuardada.clear();
 }
