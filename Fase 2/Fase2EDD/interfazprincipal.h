@@ -32,6 +32,8 @@ private slots:
     //Publicaciones
     void crearPublicacion();
     void mostrarPublicaciones();
+    void aplicarFiltroFecha();
+    void mostrarPublicacionesPorFecha(const QString& fechaFiltro);
 
 private:
     Ui::InterfazPrincipal *ui;

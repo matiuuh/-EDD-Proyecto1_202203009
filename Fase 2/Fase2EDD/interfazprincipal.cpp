@@ -10,6 +10,7 @@
 #include "nuevapublicacion.h"
 #include "bstpublicaciones.h"
 
+#include <regex>
 #include <QStandardItemModel>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -30,6 +31,10 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
 
     // Conectar el botón "Cerrar Sesión" con la función que manejará el cierre de sesión
     connect(ui->btn_crearPublicacion, &QPushButton::clicked, this, &InterfazPrincipal::crearPublicacion);
+
+    //Conectar el botón "Aplicar" para aplicar filtro de fecha
+    connect(ui->btn_aplicarFecha, &QPushButton::clicked, this, &InterfazPrincipal::aplicarFiltroFecha);
+
 
     // Llenar la tabla de usuarios cuando se abre la ventana
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
@@ -472,6 +477,89 @@ void InterfazPrincipal::mostrarPublicaciones() {
 
         // Añadir el widget de la publicación al layout de todas las publicaciones
         layoutPublicaciones->addWidget(widgetPublicacion);
+    });
+
+    // Establecer el layout de publicaciones en el contenedor de scroll
+    ui->scroll_publicaciones->setWidget(contenedorPublicaciones);
+    contenedorPublicaciones->setLayout(layoutPublicaciones);
+}
+
+// Método para validar el formato de la fecha
+bool validarFecha(const QString& fecha) {
+    // Validar el formato de la fecha (dd/mm/yyyy)
+    std::regex formatoFecha("^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$");
+    return std::regex_match(fecha.toStdString(), formatoFecha);
+}
+
+// Método para manejar el clic en btn_aplicarFecha
+void InterfazPrincipal::aplicarFiltroFecha() {
+    QString fechaFiltro = ui->txt_fechaFiltro->toPlainText();
+
+    if (!validarFecha(fechaFiltro)) {
+        QMessageBox::warning(this, "Formato de Fecha Inválido", "El formato de la fecha debe ser dd/mm/yyyy.");
+        return;
+    }
+
+    // Mostrar publicaciones filtradas por la fecha
+    mostrarPublicacionesPorFecha(fechaFiltro);
+}
+
+// Método para mostrar las publicaciones por filtro
+void InterfazPrincipal::mostrarPublicacionesPorFecha(const QString& fechaFiltro) {
+    // Obtener el usuario conectado
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    if (!usuarioConectado) {
+        std::cerr << "Error: No se encontró el usuario conectado." << std::endl;
+        return;
+    }
+
+    // Limpiar el contenedor de publicaciones
+    ui->scroll_publicaciones->takeWidget();
+
+    // Crear un nuevo widget contenedor para las publicaciones filtradas
+    QWidget *contenedorPublicaciones = new QWidget();
+    QVBoxLayout *layoutPublicaciones = new QVBoxLayout(contenedorPublicaciones);
+
+    // Obtener el BST de publicaciones del usuario conectado
+    BSTPublicaciones& bstPublicaciones = usuarioConectado->getBSTPublicacionesAmigos();
+
+    // Recorre el BST de publicaciones usando la función en orden
+    bstPublicaciones.recorrerInOrden([this, layoutPublicaciones, fechaFiltro](const Publicacion& publicacion) {
+        // Filtrar publicaciones por fecha
+        if (publicacion.getFecha() == fechaFiltro) {
+            // Crear un widget para cada publicación
+            QWidget *widgetPublicacion = new QWidget();
+            QVBoxLayout *layoutPublicacion = new QVBoxLayout(widgetPublicacion);
+
+            // Crear QLabel para mostrar el nombre del usuario
+            QLabel *nombreUsuario = new QLabel(publicacion.getNombreUsuario());
+            layoutPublicacion->addWidget(nombreUsuario);
+
+            // Crear QLabel para la fecha de publicación
+            QLabel *fechaPublicacion = new QLabel(publicacion.getFecha());
+            layoutPublicacion->addWidget(fechaPublicacion);
+
+            // Crear QLabel para mostrar el contenido de la publicación
+            QLabel *contenidoPublicacion = new QLabel(publicacion.getContenido());
+            layoutPublicacion->addWidget(contenidoPublicacion);
+
+            // Añadir botones debajo del contenido
+            QHBoxLayout *layoutBotones = new QHBoxLayout();
+            QPushButton *btnComentar = new QPushButton("Comentar");
+            QPushButton *btnVerComentarios = new QPushButton("Ver Comentarios");
+            QPushButton *btnVerArbolComentarios = new QPushButton("Ver Árbol de Comentarios");
+
+            layoutBotones->addWidget(btnComentar);
+            layoutBotones->addWidget(btnVerComentarios);
+            layoutBotones->addWidget(btnVerArbolComentarios);
+
+            layoutPublicacion->addLayout(layoutBotones);
+
+            // Añadir el widget de la publicación al layout de todas las publicaciones
+            layoutPublicaciones->addWidget(widgetPublicacion);
+        }
     });
 
     // Establecer el layout de publicaciones en el contenedor de scroll

@@ -237,16 +237,6 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
-      <widget class="QComboBox" name="comboBox">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>40</y>
-         <width>191</width>
-         <height>28</height>
-        </rect>
-       </property>
-      </widget>
       <widget class="QPushButton" name="btn_aplicarFecha">
        <property name="geometry">
         <rect>
@@ -258,6 +248,16 @@
        </property>
        <property name="text">
         <string>Aplicar</string>
+       </property>
+      </widget>
+      <widget class="QTextEdit" name="txt_fechaFiltro">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>30</y>
+         <width>191</width>
+         <height>31</height>
+        </rect>
        </property>
       </widget>
      </widget>
