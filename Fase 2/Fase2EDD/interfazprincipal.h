@@ -34,6 +34,8 @@ private slots:
     void mostrarPublicaciones();
     void aplicarFiltroFecha();
     void mostrarPublicacionesPorFecha(const QString& fechaFiltro);
+    void mostrarPublicacionesConOrden(const QString& tipoOrden, int cantidad);
+    void aplicarOrdenLimitado();
 
 private:
     Ui::InterfazPrincipal *ui;

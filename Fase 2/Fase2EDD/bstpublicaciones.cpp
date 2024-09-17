@@ -148,7 +148,6 @@ void BSTPublicaciones::agregarPublicacionesDeLista(ListaDoble& listaPublicacione
     }
 }
 
-
 void BSTPublicaciones::recorrerInOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const {
     if (!nodo) return;
 
@@ -169,4 +168,46 @@ void BSTPublicaciones::recorrerInOrdenRecursivo(NodoBST* nodo, std::function<voi
 // Implementación del método recorrerInOrden
 void BSTPublicaciones::recorrerInOrden(std::function<void(const Publicacion&)> funcion) const {
     recorrerInOrdenRecursivo(raiz, funcion);
+}
+
+void BSTPublicaciones::recorrerPreOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const {
+    if (!nodo) return;
+
+    // Aplicar la función a todas las publicaciones en el nodo actual
+    NodoDoble* nodoPublicacion = nodo->publicacionesPorFecha.getPrimerNodo();
+    while (nodoPublicacion) {
+        funcion(nodoPublicacion->getPublicacion());
+        nodoPublicacion = nodoPublicacion->getSiguiente();
+    }
+
+    // Recorrer el subárbol izquierdo
+    recorrerPreOrdenRecursivo(nodo->izquierda, funcion);
+
+    // Recorrer el subárbol derecho
+    recorrerPreOrdenRecursivo(nodo->derecha, funcion);
+}
+
+void BSTPublicaciones::recorrerPreOrden(std::function<void(const Publicacion&)> funcion) const {
+    recorrerPreOrdenRecursivo(raiz, funcion);
+}
+
+void BSTPublicaciones::recorrerPostOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const {
+    if (!nodo) return;
+
+    // Recorrer el subárbol izquierdo
+    recorrerPostOrdenRecursivo(nodo->izquierda, funcion);
+
+    // Recorrer el subárbol derecho
+    recorrerPostOrdenRecursivo(nodo->derecha, funcion);
+
+    // Aplicar la función a todas las publicaciones en el nodo actual
+    NodoDoble* nodoPublicacion = nodo->publicacionesPorFecha.getPrimerNodo();
+    while (nodoPublicacion) {
+        funcion(nodoPublicacion->getPublicacion());
+        nodoPublicacion = nodoPublicacion->getSiguiente();
+    }
+}
+
+void BSTPublicaciones::recorrerPostOrden(std::function<void(const Publicacion&)> funcion) const {
+    recorrerPostOrdenRecursivo(raiz, funcion);
 }

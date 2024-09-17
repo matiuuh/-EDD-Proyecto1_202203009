@@ -276,7 +276,7 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
-      <widget class="QComboBox" name="comboBox_2">
+      <widget class="QComboBox" name="combo_ordenes">
        <property name="geometry">
         <rect>
          <x>100</x>
@@ -285,8 +285,23 @@
          <height>28</height>
         </rect>
        </property>
+       <item>
+        <property name="text">
+         <string>Pre-Orden</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>In-Orden</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Post-Orden</string>
+        </property>
+       </item>
       </widget>
-      <widget class="QTextEdit" name="textEdit_3">
+      <widget class="QTextEdit" name="txt_cantidad">
        <property name="geometry">
         <rect>
          <x>100</x>

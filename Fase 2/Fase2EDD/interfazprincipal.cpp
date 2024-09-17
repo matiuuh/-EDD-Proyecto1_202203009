@@ -35,6 +35,8 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
     //Conectar el botón "Aplicar" para aplicar filtro de fecha
     connect(ui->btn_aplicarFecha, &QPushButton::clicked, this, &InterfazPrincipal::aplicarFiltroFecha);
 
+    //Conectar el botón "Aplicar" para aplicar filtro de fecha
+    connect(ui->btn_aplicarRecorridoLimitado, &QPushButton::clicked, this, &InterfazPrincipal::aplicarOrdenLimitado);
 
     // Llenar la tabla de usuarios cuando se abre la ventana
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
@@ -566,3 +568,90 @@ void InterfazPrincipal::mostrarPublicacionesPorFecha(const QString& fechaFiltro)
     ui->scroll_publicaciones->setWidget(contenedorPublicaciones);
     contenedorPublicaciones->setLayout(layoutPublicaciones);
 }
+
+void InterfazPrincipal::aplicarOrdenLimitado(){
+    QString tipoOrden = ui->combo_ordenes->currentText();
+    QString cantidadTexto = ui->txt_cantidad->toPlainText();  // Obtener el texto del QTextEdit
+    bool ok;
+    int cantidad = cantidadTexto.toInt(&ok);
+
+    if (!ok || cantidad <= 0) {
+        QMessageBox::warning(this, "Error", "Ingrese una cantidad válida.");
+        return;
+    }
+
+    mostrarPublicacionesConOrden(tipoOrden, cantidad);
+}
+
+void InterfazPrincipal::mostrarPublicacionesConOrden(const QString& tipoOrden, int cantidad) {
+    // Obtener el usuario conectado
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    if (!usuarioConectado) {
+        std::cerr << "Error: No se encontró el usuario conectado." << std::endl;
+        return;
+    }
+
+    // Crear un widget contenedor para todas las publicaciones
+    QWidget *contenedorPublicaciones = new QWidget();
+    QVBoxLayout *layoutPublicaciones = new QVBoxLayout(contenedorPublicaciones);
+
+    // Obtener el BST de publicaciones del usuario conectado
+    BSTPublicaciones& bstPublicaciones = usuarioConectado->getBSTPublicacionesAmigos();
+
+    // Función lambda para mostrar una publicación
+    auto mostrarPublicacion = [this, layoutPublicaciones](const Publicacion& publicacion) {
+        QWidget *widgetPublicacion = new QWidget();
+        QVBoxLayout *layoutPublicacion = new QVBoxLayout(widgetPublicacion);
+
+        QLabel *nombreUsuario = new QLabel(publicacion.getNombreUsuario());
+        layoutPublicacion->addWidget(nombreUsuario);
+
+        QLabel *fechaPublicacion = new QLabel(publicacion.getFecha());
+        layoutPublicacion->addWidget(fechaPublicacion);
+
+        QLabel *contenidoPublicacion = new QLabel(publicacion.getContenido());
+        layoutPublicacion->addWidget(contenidoPublicacion);
+
+        QHBoxLayout *layoutBotones = new QHBoxLayout();
+        QPushButton *btnComentar = new QPushButton("Comentar");
+        QPushButton *btnVerComentarios = new QPushButton("Ver Comentarios");
+        QPushButton *btnVerArbolComentarios = new QPushButton("Ver Árbol de Comentarios");
+
+        layoutBotones->addWidget(btnComentar);
+        layoutBotones->addWidget(btnVerComentarios);
+        layoutBotones->addWidget(btnVerArbolComentarios);
+
+        layoutPublicacion->addLayout(layoutBotones);
+
+        layoutPublicaciones->addWidget(widgetPublicacion);
+    };
+
+    // Función para limitar el número de publicaciones mostradas
+    int contador = 0;
+
+    auto aplicarRecorrido = [&](const Publicacion& publicacion) {
+        if (contador < cantidad) {
+            mostrarPublicacion(publicacion);
+            contador++;
+        }
+    };
+
+    // Aplicar el tipo de recorrido especificado
+    if (tipoOrden == "Pre-Orden") {
+        bstPublicaciones.recorrerPreOrden(aplicarRecorrido);
+    } else if (tipoOrden == "In-Orden") {
+        bstPublicaciones.recorrerInOrden(aplicarRecorrido);
+    } else if (tipoOrden == "Post-Orden") {
+        bstPublicaciones.recorrerPostOrden(aplicarRecorrido);
+    } else {
+        QMessageBox::warning(this, "Error", "Tipo de orden inválido.");
+        return;
+    }
+
+    // Establecer el layout de publicaciones en el contenedor de scroll
+    ui->scroll_publicaciones->setWidget(contenedorPublicaciones);
+    contenedorPublicaciones->setLayout(layoutPublicaciones);
+}
+

@@ -44,6 +44,13 @@ public:
     // Recorre el árbol en orden y aplica una función a cada publicación
     void recorrerInOrden(std::function<void(const Publicacion&)> funcion) const;
 
+    void recorrerPreOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const;
+
+    void recorrerPreOrden(std::function<void(const Publicacion&)> funcion) const;
+
+    void recorrerPostOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const;
+
+    void recorrerPostOrden(std::function<void(const Publicacion&)> funcion) const;
 
 private:
     NodoBST* raiz;
