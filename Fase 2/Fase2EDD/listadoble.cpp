@@ -58,3 +58,7 @@ void ListaDoble::mostrar() const {
 bool ListaDoble::estaVacia() const {
     return cabeza == nullptr;  // La lista está vacía si la cabeza es nullptr
 }
+
+NodoDoble* ListaDoble::getPrimerNodo() const {
+    return cabeza;  // Devuelve el primer nodo de la lista (cabeza)
+}

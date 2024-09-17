@@ -4,7 +4,6 @@
 #include "Publicaciones/publicacion.h"
 #include "listadoble.h"
 
-
 #include <string>
 
 class NodoBST {
@@ -32,6 +31,10 @@ public:
 
     // Mostrar todas las publicaciones en el BST
     void mostrarPublicaciones() const;
+
+    // Método para agregar todas las publicaciones de una lista al BST
+    void agregarPublicacionesDeLista(ListaDoble& listaPublicaciones);
+
 
     // Función recursiva para mostrar todas las publicaciones
     void mostrarRecursivo(NodoBST* nodo) const;

@@ -270,6 +270,17 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     matrizAmigosUsuarioConectado.agregarAmistad( remitente->getCorreo());
     matrizAmigosRemitente.agregarAmistad(usuarioConectado->getCorreo());
 
+    // Transferir las publicaciones del remitente al BST del usuario conectado
+    BSTPublicaciones& bstPublicacionesUsuarioConectado = usuarioConectado->getBSTPublicacionesAmigos();
+    ListaDoble& listaPublicacionesRemitente = remitente->getListaPublicacionesPropias();
+    bstPublicacionesUsuarioConectado.agregarPublicacionesDeLista(listaPublicacionesRemitente);
+
+    // Transferir las publicaciones del usuario conectado al BST del remitente
+    BSTPublicaciones& bstPublicacionesRemitente = remitente->getBSTPublicacionesAmigos();
+    ListaDoble& listaPublicacionesUsuarioConectado = usuarioConectado->getListaPublicacionesPropias();
+    bstPublicacionesRemitente.agregarPublicacionesDeLista(listaPublicacionesUsuarioConectado);
+
+
     // Imprimir las solicitudes antes de la eliminación
     std::cout << "Solicitudes antes de aceptar:" << std::endl;
     usuarioConectado->getPilaSolicitudes().imprimir();

@@ -1,5 +1,6 @@
 #include "BSTPublicaciones.h"
 #include <iostream>
+#include "listadoble.h"
 
 // Constructor del NodoBST
 NodoBST::NodoBST(const std::string& fecha)
@@ -133,4 +134,16 @@ void BSTPublicaciones::mostrarRecursivo(NodoBST* nodo) const {
 
     // Mostrar publicaciones del subárbol derecho
     mostrarRecursivo(nodo->derecha);
+}
+
+// Método para agregar todas las publicaciones de un usuario al BST
+void BSTPublicaciones::agregarPublicacionesDeLista(ListaDoble& listaPublicaciones) {
+    NodoDoble* nodoActual = listaPublicaciones.getPrimerNodo();  // Obtener el primer nodo de la lista
+
+    // Recorrer la lista de publicaciones y agregarlas al BST
+    while (nodoActual != nullptr) {
+        Publicacion publicacion = nodoActual->getPublicacion();  // Obtener la publicación del nodo
+        insertar(publicacion);  // Insertar la publicación en el BST
+        nodoActual = nodoActual->getSiguiente();  // Moverse al siguiente nodo
+    }
 }
