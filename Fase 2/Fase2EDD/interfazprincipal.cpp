@@ -8,6 +8,7 @@
 #include "TablasModUsuario/buttondelegateenviadas.h"
 #include "EstructurasUsuario/matrizdispersaamigos.h"
 #include "nuevapublicacion.h"
+#include "bstpublicaciones.h"
 
 #include <QStandardItemModel>
 #include <QPushButton>
@@ -34,6 +35,7 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
     llenarTablaSolicitudesRecibidas();
     llenarTablaSolicitudesEnviadas();
+    mostrarPublicaciones();
 }
 
 InterfazPrincipal::~InterfazPrincipal()
@@ -280,6 +282,8 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     ListaDoble& listaPublicacionesUsuarioConectado = usuarioConectado->getListaPublicacionesPropias();
     bstPublicacionesRemitente.agregarPublicacionesDeLista(listaPublicacionesUsuarioConectado);
 
+    //Se agregan las publicaciones al feed (interfaz gráfica)
+    mostrarPublicaciones();
 
     // Imprimir las solicitudes antes de la eliminación
     std::cout << "Solicitudes antes de aceptar:" << std::endl;
@@ -417,4 +421,60 @@ void InterfazPrincipal::crearPublicacion()
 
     // Cerrar la ventana actual
     this->close();
+}
+
+void InterfazPrincipal::mostrarPublicaciones() {
+    // Obtener el usuario conectado
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    if (!usuarioConectado) {
+        std::cerr << "Error: No se encontró el usuario conectado." << std::endl;
+        return;
+    }
+
+    // Crear un widget contenedor para todas las publicaciones
+    QWidget *contenedorPublicaciones = new QWidget();
+    QVBoxLayout *layoutPublicaciones = new QVBoxLayout(contenedorPublicaciones);
+
+    // Obtener el BST de publicaciones del usuario conectado
+    BSTPublicaciones& bstPublicaciones = usuarioConectado->getBSTPublicacionesAmigos();
+
+    // Recorre el BST de publicaciones usando la función en orden
+    bstPublicaciones.recorrerInOrden([this, layoutPublicaciones](const Publicacion& publicacion) {
+        // Crear un widget para cada publicación
+        QWidget *widgetPublicacion = new QWidget();
+        QVBoxLayout *layoutPublicacion = new QVBoxLayout(widgetPublicacion);
+
+        // Crear QLabel para mostrar el nombre del usuario
+        QLabel *nombreUsuario = new QLabel(publicacion.getNombreUsuario());
+        layoutPublicacion->addWidget(nombreUsuario);
+
+        // Crear QLabel para la fecha de publicación
+        QLabel *fechaPublicacion = new QLabel(publicacion.getFecha());
+        layoutPublicacion->addWidget(fechaPublicacion);
+
+        // Crear QLabel para mostrar el contenido de la publicación
+        QLabel *contenidoPublicacion = new QLabel(publicacion.getContenido());
+        layoutPublicacion->addWidget(contenidoPublicacion);
+
+        // Añadir botones debajo del contenido
+        QHBoxLayout *layoutBotones = new QHBoxLayout();
+        QPushButton *btnComentar = new QPushButton("Comentar");
+        QPushButton *btnVerComentarios = new QPushButton("Ver Comentarios");
+        QPushButton *btnVerArbolComentarios = new QPushButton("Ver Árbol de Comentarios");
+
+        layoutBotones->addWidget(btnComentar);
+        layoutBotones->addWidget(btnVerComentarios);
+        layoutBotones->addWidget(btnVerArbolComentarios);
+
+        layoutPublicacion->addLayout(layoutBotones);
+
+        // Añadir el widget de la publicación al layout de todas las publicaciones
+        layoutPublicaciones->addWidget(widgetPublicacion);
+    });
+
+    // Establecer el layout de publicaciones en el contenedor de scroll
+    ui->scroll_publicaciones->setWidget(contenedorPublicaciones);
+    contenedorPublicaciones->setLayout(layoutPublicaciones);
 }

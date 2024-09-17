@@ -17,6 +17,7 @@ public:
     QString getFecha() const;
     QString getHora() const;
     QString getImagen() const;
+    QString getNombreUsuario() const;
 
     void agregarComentario(const Comentario& comentario);
 

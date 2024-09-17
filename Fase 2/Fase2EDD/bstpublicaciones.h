@@ -39,6 +39,12 @@ public:
     // Función recursiva para mostrar todas las publicaciones
     void mostrarRecursivo(NodoBST* nodo) const;
 
+    void recorrerInOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const;
+
+    // Recorre el árbol en orden y aplica una función a cada publicación
+    void recorrerInOrden(std::function<void(const Publicacion&)> funcion) const;
+
+
 private:
     NodoBST* raiz;
 

@@ -31,6 +31,7 @@ private slots:
 
     //Publicaciones
     void crearPublicacion();
+    void mostrarPublicaciones();
 
 private:
     Ui::InterfazPrincipal *ui;

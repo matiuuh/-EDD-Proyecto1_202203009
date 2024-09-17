@@ -49,3 +49,7 @@ void Publicacion::setFecha(const QString& fecha) {
 void Publicacion::setHora(const QString& hora) {
     this->hora = hora;  // Establecer la hora manualmente
 }
+
+QString Publicacion::getNombreUsuario() const {
+    return correoUsuario; // O el nombre del campo que desees retornar
+}

@@ -147,3 +147,26 @@ void BSTPublicaciones::agregarPublicacionesDeLista(ListaDoble& listaPublicacione
         nodoActual = nodoActual->getSiguiente();  // Moverse al siguiente nodo
     }
 }
+
+
+void BSTPublicaciones::recorrerInOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const {
+    if (!nodo) return;
+
+    // Recorrer el subárbol izquierdo
+    recorrerInOrdenRecursivo(nodo->izquierda, funcion);
+
+    // Aplicar la función a todas las publicaciones en el nodo actual
+    NodoDoble* nodoPublicacion = nodo->publicacionesPorFecha.getPrimerNodo();
+    while (nodoPublicacion) {
+        funcion(nodoPublicacion->getPublicacion());
+        nodoPublicacion = nodoPublicacion->getSiguiente();
+    }
+
+    // Recorrer el subárbol derecho
+    recorrerInOrdenRecursivo(nodo->derecha, funcion);
+}
+
+// Implementación del método recorrerInOrden
+void BSTPublicaciones::recorrerInOrden(std::function<void(const Publicacion&)> funcion) const {
+    recorrerInOrdenRecursivo(raiz, funcion);
+}

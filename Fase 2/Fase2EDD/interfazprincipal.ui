@@ -199,7 +199,7 @@
      <attribute name="title">
       <string>Publicaciones</string>
      </attribute>
-     <widget class="QScrollArea" name="scrollArea">
+     <widget class="QScrollArea" name="scroll_publicaciones">
       <property name="geometry">
        <rect>
         <x>250</x>
