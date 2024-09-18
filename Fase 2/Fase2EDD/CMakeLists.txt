@@ -42,6 +42,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Publicaciones/publicacion.h Publicaciones/publicacion.cpp
         Publicaciones/Comentarios/comentario.h Publicaciones/Comentarios/comentario.cpp
         Publicaciones/Comentarios/arbolbcomentarios.h Publicaciones/Comentarios/arbolbcomentarios.cpp
+        gestorcomentarios.h gestorcomentarios.cpp gestorcomentarios.ui
+
 
         #Oficial.cpp
 

@@ -13,8 +13,10 @@ public:
     // Funciones de nodo
     void insertarNoLleno(const Comentario& comentario);
     void dividirHijo(int i, NodoB* hijo);
-    void mostrar();
+    void mostrar() const;
     NodoB* buscar(const QString& claveFechaHora);
+    void listarComentarios(std::vector<Comentario>& listaComentarios); // Agregar esta función
+    void mostrarTodosLosComentarios() const;
 
 private:
     std::vector<Comentario> comentarios;  // Los comentarios almacenados en el nodo
@@ -32,12 +34,12 @@ public:
     void insertar(const Comentario& comentario);
     void eliminar(const QString& claveFechaHora);
     Comentario* buscar(const QString& claveFechaHora);
-    void mostrar();  // Muestra todos los comentarios en orden
+    void mostrar() const;  // Muestra todos los comentarios en orden
+    std::vector<Comentario> listarComentarios() const; // Agregar esta función
+    void mostrarTodosLosComentarios() const;
 
 private:
     NodoB* raiz;
-    void insertarRecursivo(NodoB* nodo, const Comentario& comentario);
-    void eliminarRecursivo(NodoB* nodo, const QString& claveFechaHora);
 };
 
 #endif // ARBOLBCOMENTARIOS_H

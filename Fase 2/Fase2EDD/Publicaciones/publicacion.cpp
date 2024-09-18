@@ -1,4 +1,5 @@
 #include "publicacion.h"
+#include <iostream>
 
 Publicacion::Publicacion(const QString& correo, const QString& contenido)
     : correoUsuario(correo), contenido(contenido)
@@ -52,4 +53,12 @@ void Publicacion::setHora(const QString& hora) {
 
 QString Publicacion::getNombreUsuario() const {
     return correoUsuario; // O el nombre del campo que desees retornar
+}
+
+void Publicacion::listarComentarios() {
+    arbolComentarios.mostrar();  // Esto debería mostrar todos los comentarios en orden
+}
+
+ArbolBComentarios& Publicacion::getArbolComentarios() {
+    return arbolComentarios;
 }

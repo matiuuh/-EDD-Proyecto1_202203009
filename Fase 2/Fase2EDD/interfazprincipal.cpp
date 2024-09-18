@@ -9,6 +9,7 @@
 #include "EstructurasUsuario/matrizdispersaamigos.h"
 #include "nuevapublicacion.h"
 #include "bstpublicaciones.h"
+#include "gestorcomentarios.h"
 
 #include <regex>
 #include <QStandardItemModel>
@@ -18,6 +19,8 @@
 #include <QMessageBox>  // Para mostrar mensajes de error o éxito
 #include <QStyledItemDelegate>
 #include <QModelIndex>
+#include <QLineEdit>
+#include <iostream>  // Para utilizar cout
 
 InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuario)
     : QMainWindow(parent)
@@ -419,7 +422,7 @@ void InterfazPrincipal::manejarCancelacionSolicitud(const QModelIndex &index) {
 }
 
 //***************************PUBLICACIONES**********************************
-// Función para manejar el cierre de sesión
+//--------------CREACIÓN DE PUBLICACIÓN----------------------
 void InterfazPrincipal::crearPublicacion()
 {
     // Crear una nueva instancia del módulo de entrada
@@ -430,6 +433,7 @@ void InterfazPrincipal::crearPublicacion()
     this->close();
 }
 
+//--------------MOSTRAR PUBLICACIONES Y APLICAR FILTROS-----------------
 void InterfazPrincipal::mostrarPublicaciones() {
     // Obtener el usuario conectado
     AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
@@ -467,18 +471,20 @@ void InterfazPrincipal::mostrarPublicaciones() {
 
         // Añadir botones debajo del contenido
         QHBoxLayout *layoutBotones = new QHBoxLayout();
-        QPushButton *btnComentar = new QPushButton("Comentar");
-        QPushButton *btnVerComentarios = new QPushButton("Ver Comentarios");
-        QPushButton *btnVerArbolComentarios = new QPushButton("Ver Árbol de Comentarios");
+        QPushButton *btnOpcionesPublicacion = new QPushButton("Opciones Publicación");
 
-        layoutBotones->addWidget(btnComentar);
-        layoutBotones->addWidget(btnVerComentarios);
-        layoutBotones->addWidget(btnVerArbolComentarios);
+        layoutBotones->addWidget(btnOpcionesPublicacion);
 
         layoutPublicacion->addLayout(layoutBotones);
 
         // Añadir el widget de la publicación al layout de todas las publicaciones
         layoutPublicaciones->addWidget(widgetPublicacion);
+
+        // Conectar botón a la función que abrirá la nueva interfaz de opciones
+        connect(btnOpcionesPublicacion, &QPushButton::clicked, this, [this, &publicacion]() {
+            publicacionActual = const_cast<Publicacion*>(&publicacion); // Asignar la publicación seleccionada
+            mostrarOpcionesPublicacion();
+        });
     });
 
     // Establecer el layout de publicaciones en el contenedor de scroll
@@ -655,3 +661,13 @@ void InterfazPrincipal::mostrarPublicacionesConOrden(const QString& tipoOrden, i
     contenedorPublicaciones->setLayout(layoutPublicaciones);
 }
 
+//****************************COMENTARIOS*****************************
+
+void InterfazPrincipal::mostrarOpcionesPublicacion(){
+    // Crear una nueva instancia de gestor
+    GestorComentarios *crear = new GestorComentarios(nullptr, correoConectado, publicacionActual);
+    crear->show();
+
+    // Cerrar la ventana actual
+    this->close();
+}

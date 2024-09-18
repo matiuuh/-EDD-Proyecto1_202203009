@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>772</width>
+    <width>827</width>
     <height>488</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
      <rect>
       <x>20</x>
       <y>40</y>
-      <width>731</width>
+      <width>791</width>
       <height>401</height>
      </rect>
     </property>
@@ -112,9 +112,9 @@
      <widget class="QPushButton" name="btn_cargarUsuarios">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>20</x>
         <y>320</y>
-        <width>111</width>
+        <width>101</width>
         <height>29</height>
        </rect>
       </property>
@@ -125,7 +125,7 @@
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>260</x>
         <y>10</y>
         <width>141</width>
         <height>20</height>
@@ -155,13 +155,23 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
+      <widget class="QTextEdit" name="txt_cargaUsuarios">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>211</width>
+         <height>271</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QFrame" name="frame_4">
       <property name="geometry">
        <rect>
-        <x>510</x>
+        <x>520</x>
         <y>30</y>
-        <width>201</width>
+        <width>251</width>
         <height>271</height>
        </rect>
       </property>
@@ -171,6 +181,16 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
+      <widget class="QTextEdit" name="txt_cargaPublicaciones">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>251</width>
+         <height>271</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QLabel" name="label_4">
       <property name="geometry">
@@ -193,9 +213,9 @@
      <widget class="QFrame" name="frame_5">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>260</x>
         <y>30</y>
-        <width>211</width>
+        <width>231</width>
         <height>271</height>
        </rect>
       </property>
@@ -205,11 +225,21 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
+      <widget class="QTextEdit" name="txt_cargaSolicitudes">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>231</width>
+         <height>271</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
-        <x>510</x>
+        <x>520</x>
         <y>10</y>
         <width>141</width>
         <height>20</height>
@@ -227,7 +257,7 @@
      <widget class="QPushButton" name="btn_cargarSolicitudes">
       <property name="geometry">
        <rect>
-        <x>320</x>
+        <x>260</x>
         <y>320</y>
         <width>111</width>
         <height>29</height>
@@ -237,17 +267,56 @@
        <string>Cargar solicitudes</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_cargarPublicaciones">
+     <widget class="QPushButton" name="btn_importarPublicaciones">
       <property name="geometry">
        <rect>
-        <x>550</x>
+        <x>650</x>
         <y>320</y>
         <width>121</width>
         <height>29</height>
        </rect>
       </property>
       <property name="text">
-       <string>Cargar publicaciones</string>
+       <string>Importar</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_importarUsuarios">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>320</y>
+        <width>101</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Importar</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_importarSolicitudes">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>320</y>
+        <width>111</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Importar</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_cargarPublicaciones">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>320</y>
+        <width>111</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cargar solicitudes</string>
       </property>
      </widget>
     </widget>
@@ -341,7 +410,7 @@
    <widget class="QPushButton" name="btn_cerrarSesion">
     <property name="geometry">
      <rect>
-      <x>640</x>
+      <x>700</x>
       <y>20</y>
       <width>111</width>
       <height>29</height>

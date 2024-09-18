@@ -15,13 +15,6 @@ void Usuario::mostrarPublicaciones() {
     publicacionesPropias.mostrar();
 }
 
-/*
-// Buscar publicaciones por fecha en el BST de publicaciones de amigos
-void Usuario::buscarPublicacionesPorFecha(const std::string& fecha) {
-    cout << "Buscando publicaciones en la fecha: " << fecha << endl;
-    publicacionesAmigos.buscarPorFecha(fecha);
-}*/
-
 // Obtener el nombre del usuario
 std::string Usuario::getNombre() const {
     return nombre;

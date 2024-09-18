@@ -1,6 +1,7 @@
 #ifndef INTERFAZPRINCIPAL_H
 #define INTERFAZPRINCIPAL_H
 #include <QMainWindow>
+#include "Publicaciones/publicacion.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -37,8 +38,12 @@ private slots:
     void mostrarPublicacionesConOrden(const QString& tipoOrden, int cantidad);
     void aplicarOrdenLimitado();
 
+    //Comentarios
+    void mostrarOpcionesPublicacion();
+
 private:
     Ui::InterfazPrincipal *ui;
     QString correoConectado; // Variable para almacenar el correo del usuario conectado
+    Publicacion* publicacionActual;  // Apunta a la publicación seleccionada actualmente
 };
 #endif // INTERFAZPRINCIPAL_H

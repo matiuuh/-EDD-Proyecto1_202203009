@@ -21,10 +21,14 @@ public:
 
     void agregarComentario(const Comentario& comentario);
 
+    //Publicaciones
     void setContenido(const QString& contenido);
     void setFecha(const QString& fecha);  // Método para establecer la fecha
     void setHora(const QString& hora);    // Método para establecer la hora
     void setImagen(const QString& rutaImagen);
+
+    void listarComentarios();
+    ArbolBComentarios& getArbolComentarios();
 
 private:
     QString correoUsuario;      // Correo del usuario que crea la publicación
