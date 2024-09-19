@@ -20,18 +20,18 @@ AVLUsuarios::~AVLUsuarios() {
     // Aquí se debería liberar la memoria, si es necesario
 }
 
-// Obtener la instancia única del Singleton
+//-----------------PARA OBTENER LA INSTANCIA GLOBAL-----------
 AVLUsuarios& AVLUsuarios::getInstance() {
     static AVLUsuarios instance;  // Instancia local estática, segura para hilos
     return instance;
 }
 
-// Implementaciones de métodos de AVLUsuarios
+//-----------------PARA AGREGAR USUARIOS AL SISTEMA-----------
 void AVLUsuarios::insertar(Usuario* usuario) {
     std::cout << "Insertando usuario con correo: " << usuario->getCorreo() << std::endl;
     raiz = insertarRecursivo(raiz, usuario);
 }
-
+//----------------BUSCAR USUARIO POR CORREO-------------------
 Usuario* AVLUsuarios::buscar(const std::string& correo) {
     NodoAVL* resultado = buscarRecursivo(raiz, correo);
     if (resultado) {
@@ -40,6 +40,7 @@ Usuario* AVLUsuarios::buscar(const std::string& correo) {
     return nullptr;
 }
 
+//--------------------MOSTRAR USUARIOS--------------------------
 void AVLUsuarios::mostrarUsuarios() const {
     mostrarRecursivo(raiz);
 }
@@ -62,6 +63,7 @@ NodoAVL* AVLUsuarios::rotacionDerecha(NodoAVL* y) {
     return x;
 }
 
+//---------------VALIDA CREDENCIALES DEL USUARIO--------------------
 // Nuevo método para validar las credenciales del usuario
 bool AVLUsuarios::validarCredenciales(const std::string& correo, const std::string& contrasenia) {
     // Buscar el nodo del usuario por correo
@@ -176,7 +178,7 @@ void AVLUsuarios::mostrarRecursivo(NodoAVL* nodo) const {
     }
 }
 
-//-----------métodos para obtener los usuarios para la tabla-----------
+//-------------------------MÉTODOS PARA OBTENER LA TABLA DE USUARIOS-----------------------
 void AVLUsuarios::obtenerUsuariosDisponibles(ListaDobleUsuariosDisponibles& lista, const std::string& correoConectado) {
     obtenerUsuariosRecursivo(raiz, lista, correoConectado);
 }
@@ -197,6 +199,7 @@ void AVLUsuarios::obtenerUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisp
 
     obtenerUsuariosRecursivo(nodo->derecha, lista, correoConectado);
 }
+
 //*********************************MODULO ADMINISTRADOR*************************************
 //--------------------OBTENER USUARIOS MODULO ADMINISTRADOR-----------------------------
 void AVLUsuarios::obtenerTodosLosUsuarios(ListaDobleUsuariosDisponibles& lista) {
