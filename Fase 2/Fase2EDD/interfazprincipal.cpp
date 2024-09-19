@@ -41,11 +41,18 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
     //Conectar el botón "Aplicar" para aplicar filtro de fecha
     connect(ui->btn_aplicarRecorridoLimitado, &QPushButton::clicked, this, &InterfazPrincipal::aplicarOrdenLimitado);
 
+    //Conectar el botón "Aplicar" para aplicar filtro de fecha
+    connect(ui->btn_modificarDatos, &QPushButton::clicked, this, &InterfazPrincipal::modificarDatosPropios);
+
+    //Conectar el botón "Aplicar" para aplicar filtro de fecha
+    connect(ui->btn_eliminarCuenta, &QPushButton::clicked, this, &InterfazPrincipal::eliminarUsuarioConectado);
+
     // Llenar la tabla de usuarios cuando se abre la ventana
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
     llenarTablaSolicitudesRecibidas();
     llenarTablaSolicitudesEnviadas();
     mostrarPublicaciones();
+    mostrarDatosUsuarioConectado();
 }
 
 InterfazPrincipal::~InterfazPrincipal()
@@ -670,4 +677,70 @@ void InterfazPrincipal::mostrarOpcionesPublicacion(){
 
     // Cerrar la ventana actual
     this->close();
+}
+
+//************************PERFIL***************************
+//------------------MODIFICAR DATOS USUARIO CONECTADO---------------
+
+void InterfazPrincipal::modificarDatosPropios() {
+    QString nuevoNombre = ui->txt_nombreObtener->toPlainText();
+    QString nuevoApellido = ui->txt_apellidoObtener->toPlainText();
+    QString nuevoCorreo = ui->txt_correoObtener->toPlainText();
+    QString nuevaContrasenia = ui->txt_contraseniaObtener->toPlainText();
+    QString nuevaFecha = ui->txt_fechaObtener->toPlainText();
+
+    // Convertir los QString a std::string
+    std::string nuevoNombreStd = nuevoNombre.toStdString();
+    std::string nuevoApellidoStd = nuevoApellido.toStdString();
+    std::string nuevoCorreoStd = nuevoCorreo.toStdString();
+    std::string nuevaContraseniaStd = nuevaContrasenia.toStdString();
+    std::string nuevaFechaStd = nuevaFecha.toStdString();
+
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    // Llamar al método de modificación con std::string
+    avlUsuarios.modificarUsuario(usuarioConectado, nuevoNombreStd, nuevoApellidoStd, nuevoCorreoStd, nuevaContraseniaStd, nuevaFechaStd);
+
+    mostrarDatosUsuarioConectado();
+}
+
+void InterfazPrincipal::mostrarDatosUsuarioConectado() const {
+    // Obtener el usuario conectado (suponiendo que tienes correoConectado disponible)
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    if (usuarioConectado) {
+        // Imprimir los datos del usuario en la consola
+        std::cout << "Nombre: " << usuarioConectado->getNombre() << std::endl;
+        std::cout << "Apellido: " << usuarioConectado->getApellidos() << std::endl;
+        std::cout << "Correo: " << usuarioConectado->getCorreo() << std::endl;
+        std::cout << "Contraseña: " << usuarioConectado->getContrasenia() << std::endl;
+        std::cout << "Fecha: " << usuarioConectado->getFecha() << std::endl;
+    } else {
+        std::cout << "No se encontró el usuario conectado." << std::endl;
+    }
+}
+
+//--------------------ELIMINAR AL USUARIO CONECTADO-------------------
+void InterfazPrincipal::eliminarUsuarioConectado() {
+    // Obtener el correo del usuario conectado
+    std::string correoConectadoStr = correoConectado.toStdString();
+
+    // Obtener la instancia del AVLUsuarios
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+
+    // Verificar si el usuario está en el sistema
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectadoStr);
+    if (usuarioConectado) {
+        // Eliminar el usuario del AVL
+        avlUsuarios.eliminar(correoConectadoStr);
+
+        // Cerrar sesión o volver a la pantalla de inicio
+        std::cout << "Usuario eliminado exitosamente: " << correoConectadoStr << std::endl;
+        // Aquí podrías agregar código para cerrar sesión o redirigir al usuario
+        cerrarSesion();
+    } else {
+        std::cout << "No se encontró el usuario conectado para eliminar." << std::endl;
+    }
 }

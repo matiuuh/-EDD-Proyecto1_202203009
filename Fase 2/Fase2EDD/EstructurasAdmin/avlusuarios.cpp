@@ -251,3 +251,103 @@ void AVLUsuarios::obtenerUsuariosPostOrdenRecursivo(NodoAVL* nodo, ListaDobleUsu
 }
 
 //*******************************MODIFICAR DATOS DEL USUARIO*******************************
+// Método para modificar la información de un usuario
+void AVLUsuarios::modificarUsuario(Usuario* usuarioConectado, const std::string& nuevoNombre, const std::string& nuevoApellido, const std::string& nuevoCorreo, const std::string& nuevaContrasenia, const std::string& nuevaFecha) {
+    // Verificar si el nombre no está vacío y modificarlo
+    if (!nuevoNombre.empty()) {
+        usuarioConectado->setNombre(nuevoNombre);
+    }
+
+    // Verificar si el apellido no está vacío y modificarlo
+    if (!nuevoApellido.empty()) {
+        usuarioConectado->setApellidos(nuevoApellido);
+    }
+
+    // Verificar si el correo no está vacío y modificarlo
+    if (!nuevoCorreo.empty()) {
+        usuarioConectado->setCorreo(nuevoCorreo);
+    }
+
+    // Verificar si la contraseña no está vacía y modificarla
+    if (!nuevaContrasenia.empty()) {
+        usuarioConectado->setContrasenia(nuevaContrasenia);
+    }
+
+    // Verificar si la fecha no está vacía y modificarla
+    if (!nuevaFecha.empty()) {
+        usuarioConectado->setFechaNacimiento(nuevaFecha);
+    }
+
+    // Imprimir mensaje para confirmar cambios
+    std::cout << "Datos del usuario modificados exitosamente." << std::endl;
+}
+
+void AVLUsuarios::eliminar(const std::string& correo) {
+    raiz = eliminarRecursivo(raiz, correo);
+}
+
+NodoAVL* AVLUsuarios::eliminarRecursivo(NodoAVL* nodo, const std::string& correo) {
+    if (!nodo) return nodo;
+
+    if (correo < nodo->usuario->getCorreo()) {
+        nodo->izquierda = eliminarRecursivo(nodo->izquierda, correo);
+    } else if (correo > nodo->usuario->getCorreo()) {
+        nodo->derecha = eliminarRecursivo(nodo->derecha, correo);
+    } else {
+        // Nodo con solo un hijo o sin hijos
+        if (!nodo->izquierda) {
+            NodoAVL* temp = nodo->derecha;
+            delete nodo;
+            return temp;
+        } else if (!nodo->derecha) {
+            NodoAVL* temp = nodo->izquierda;
+            delete nodo;
+            return temp;
+        }
+
+        // Nodo con dos hijos
+        NodoAVL* temp = encontrarMinimo(nodo->derecha);
+        nodo->usuario = temp->usuario;
+        nodo->derecha = eliminarRecursivo(nodo->derecha, temp->usuario->getCorreo());
+    }
+
+    // Actualizar altura y balance
+    nodo->altura = 1 + std::max(altura(nodo->izquierda), altura(nodo->derecha));
+    int balance = obtenerBalance(nodo);
+
+    // Rotaciones para mantener el balance del árbol
+    if (balance > 1 && obtenerBalance(nodo->izquierda) >= 0) {
+        return rotacionDerecha(nodo);
+    }
+
+    if (balance > 1 && obtenerBalance(nodo->izquierda) < 0) {
+        nodo->izquierda = rotacionIzquierda(nodo->izquierda);
+        return rotacionDerecha(nodo);
+    }
+
+    if (balance < -1 && obtenerBalance(nodo->derecha) <= 0) {
+        return rotacionIzquierda(nodo);
+    }
+
+    if (balance < -1 && obtenerBalance(nodo->derecha) > 0) {
+        nodo->derecha = rotacionDerecha(nodo->derecha);
+        return rotacionIzquierda(nodo);
+    }
+
+    return nodo;
+}
+
+NodoAVL* AVLUsuarios::encontrarMinimo(NodoAVL* nodo) {
+    while (nodo && nodo->izquierda) {
+        nodo = nodo->izquierda;
+    }
+    return nodo;
+}
+
+void AVLUsuarios::liberarMemoria(NodoAVL* nodo) {
+    if (nodo) {
+        liberarMemoria(nodo->izquierda);
+        liberarMemoria(nodo->derecha);
+        delete nodo;
+    }
+}

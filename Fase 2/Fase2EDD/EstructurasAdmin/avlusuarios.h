@@ -33,6 +33,10 @@ public:
     void obtenerUsuariosInOrden(ListaDobleUsuariosDisponibles& lista);
     void obtenerUsuariosPostOrden(ListaDobleUsuariosDisponibles& lista);
     void obtenerUsuariosPostOrdenRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista);
+    void modificarUsuario(Usuario* usuarioConectado, const std::string& nuevoNombre, const std::string& nuevoApellido, const std::string& nuevoCorreo, const std::string& nuevaContrasenia, const std::string& nuevaFecha);
+
+    //Para eliminar
+    void eliminar(const std::string& correo);
 
 private:
     AVLUsuarios();  // Constructor privado para evitar instanciación externa
@@ -47,6 +51,11 @@ private:
     NodoAVL* insertarRecursivo(NodoAVL* nodo, Usuario* usuario);
     NodoAVL* buscarRecursivo(NodoAVL* nodo, const std::string& correo) const;
     void mostrarRecursivo(NodoAVL* nodo) const;
+
+    //Para eliminar
+    NodoAVL* eliminarRecursivo(NodoAVL* nodo, const std::string& correo);
+    NodoAVL* encontrarMinimo(NodoAVL* nodo);
+    void liberarMemoria(NodoAVL* nodo);
 
     static AVLUsuarios* instance;  // Instancia única del Singleton
 };

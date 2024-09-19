@@ -24,6 +24,15 @@ public:
     std::string getNombre() const;
     std::string getCorreo() const;
     std::string getContrasenia() const;
+    std::string getFecha() const;
+    std::string getApellidos() const;
+
+    //Setters
+    void setContrasenia(const std::string& nuevaContrasenia);
+    void setNombre(const std::string& nuevoNombre);
+    void setApellidos(const std::string& nuevosApellidos);
+    void setCorreo(const std::string& nuevoCorreo);
+    void setFechaNacimiento(const std::string& nuevaFecha);
 
     Pila& getPilaSolicitudes() { return solicitudesRecibidas; }
     ListaSimple& getListaSolicitudesEnviadas() { return solicitudesEnviadas; }

@@ -41,6 +41,11 @@ private slots:
     //Comentarios
     void mostrarOpcionesPublicacion();
 
+    //Perfil
+    void modificarDatosPropios();
+    void mostrarDatosUsuarioConectado() const;
+    void eliminarUsuarioConectado();
+
 private:
     Ui::InterfazPrincipal *ui;
     QString correoConectado; // Variable para almacenar el correo del usuario conectado
