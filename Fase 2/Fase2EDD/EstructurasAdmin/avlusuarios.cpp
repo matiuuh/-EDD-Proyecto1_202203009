@@ -194,7 +194,7 @@ void AVLUsuarios::obtenerUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisp
 
     obtenerUsuariosRecursivo(nodo->derecha, lista, correoConectado);
 }
-
+//*********************************MODULO ADMINISTRADOR*************************************
 //--------------------OBTENER USUARIOS MODULO ADMINISTRADOR-----------------------------
 void AVLUsuarios::obtenerTodosLosUsuarios(ListaDobleUsuariosDisponibles& lista) {
     obtenerTodosLosUsuariosRecursivo(raiz, lista);
@@ -212,3 +212,42 @@ void AVLUsuarios::obtenerTodosLosUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsua
     obtenerTodosLosUsuariosRecursivo(nodo->derecha, lista);
 }
 
+//------------------------------RECORRIDOS EN ORDEN----------------------------------
+// Recorrido Pre-Orden
+void AVLUsuarios::obtenerUsuariosPreOrden(ListaDobleUsuariosDisponibles& lista) {
+    obtenerUsuariosPreOrdenRecursivo(raiz, lista);
+}
+
+void AVLUsuarios::obtenerUsuariosPreOrdenRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista) {
+    if (!nodo) return;
+
+    // Primero el nodo raíz
+    lista.agregarCorreo(nodo->usuario->getCorreo());
+
+    // Luego recorrer izquierda y derecha
+    obtenerUsuariosPreOrdenRecursivo(nodo->izquierda, lista);
+    obtenerUsuariosPreOrdenRecursivo(nodo->derecha, lista);
+}
+
+// Recorrido In-Orden (ya implementado)
+void AVLUsuarios::obtenerUsuariosInOrden(ListaDobleUsuariosDisponibles& lista) {
+    obtenerTodosLosUsuariosRecursivo(raiz, lista);  // Este ya lo tienes como "obtenerTodosLosUsuarios"
+}
+
+// Recorrido Post-Orden
+void AVLUsuarios::obtenerUsuariosPostOrden(ListaDobleUsuariosDisponibles& lista) {
+    obtenerUsuariosPostOrdenRecursivo(raiz, lista);
+}
+
+void AVLUsuarios::obtenerUsuariosPostOrdenRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista) {
+    if (!nodo) return;
+
+    // Primero recorrer izquierda y derecha
+    obtenerUsuariosPostOrdenRecursivo(nodo->izquierda, lista);
+    obtenerUsuariosPostOrdenRecursivo(nodo->derecha, lista);
+
+    // Luego el nodo raíz
+    lista.agregarCorreo(nodo->usuario->getCorreo());
+}
+
+//*******************************MODIFICAR DATOS DEL USUARIO*******************************

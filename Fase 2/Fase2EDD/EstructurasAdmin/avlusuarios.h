@@ -28,6 +28,11 @@ public:
     void obtenerUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista, const std::string& correoConectado);
     void obtenerTodosLosUsuarios(ListaDobleUsuariosDisponibles& lista);
     void obtenerTodosLosUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista);
+    void obtenerUsuariosPreOrden(ListaDobleUsuariosDisponibles& lista);
+    void obtenerUsuariosPreOrdenRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista);
+    void obtenerUsuariosInOrden(ListaDobleUsuariosDisponibles& lista);
+    void obtenerUsuariosPostOrden(ListaDobleUsuariosDisponibles& lista);
+    void obtenerUsuariosPostOrdenRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista);
 
 private:
     AVLUsuarios();  // Constructor privado para evitar instanciación externa

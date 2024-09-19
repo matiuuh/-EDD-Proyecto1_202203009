@@ -41,6 +41,8 @@ private slots:
     //void setupConnections();
     void mostrarUsuariosEnTabla();
 
+    void aplicarRecorridos();
+
 private:
     Ui::ModuloAdministrador *ui;
 };

@@ -16,6 +16,7 @@
 #include "usuario.h"
 #include "listadoble.h"
 #include "EstructurasAdmin/listadoblepublicacionesglobal.h"
+#include "TablasAdmin/buttondelegatetablaadmin.h"
 
 
 ModuloAdministrador::ModuloAdministrador(QWidget *parent)
@@ -49,7 +50,9 @@ ModuloAdministrador::ModuloAdministrador(QWidget *parent)
 
     //***************************BUSCAR***************************
     connect(ui->btn_buscar, &QPushButton::clicked, this, &ModuloAdministrador::buscarUsuarioPorCorreo);
-    //connect(ui->txt_correoBuscar, &QLineEdit::textChanged, this, &ModuloAdministrador::buscarUsuarioPorCorreo);
+
+    //*****************************APLICAR RECORRIDOS EN ORDEN************************
+    connect(ui->btn_aplicar, &QPushButton::clicked, this, &ModuloAdministrador::aplicarRecorridos);
 
     mostrarUsuariosEnTabla();
 
@@ -393,6 +396,7 @@ void ModuloAdministrador::buscarUsuarioPorCorreo() {
 
 void ModuloAdministrador::mostrarUsuariosEnTabla() {
     // Limpiar la tabla antes de llenarla nuevamente
+    ui->tabla_usuariosADMIN->clearContents();  // Limpia el contenido sin eliminar las cabeceras
     ui->tabla_usuariosADMIN->setRowCount(0);
 
     // Obtener la instancia del AVL y la lista de usuarios
@@ -401,6 +405,64 @@ void ModuloAdministrador::mostrarUsuariosEnTabla() {
 
     // Obtener todos los usuarios del AVL
     avlUsuarios.obtenerTodosLosUsuarios(listaUsuarios);
+
+    // Configurar las cabeceras de la tabla
+    ui->tabla_usuariosADMIN->setColumnCount(3);
+    QStringList headers;
+    headers << "Correo de Usuario" << "Modificar" << "Eliminar";
+    ui->tabla_usuariosADMIN->setHorizontalHeaderLabels(headers);
+
+    // Llenar la tabla iterando sobre los correos de la lista
+    int fila = 0;
+    listaUsuarios.paraCadaCorreo([this, &fila](const std::string& correo) {
+        // Insertar una nueva fila en la tabla
+        ui->tabla_usuariosADMIN->insertRow(fila);
+
+        // Crear el QTableWidgetItem para el correo
+        QTableWidgetItem* itemCorreo = new QTableWidgetItem(QString::fromStdString(correo));
+        ui->tabla_usuariosADMIN->setItem(fila, 0, itemCorreo);
+
+        // Crear los items de las acciones como "placeholders"
+        QTableWidgetItem* modificarItem = new QTableWidgetItem();
+        ui->tabla_usuariosADMIN->setItem(fila, 1, modificarItem);
+
+        QTableWidgetItem* eliminarItem = new QTableWidgetItem();
+        ui->tabla_usuariosADMIN->setItem(fila, 2, eliminarItem);
+
+        fila++;
+    });
+
+    // Asignar el ButtonDelegateTablaAdmin a las columnas de botones
+    ButtonDelegateTablaAdmin* buttonDelegate = new ButtonDelegateTablaAdmin(this);
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(1, buttonDelegate);  // Columna "Modificar"
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(2, buttonDelegate);  // Columna "Eliminar"
+
+    // Ajustar el ancho de las columnas
+    int totalWidth = 725;
+    int columnWidth = totalWidth / 3;
+    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth);  // Columna "Correo de Usuario"
+    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth);  // Columna "Modificar"
+    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth);  // Columna "Eliminar"
+}
+
+void ModuloAdministrador::aplicarRecorridos() {
+    // Limpiar la tabla antes de llenarla nuevamente
+    ui->tabla_usuariosADMIN->setRowCount(0);
+
+    // Obtener la instancia del AVL y la lista de usuarios
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    ListaDobleUsuariosDisponibles listaUsuarios;
+
+    // Determinar el tipo de orden basado en el combo box
+    QString ordenSeleccionado = ui->combo_Orden->currentText();
+
+    if (ordenSeleccionado == "Pre-Orden") {
+        avlUsuarios.obtenerUsuariosPreOrden(listaUsuarios);
+    } else if (ordenSeleccionado == "In-Orden") {
+        avlUsuarios.obtenerUsuariosInOrden(listaUsuarios);
+    } else if (ordenSeleccionado == "Post-Orden") {
+        avlUsuarios.obtenerUsuariosPostOrden(listaUsuarios);
+    }
 
     // Llenar la tabla iterando sobre los correos de la lista
     int fila = 0;
@@ -425,13 +487,13 @@ void ModuloAdministrador::mostrarUsuariosEnTabla() {
         fila++;
     });
 
+    // Ajustar el ancho de las columnas como antes
     int totalWidth = 725;
-    int columnWidth = totalWidth / 3;  // Dividir el espacio en 2 columnas iguales
+    int columnWidth = totalWidth / 3;
 
-    // Configurar las columnas para ajustar el tamaño del contenido
-    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth);  // Ajustar el ancho de la columna de correos
-    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth);  // Ajustar el ancho de la columna de botones
-    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth);  // Ajustar el ancho de la columna de botones
+    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth);
+    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth);
+    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth);
 }
 
 
