@@ -47,6 +47,9 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
     //Conectar el botón "Aplicar" para aplicar filtro de fecha
     connect(ui->btn_eliminarCuenta, &QPushButton::clicked, this, &InterfazPrincipal::eliminarUsuarioConectado);
 
+    //Conectar el botón "Aplicar" para aplicar filtro de fecha
+    connect(ui->btn_buscarUsuarioCorreo, &QPushButton::clicked, this, &InterfazPrincipal::buscarUsuarioCorreo);
+
     // Llenar la tabla de usuarios cuando se abre la ventana
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
     llenarTablaSolicitudesRecibidas();
@@ -742,5 +745,45 @@ void InterfazPrincipal::eliminarUsuarioConectado() {
         cerrarSesion();
     } else {
         std::cout << "No se encontró el usuario conectado para eliminar." << std::endl;
+    }
+}
+
+//**************************BUSCAR****************************
+//--------------BUSCAR A UN USUARIO POR SU CORREO---------------
+void InterfazPrincipal::buscarUsuarioCorreo() {
+    // Obtener el correo ingresado por el usuario
+    QString correoBuscar = ui->txt_correoBuscar->toPlainText();
+
+    // Convertir el QString a std::string para usarlo con AVLUsuarios
+    std::string correoBuscarStd = correoBuscar.toStdString();
+
+    // Obtener una instancia del AVLUsuarios (suponiendo que es singleton o global)
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+
+    // Buscar el usuario por correo
+    Usuario* usuarioEncontrado = avlUsuarios.buscar(correoBuscarStd);
+
+    // Si se encuentra el usuario, mostrar sus datos en los campos correspondientes
+    if (usuarioEncontrado) {
+        ui->txt_nombreEncontrado->setText(QString::fromStdString(usuarioEncontrado->getNombre()));
+        ui->txt_apellidoEncontrado->setText(QString::fromStdString(usuarioEncontrado->getApellidos()));
+        ui->txt_correoEncontrado->setText(QString::fromStdString(usuarioEncontrado->getCorreo()));
+        ui->txt_fechaEncontrada->setText(QString::fromStdString(usuarioEncontrado->getFecha()));
+
+        // Bloquear los campos para que no sean editables
+        ui->txt_nombreEncontrado->setReadOnly(true);
+        ui->txt_apellidoEncontrado->setReadOnly(true);
+        ui->txt_correoEncontrado->setReadOnly(true);
+        ui->txt_fechaEncontrada->setReadOnly(true);
+
+    } else {
+        // Si no se encuentra el usuario, limpiar los campos y mostrar un mensaje
+        ui->txt_nombreEncontrado->clear();
+        ui->txt_apellidoEncontrado->clear();
+        ui->txt_correoEncontrado->clear();
+        ui->txt_fechaEncontrada->clear();
+
+        // Mostrar mensaje al usuario
+        QMessageBox::warning(this, "Usuario no encontrado", "El correo ingresado no corresponde a ningún usuario.");
     }
 }

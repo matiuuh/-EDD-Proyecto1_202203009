@@ -46,6 +46,8 @@ private slots:
     void mostrarDatosUsuarioConectado() const;
     void eliminarUsuarioConectado();
 
+    void buscarUsuarioCorreo();
+
 private:
     Ui::InterfazPrincipal *ui;
     QString correoConectado; // Variable para almacenar el correo del usuario conectado

@@ -37,13 +37,13 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="sss">
      <attribute name="title">
       <string>Buscar</string>
      </attribute>
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="btn_buscarUsuarioCorreo">
       <property name="geometry">
        <rect>
         <x>260</x>
@@ -71,7 +71,7 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
-      <widget class="QTextEdit" name="textEdit_9">
+      <widget class="QTextEdit" name="txt_fechaEncontrada">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -117,7 +117,7 @@
         <string>Apellidos</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="textEdit_10">
+      <widget class="QTextEdit" name="txt_nombreEncontrado">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -127,7 +127,7 @@
         </rect>
        </property>
       </widget>
-      <widget class="QTextEdit" name="textEdit_11">
+      <widget class="QTextEdit" name="txt_correoEncontrado">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -173,7 +173,7 @@
         <string>Fecha de nacimiento</string>
        </property>
       </widget>
-      <widget class="QTextEdit" name="textEdit_12">
+      <widget class="QTextEdit" name="txt_apellidoEncontrado">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -184,7 +184,7 @@
        </property>
       </widget>
      </widget>
-     <widget class="QTextEdit" name="textEdit_2">
+     <widget class="QTextEdit" name="txt_correoBuscar">
       <property name="geometry">
        <rect>
         <x>40</x>
