@@ -44,6 +44,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Publicaciones/Comentarios/arbolbcomentarios.h Publicaciones/Comentarios/arbolbcomentarios.cpp
         gestorcomentarios.h gestorcomentarios.cpp gestorcomentarios.ui
         TablasAdmin/buttondelegatetablaadmin.h TablasAdmin/buttondelegatetablaadmin.cpp
+        TablasModUsuario/modificarusuariodialog.h TablasModUsuario/modificarusuariodialog.cpp
 
 
         #Oficial.cpp

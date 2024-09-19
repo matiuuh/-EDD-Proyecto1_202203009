@@ -17,6 +17,7 @@
 #include "listadoble.h"
 #include "EstructurasAdmin/listadoblepublicacionesglobal.h"
 #include "TablasAdmin/buttondelegatetablaadmin.h"
+#include "TablasModUsuario/modificarusuariodialog.h"
 
 
 ModuloAdministrador::ModuloAdministrador(QWidget *parent)
@@ -410,27 +411,36 @@ void ModuloAdministrador::mostrarUsuariosEnTabla() {
     avlUsuarios.obtenerTodosLosUsuarios(listaUsuarios);
 
     // Configurar las cabeceras de la tabla
-    ui->tabla_usuariosADMIN->setColumnCount(3);
+    ui->tabla_usuariosADMIN->setColumnCount(6);  // Ahora tenemos 6 columnas
     QStringList headers;
-    headers << "Correo de Usuario" << "Modificar" << "Eliminar";
+    headers << "Nombre" << "Apellido" << "Correo de Usuario" << "Fecha de Nacimiento" << "Modificar" << "Eliminar";
     ui->tabla_usuariosADMIN->setHorizontalHeaderLabels(headers);
 
-    // Llenar la tabla iterando sobre los correos de la lista
+    // Llenar la tabla iterando sobre los usuarios de la lista
     int fila = 0;
-    listaUsuarios.paraCadaCorreo([this, &fila](const std::string& correo) {
+    listaUsuarios.paraCadaUsuario([this, &fila](const NodoUsuario& usuario) {
         // Insertar una nueva fila en la tabla
         ui->tabla_usuariosADMIN->insertRow(fila);
 
-        // Crear el QTableWidgetItem para el correo
-        QTableWidgetItem* itemCorreo = new QTableWidgetItem(QString::fromStdString(correo));
-        ui->tabla_usuariosADMIN->setItem(fila, 0, itemCorreo);
+        // Crear los QTableWidgetItem para cada dato del usuario
+        QTableWidgetItem* itemNombre = new QTableWidgetItem(QString::fromStdString(usuario.nombre));
+        ui->tabla_usuariosADMIN->setItem(fila, 0, itemNombre);
 
-        // Crear los items de las acciones como "placeholders"
+        QTableWidgetItem* itemApellido = new QTableWidgetItem(QString::fromStdString(usuario.apellido));
+        ui->tabla_usuariosADMIN->setItem(fila, 1, itemApellido);
+
+        QTableWidgetItem* itemCorreo = new QTableWidgetItem(QString::fromStdString(usuario.correo));
+        ui->tabla_usuariosADMIN->setItem(fila, 2, itemCorreo);
+
+        QTableWidgetItem* itemFechaNacimiento = new QTableWidgetItem(QString::fromStdString(usuario.fechaNacimiento));
+        ui->tabla_usuariosADMIN->setItem(fila, 3, itemFechaNacimiento);
+
+        // Crear los items de las acciones como "placeholders" para los botones Modificar y Eliminar
         QTableWidgetItem* modificarItem = new QTableWidgetItem();
-        ui->tabla_usuariosADMIN->setItem(fila, 1, modificarItem);
+        ui->tabla_usuariosADMIN->setItem(fila, 4, modificarItem);
 
         QTableWidgetItem* eliminarItem = new QTableWidgetItem();
-        ui->tabla_usuariosADMIN->setItem(fila, 2, eliminarItem);
+        ui->tabla_usuariosADMIN->setItem(fila, 5, eliminarItem);
 
         fila++;
     });
@@ -441,14 +451,17 @@ void ModuloAdministrador::mostrarUsuariosEnTabla() {
     connect(delegate, &ButtonDelegateTablaAdmin::eliminarUsuario, this, &ModuloAdministrador::eliminarUsuario);
 
     // Asignar el delegado a las columnas correspondientes
-    ui->tabla_usuariosADMIN->setItemDelegateForColumn(1, delegate); // Para el botón "Modificar"
-    ui->tabla_usuariosADMIN->setItemDelegateForColumn(2, delegate); // Para el botón "Eliminar"
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(4, delegate); // Para el botón "Modificar"
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(5, delegate); // Para el botón "Eliminar"
 
     // Establecer el ancho de cada columna
-    int columnWidth = 721 / 3;
-    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth); // Columna "Correo de Usuario"
-    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth); // Columna "Modificar"
-    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth); // Columna "Eliminar"
+    int columnWidth = 721 / 6;
+    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth); // Columna "Nombre"
+    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth); // Columna "Apellido"
+    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth); // Columna "Correo de Usuario"
+    ui->tabla_usuariosADMIN->setColumnWidth(3, columnWidth); // Columna "Fecha de Nacimiento"
+    ui->tabla_usuariosADMIN->setColumnWidth(4, columnWidth); // Columna "Modificar"
+    ui->tabla_usuariosADMIN->setColumnWidth(5, columnWidth); // Columna "Eliminar"
 }
 
 //------------------------APLICA RECORRIDOS Y LOS MUESTRA EN TABLA--------------------------
@@ -472,27 +485,36 @@ void ModuloAdministrador::aplicarRecorridos() {
     }
 
     // Configurar las cabeceras de la tabla
-    ui->tabla_usuariosADMIN->setColumnCount(3);
+    ui->tabla_usuariosADMIN->setColumnCount(6);  // Ahora tenemos 6 columnas
     QStringList headers;
-    headers << "Correo de Usuario" << "Modificar" << "Eliminar";
+    headers << "Nombre" << "Apellido" << "Correo de Usuario" << "Fecha de Nacimiento" << "Modificar" << "Eliminar";
     ui->tabla_usuariosADMIN->setHorizontalHeaderLabels(headers);
 
-    // Llenar la tabla iterando sobre los correos de la lista
+    // Llenar la tabla iterando sobre los usuarios de la lista
     int fila = 0;
-    listaUsuarios.paraCadaCorreo([this, &fila](const std::string& correo) {
+    listaUsuarios.paraCadaUsuario([this, &fila](const NodoUsuario& usuario) {
         // Insertar una nueva fila en la tabla
         ui->tabla_usuariosADMIN->insertRow(fila);
 
-        // Crear el QTableWidgetItem para el correo
-        QTableWidgetItem* itemCorreo = new QTableWidgetItem(QString::fromStdString(correo));
-        ui->tabla_usuariosADMIN->setItem(fila, 0, itemCorreo);
+        // Crear los QTableWidgetItem para cada dato del usuario
+        QTableWidgetItem* itemNombre = new QTableWidgetItem(QString::fromStdString(usuario.nombre));
+        ui->tabla_usuariosADMIN->setItem(fila, 0, itemNombre);
 
-        // Crear los items de las acciones como "placeholders"
+        QTableWidgetItem* itemApellido = new QTableWidgetItem(QString::fromStdString(usuario.apellido));
+        ui->tabla_usuariosADMIN->setItem(fila, 1, itemApellido);
+
+        QTableWidgetItem* itemCorreo = new QTableWidgetItem(QString::fromStdString(usuario.correo));
+        ui->tabla_usuariosADMIN->setItem(fila, 2, itemCorreo);
+
+        QTableWidgetItem* itemFechaNacimiento = new QTableWidgetItem(QString::fromStdString(usuario.fechaNacimiento));
+        ui->tabla_usuariosADMIN->setItem(fila, 3, itemFechaNacimiento);
+
+        // Crear los items de las acciones como "placeholders" para los botones Modificar y Eliminar
         QTableWidgetItem* modificarItem = new QTableWidgetItem();
-        ui->tabla_usuariosADMIN->setItem(fila, 1, modificarItem);
+        ui->tabla_usuariosADMIN->setItem(fila, 4, modificarItem);
 
         QTableWidgetItem* eliminarItem = new QTableWidgetItem();
-        ui->tabla_usuariosADMIN->setItem(fila, 2, eliminarItem);
+        ui->tabla_usuariosADMIN->setItem(fila, 5, eliminarItem);
 
         fila++;
     });
@@ -503,19 +525,22 @@ void ModuloAdministrador::aplicarRecorridos() {
     connect(delegate, &ButtonDelegateTablaAdmin::eliminarUsuario, this, &ModuloAdministrador::eliminarUsuario);
 
     // Asignar el delegado a las columnas correspondientes
-    ui->tabla_usuariosADMIN->setItemDelegateForColumn(1, delegate); // Para el botón "Modificar"
-    ui->tabla_usuariosADMIN->setItemDelegateForColumn(2, delegate); // Para el botón "Eliminar"
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(4, delegate); // Para el botón "Modificar"
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(5, delegate); // Para el botón "Eliminar"
 
     // Establecer el ancho de cada columna
-    int columnWidth = 721 / 3;
-    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth); // Columna "Correo de Usuario"
-    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth); // Columna "Modificar"
-    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth); // Columna "Eliminar"
+    int columnWidth = 721 / 6;
+    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth); // Columna "Nombre"
+    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth); // Columna "Apellido"
+    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth); // Columna "Correo de Usuario"
+    ui->tabla_usuariosADMIN->setColumnWidth(3, columnWidth); // Columna "Fecha de Nacimiento"
+    ui->tabla_usuariosADMIN->setColumnWidth(4, columnWidth); // Columna "Modificar"
+    ui->tabla_usuariosADMIN->setColumnWidth(5, columnWidth); // Columna "Eliminar"
 }
 
 //--------------------------ELIMINAR USUARIO------------------------
 void ModuloAdministrador::eliminarUsuario(const QModelIndex &index) {
-    QString correo = index.sibling(index.row(), 0).data().toString();
+    QString correo = index.sibling(index.row(), 2).data().toString();
 
     // Mostrar un mensaje de confirmación
     QMessageBox::StandardButton reply;
@@ -535,8 +560,39 @@ void ModuloAdministrador::eliminarUsuario(const QModelIndex &index) {
 
 //--------------------------MODIFICAR USUARIO-----------------------
 void ModuloAdministrador::modificarUsuario(const QModelIndex &index) {
-    // Implementa la lógica para modificar el usuario
-    QString correo = index.sibling(index.row(), 0).data().toString();
-    // Llama a una función para modificar el usuario
-    // ejemplo: modificarUsuario(correo.toStdString());
+    // Obtener el correo del usuario seleccionado
+    QString correo = index.sibling(index.row(), 2).data().toString();
+
+    // Crear un diálogo para modificar el usuario
+    ModificarUsuarioDialog dialog(this);
+
+    // Mostrar el diálogo y verificar si se presionó "Aceptar"
+    if (dialog.exec() == QDialog::Accepted) {
+        // Obtener los valores ingresados por el administrador
+        QString nuevoNombre = dialog.getNombre();
+        QString nuevoApellido = dialog.getApellido();
+        QString nuevoCorreo = dialog.getCorreo();
+        QString nuevaContrasenia = dialog.getContrasenia();
+        QString nuevaFecha = dialog.getFechaNacimiento();
+
+        // Convertir QString a std::string para las operaciones
+        std::string nuevoNombreStd = nuevoNombre.toStdString();
+        std::string nuevoApellidoStd = nuevoApellido.toStdString();
+        std::string nuevoCorreoStd = nuevoCorreo.toStdString();
+        std::string nuevaContraseniaStd = nuevaContrasenia.toStdString();
+        std::string nuevaFechaStd = nuevaFecha.toStdString();
+
+        // Buscar al usuario por correo
+        AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+        Usuario* usuarioAModificar = avlUsuarios.buscar(correo.toStdString());
+
+        if (usuarioAModificar) {
+            // Modificar los campos no vacíos
+            avlUsuarios.modificarUsuario(usuarioAModificar, nuevoNombreStd, nuevoApellidoStd, nuevoCorreoStd, nuevaContraseniaStd, nuevaFechaStd);
+        } else {
+            // Manejar el caso de usuario no encontrado
+            QMessageBox::warning(this, "Error", "Usuario no encontrado.");
+        }
+    }
+    mostrarUsuariosEnTabla();
 }

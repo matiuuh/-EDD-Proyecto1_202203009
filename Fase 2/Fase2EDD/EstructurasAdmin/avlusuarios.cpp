@@ -189,7 +189,10 @@ void AVLUsuarios::obtenerUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisp
 
     // Si el correo del nodo no es el del usuario conectado, lo agregamos a la lista
     if (nodo->usuario->getCorreo() != correoConectado) {
-        lista.agregarCorreo(nodo->usuario->getCorreo());
+        lista.agregarUsuario(nodo->usuario->getNombre(),
+                             nodo->usuario->getApellidos(),
+                             nodo->usuario->getCorreo(),
+                             nodo->usuario->getFecha());
     }
 
     obtenerUsuariosRecursivo(nodo->derecha, lista, correoConectado);
@@ -207,7 +210,10 @@ void AVLUsuarios::obtenerTodosLosUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsua
     obtenerTodosLosUsuariosRecursivo(nodo->izquierda, lista);
 
     // Agregar el correo del usuario al listado
-    lista.agregarCorreo(nodo->usuario->getCorreo());
+    lista.agregarUsuario(nodo->usuario->getNombre(),
+                         nodo->usuario->getApellidos(),
+                         nodo->usuario->getCorreo(),
+                         nodo->usuario->getFecha());
 
     obtenerTodosLosUsuariosRecursivo(nodo->derecha, lista);
 }
@@ -221,8 +227,11 @@ void AVLUsuarios::obtenerUsuariosPreOrden(ListaDobleUsuariosDisponibles& lista) 
 void AVLUsuarios::obtenerUsuariosPreOrdenRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista) {
     if (!nodo) return;
 
-    // Primero el nodo raíz
-    lista.agregarCorreo(nodo->usuario->getCorreo());
+    // Primero el nodo raíz: agregar el usuario completo
+    lista.agregarUsuario(nodo->usuario->getNombre(),
+                         nodo->usuario->getApellidos(),
+                         nodo->usuario->getCorreo(),
+                         nodo->usuario->getFecha());
 
     // Luego recorrer izquierda y derecha
     obtenerUsuariosPreOrdenRecursivo(nodo->izquierda, lista);
@@ -247,7 +256,10 @@ void AVLUsuarios::obtenerUsuariosPostOrdenRecursivo(NodoAVL* nodo, ListaDobleUsu
     obtenerUsuariosPostOrdenRecursivo(nodo->derecha, lista);
 
     // Luego el nodo raíz
-    lista.agregarCorreo(nodo->usuario->getCorreo());
+    lista.agregarUsuario(nodo->usuario->getNombre(),
+                         nodo->usuario->getApellidos(),
+                         nodo->usuario->getCorreo(),
+                         nodo->usuario->getFecha());
 }
 
 //*******************************MODIFICAR DATOS DEL USUARIO*******************************
