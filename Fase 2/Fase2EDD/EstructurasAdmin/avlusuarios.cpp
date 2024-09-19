@@ -195,3 +195,20 @@ void AVLUsuarios::obtenerUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisp
     obtenerUsuariosRecursivo(nodo->derecha, lista, correoConectado);
 }
 
+//--------------------OBTENER USUARIOS MODULO ADMINISTRADOR-----------------------------
+void AVLUsuarios::obtenerTodosLosUsuarios(ListaDobleUsuariosDisponibles& lista) {
+    obtenerTodosLosUsuariosRecursivo(raiz, lista);
+}
+
+void AVLUsuarios::obtenerTodosLosUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista) {
+    if (!nodo) return;
+
+    // Recorrer los nodos en orden (izquierda, raíz, derecha)
+    obtenerTodosLosUsuariosRecursivo(nodo->izquierda, lista);
+
+    // Agregar el correo del usuario al listado
+    lista.agregarCorreo(nodo->usuario->getCorreo());
+
+    obtenerTodosLosUsuariosRecursivo(nodo->derecha, lista);
+}
+

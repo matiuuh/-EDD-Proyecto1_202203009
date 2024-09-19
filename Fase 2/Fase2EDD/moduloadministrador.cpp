@@ -14,6 +14,9 @@
 //#include <json/json.h>  // Usando la librería JsonCpp para leer el JSON
 #include "EstructurasAdmin/avlusuarios.h"
 #include "usuario.h"
+#include "listadoble.h"
+#include "EstructurasAdmin/listadoblepublicacionesglobal.h"
+
 
 ModuloAdministrador::ModuloAdministrador(QWidget *parent)
     : QDockWidget(parent)
@@ -38,10 +41,17 @@ ModuloAdministrador::ModuloAdministrador(QWidget *parent)
     // Conectar el botón "Cargar Usuarios" con la función para abrir el explorador de archivos
     connect(ui->btn_importarSolicitudes, &QPushButton::clicked, this, &ModuloAdministrador::importarSolicitudes);
 
+    //*******************************BOTONES IMPORTAR PUBLICACIONES*************************
     // Conectar el botón "Cargar Usuarios" con la función para abrir el explorador de archivos
     connect(ui->btn_cargarPublicaciones, &QPushButton::clicked, this, &ModuloAdministrador::cargarPublicaciones);
 
+    connect(ui->btn_importarPublicaciones, &QPushButton::clicked, this, &ModuloAdministrador::importarPublicaciones);
 
+    //***************************BUSCAR***************************
+    connect(ui->btn_buscar, &QPushButton::clicked, this, &ModuloAdministrador::buscarUsuarioPorCorreo);
+    //connect(ui->txt_correoBuscar, &QLineEdit::textChanged, this, &ModuloAdministrador::buscarUsuarioPorCorreo);
+
+    mostrarUsuariosEnTabla();
 
 }
 
@@ -62,60 +72,6 @@ void ModuloAdministrador::cerrarSesion()
 }
 
 //**************************CARGAS MASIVAS*****************************
-
-// Función para cargar un archivo JSON de solicitudes
-void ModuloAdministrador::cargarSolicitudes()
-{
-    // Abrir un cuadro de diálogo para seleccionar un archivo JSON
-    QString archivoPath = QFileDialog::getOpenFileName(this, "Seleccionar archivo JSON", "", "Archivos JSON (*.json)");
-
-    if (archivoPath.isEmpty()) {
-        // Si el usuario cancela la selección, no hacemos nada
-        return;
-    }
-
-    // Abrir el archivo seleccionado
-    QFile archivo(archivoPath);
-    if (!archivo.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "Error", "No se pudo abrir el archivo.");
-        return;
-    }
-
-    // Leer el contenido del archivo
-    QTextStream in(&archivo);
-    QString contenidoArchivo = in.readAll();
-    archivo.close();
-
-    // Mostrar el contenido en el QTextEdit (txt_cargaUsuarios)
-    ui->txt_cargaSolicitudes->setPlainText(contenidoArchivo);
-}
-
-// Función para cargar un archivo JSON de publicaciones
-void ModuloAdministrador::cargarPublicaciones()
-{
-    // Abrir un cuadro de diálogo para seleccionar un archivo JSON
-    QString archivoPath = QFileDialog::getOpenFileName(this, "Seleccionar archivo JSON", "", "Archivos JSON (*.json)");
-
-    if (archivoPath.isEmpty()) {
-        // Si el usuario cancela la selección, no hacemos nada
-        return;
-    }
-
-    // Abrir el archivo seleccionado
-    QFile archivo(archivoPath);
-    if (!archivo.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "Error", "No se pudo abrir el archivo.");
-        return;
-    }
-
-    // Leer el contenido del archivo
-    QTextStream in(&archivo);
-    QString contenidoArchivo = in.readAll();
-    archivo.close();
-
-    // Mostrar el contenido en el QTextEdit (txt_cargaUsuarios)
-    ui->txt_cargaPublicaciones->setPlainText(contenidoArchivo);
-}
 
 //---------------------USUARIOS-------------------------
 // Función para importar usuarios desde un archivo JSON
@@ -159,6 +115,7 @@ void ModuloAdministrador::btn_importarUsuarios_Click(const std::string& rutaArch
     }
 
     std::cout << "Usuarios importados exitosamente desde el archivo JSON." << std::endl;
+    mostrarUsuariosEnTabla();
 }
 
 // Función para cargar un archivo JSON de usuarios
@@ -258,6 +215,17 @@ void ModuloAdministrador::btn_importarSolicitudes_Click(const std::string& rutaA
             matrizEmisor.agregarAmistad(receptorCorreo);
             receptor->getMatrizAmigos().agregarAmistad(emisorCorreo);
             std::cout << "Solicitud aceptada entre: " << emisorCorreo << " y " << receptorCorreo << std::endl;
+
+            // Transferir publicaciones del remitente al BST del receptor
+            BSTPublicaciones& bstPublicacionesReceptor = receptor->getBSTPublicacionesAmigos();
+            ListaDoble& listaPublicacionesRemitente = emisor->getListaPublicacionesPropias();
+            bstPublicacionesReceptor.agregarPublicacionesDeLista(listaPublicacionesRemitente);
+
+            // Transferir publicaciones del receptor al BST del remitente
+            BSTPublicaciones& bstPublicacionesRemitente = emisor->getBSTPublicacionesAmigos();
+            ListaDoble& listaPublicacionesReceptor = receptor->getListaPublicacionesPropias();
+            bstPublicacionesRemitente.agregarPublicacionesDeLista(listaPublicacionesReceptor);
+
         } else if (estado == "pendiente") {
             std::cout << "Solicitud pendiente entre: " << emisorCorreo << " y " << receptorCorreo << std::endl;
         } else {
@@ -267,4 +235,203 @@ void ModuloAdministrador::btn_importarSolicitudes_Click(const std::string& rutaA
 
     std::cout << "Solicitudes importadas exitosamente desde el archivo JSON." << std::endl;
 }
+
+// Función para cargar un archivo JSON de solicitudes
+void ModuloAdministrador::cargarSolicitudes()
+{
+    // Abrir un cuadro de diálogo para seleccionar un archivo JSON
+    QString archivoPath = QFileDialog::getOpenFileName(this, "Seleccionar archivo JSON", "", "Archivos JSON (*.json)");
+
+    if (archivoPath.isEmpty()) {
+        // Si el usuario cancela la selección, no hacemos nada
+        return;
+    }
+
+    // Abrir el archivo seleccionado
+    QFile archivo(archivoPath);
+    if (!archivo.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "Error", "No se pudo abrir el archivo.");
+        return;
+    }
+
+    // Leer el contenido del archivo
+    QTextStream in(&archivo);
+    QString contenidoArchivo = in.readAll();
+    archivo.close();
+
+    // Mostrar el contenido en el QTextEdit (txt_cargaUsuarios)
+    ui->txt_cargaSolicitudes->setPlainText(contenidoArchivo);
+}
+
+//------------------------PUBLICACIONES---------------------
+
+// Función para cargar un archivo JSON de publicaciones
+void ModuloAdministrador::cargarPublicaciones()
+{
+    // Abrir un cuadro de diálogo para seleccionar un archivo JSON
+    QString archivoPath = QFileDialog::getOpenFileName(this, "Seleccionar archivo JSON", "", "Archivos JSON (*.json)");
+
+    if (archivoPath.isEmpty()) {
+        // Si el usuario cancela la selección, no hacemos nada
+        return;
+    }
+
+    // Abrir el archivo seleccionado
+    QFile archivo(archivoPath);
+    if (!archivo.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "Error", "No se pudo abrir el archivo.");
+        return;
+    }
+
+    // Leer el contenido del archivo
+    QTextStream in(&archivo);
+    QString contenidoArchivo = in.readAll();
+    archivo.close();
+
+    // Mostrar el contenido en el QTextEdit (txt_cargaUsuarios)
+    ui->txt_cargaPublicaciones->setPlainText(contenidoArchivo);
+}
+
+// Función para seleccionar el archivo JSON y cargar las publicaciones
+void ModuloAdministrador::importarPublicaciones() {
+    QString archivoPath = QFileDialog::getOpenFileName(this, "Seleccionar archivo JSON", "", "Archivos JSON (*.json)");
+
+    if (archivoPath.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No se seleccionó ningún archivo.");
+        return;
+    }
+
+    std::string rutaArchivoJSON = archivoPath.toStdString();
+    btn_importarPublicaciones_Click(rutaArchivoJSON);
+
+    QMessageBox::information(this, "Éxito", "Publicaciones importadas exitosamente.");
+}
+
+// Método que maneja la importación de publicaciones desde el archivo JSON
+void ModuloAdministrador::btn_importarPublicaciones_Click(const std::string& rutaArchivoJSON) {
+    std::ifstream archivo(rutaArchivoJSON);
+    if (!archivo.is_open()) {
+        std::cerr << "Error al abrir el archivo JSON: " << rutaArchivoJSON << std::endl;
+        return;
+    }
+
+    nlohmann::json publicacionesJSON;
+    archivo >> publicacionesJSON;
+
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    ListaDoblePublicacionesGlobal& listaPublicacionesGlobal = ListaDoblePublicacionesGlobal::getInstance();
+
+    for (const auto& publicacionJSON : publicacionesJSON) {
+        std::string correoUsuario = publicacionJSON["correo"];
+        std::string contenido = publicacionJSON["contenido"];
+        std::string fecha = publicacionJSON["fecha"];
+        std::string hora = publicacionJSON["hora"];
+
+        // Obtener el usuario que creó la publicación
+        Usuario* usuario = avlUsuarios.buscar(correoUsuario);
+        if (!usuario) {
+            std::cerr << "Error: El usuario " << correoUsuario << " no existe en el sistema." << std::endl;
+            continue; // Pasar a la siguiente publicación
+        }
+
+        // Crear una nueva publicación
+        Publicacion nuevaPublicacion(QString::fromStdString(correoUsuario), QString::fromStdString(contenido));
+        nuevaPublicacion.setFecha(QString::fromStdString(fecha));
+        nuevaPublicacion.setHora(QString::fromStdString(hora));
+
+        // Verificar si la publicación tiene una imagen
+        if (publicacionJSON.contains("imagen")) {
+            std::string rutaImagen = publicacionJSON["imagen"];
+            nuevaPublicacion.setImagen(QString::fromStdString(rutaImagen));
+        }
+
+        // Almacenar la publicación en la lista global de publicaciones
+        listaPublicacionesGlobal.insertar(nuevaPublicacion);
+        listaPublicacionesGlobal.mostrar();
+
+        // Almacenar la publicación en la lista de publicaciones del usuario
+        usuario->getListaPublicacionesPropias().insertar(nuevaPublicacion);
+        std::cout << "Mostrando publicaciones propias: " << std::endl;
+        usuario->getListaPublicacionesPropias().mostrar();
+
+        // Almacenar la publicación en el BST de publicaciones del usuario y amigos
+        usuario->getBSTPublicacionesAmigos().insertar(nuevaPublicacion);
+
+        std::cout << "Mostrando publicaciones del BST: " << std::endl;
+        usuario->getBSTPublicacionesAmigos().mostrarPublicaciones();
+    }
+
+    std::cout << "Publicaciones importadas exitosamente desde el archivo JSON." << std::endl;
+}
+
+//*************************************BUSCAR**************************************
+void ModuloAdministrador::buscarUsuarioPorCorreo() {
+    // Limpiar la tabla antes de la búsqueda
+    ui->tabla_usuariosADMIN->setRowCount(0);
+
+    // Obtener el correo a buscar desde el campo de texto
+    QString correoBuscar = ui->txt_correoBuscar->toPlainText();
+    if (correoBuscar.isEmpty()) {
+        return; // Si el campo está vacío, no hacer nada
+    }
+
+    // Buscar al usuario en el AVL
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuario = avlUsuarios.buscar(correoBuscar.toStdString());
+
+    if (usuario) {
+        // Si el usuario existe, mostrarlo en la tabla
+        ui->tabla_usuariosADMIN->insertRow(0);
+
+        // Crear el QTableWidgetItem para el correo
+        QTableWidgetItem* itemCorreo = new QTableWidgetItem(QString::fromStdString(usuario->getCorreo()));
+
+        // Agregar el item a la tabla (columna 0 para correo)
+        ui->tabla_usuariosADMIN->setItem(0, 0, itemCorreo);
+    }
+}
+
+void ModuloAdministrador::mostrarUsuariosEnTabla() {
+    // Limpiar la tabla antes de llenarla nuevamente
+    ui->tabla_usuariosADMIN->setRowCount(0);
+
+    // Obtener la instancia del AVL y la lista de usuarios
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    ListaDobleUsuariosDisponibles listaUsuarios;
+
+    // Obtener todos los usuarios del AVL
+    avlUsuarios.obtenerTodosLosUsuarios(listaUsuarios);
+
+    // Llenar la tabla iterando sobre los correos de la lista
+    int fila = 0;
+    listaUsuarios.paraCadaCorreo([this, &fila](const std::string& correo) {
+        // Insertar una nueva fila en la tabla
+        ui->tabla_usuariosADMIN->insertRow(fila);
+
+        // Crear el QTableWidgetItem para el correo
+        QTableWidgetItem* itemCorreo = new QTableWidgetItem(QString::fromStdString(correo));
+        ui->tabla_usuariosADMIN->setItem(fila, 0, itemCorreo);
+
+        // Crear el botón "Modificar"
+        QPushButton* botonModificar = new QPushButton("Modificar");
+        // Agregar el botón "Modificar" a la tabla en la columna 1
+        ui->tabla_usuariosADMIN->setCellWidget(fila, 1, botonModificar);
+
+        // Crear el botón "Eliminar"
+        QPushButton* botonEliminar = new QPushButton("Eliminar");
+        // Agregar el botón "Eliminar" a la tabla en la columna 2
+        ui->tabla_usuariosADMIN->setCellWidget(fila, 2, botonEliminar);
+
+        fila++;
+    });
+
+    int totalWidth = 725;
+    int columnWidth = totalWidth / 3;  // Dividir el espacio en 2 columnas iguales
+
+    // Configurar las columnas para ajustar el tamaño del contenido
+    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth);  // Ajustar el ancho de la columna de correos
+    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth);  // Ajustar el ancho de la columna de botones
+    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth);  // Ajustar el ancho de la columna de botones
+}
+
 

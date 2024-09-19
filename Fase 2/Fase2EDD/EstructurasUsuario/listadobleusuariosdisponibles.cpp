@@ -58,3 +58,13 @@ std::shared_ptr<NodoUsuario> ListaDobleUsuariosDisponibles::obtenerPrimero() {
 bool ListaDobleUsuariosDisponibles::estaVacia() const {
     return cabeza == nullptr;
 }
+
+// Método para iterar sobre los correos y aplicar una función
+void ListaDobleUsuariosDisponibles::paraCadaCorreo(const std::function<void(const std::string&)>& funcion) const {
+    std::shared_ptr<NodoUsuario> actual = cabeza;
+
+    while (actual) {
+        funcion(actual->correo);  // Llamamos a la función con el correo del nodo actual
+        actual = actual->siguiente;  // Avanzamos al siguiente nodo
+    }
+}

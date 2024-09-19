@@ -24,23 +24,23 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
       <string>Buscar</string>
      </attribute>
-     <widget class="QTableWidget" name="tableWidget">
+     <widget class="QTableWidget" name="tabla_usuariosADMIN">
       <property name="geometry">
        <rect>
         <x>30</x>
         <y>71</y>
-        <width>671</width>
+        <width>731</width>
         <height>271</height>
        </rect>
       </property>
      </widget>
-     <widget class="QTextEdit" name="textEdit">
+     <widget class="QTextEdit" name="txt_correoBuscar">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -50,7 +50,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_4">
+     <widget class="QPushButton" name="btn_buscar">
       <property name="geometry">
        <rect>
         <x>280</x>
@@ -63,10 +63,10 @@
        <string>Buscar</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_5">
+     <widget class="QPushButton" name="btn_aplicar">
       <property name="geometry">
        <rect>
-        <x>630</x>
+        <x>690</x>
         <y>20</y>
         <width>71</width>
         <height>29</height>
@@ -76,20 +76,35 @@
        <string>Aplicar</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="comboBox">
+     <widget class="QComboBox" name="combo_Orden">
       <property name="geometry">
        <rect>
-        <x>481</x>
+        <x>541</x>
         <y>20</y>
         <width>121</width>
         <height>28</height>
        </rect>
       </property>
+      <item>
+       <property name="text">
+        <string>Pre-Orden</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>In-Orden</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Post-Orden</string>
+       </property>
+      </item>
      </widget>
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>420</x>
+        <x>480</x>
         <y>20</y>
         <width>63</width>
         <height>20</height>

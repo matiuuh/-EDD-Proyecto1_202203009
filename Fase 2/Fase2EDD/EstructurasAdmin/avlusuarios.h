@@ -26,6 +26,8 @@ public:
     bool validarCredenciales(const std::string& correo, const std::string& contrasenia);
     void obtenerUsuariosDisponibles(ListaDobleUsuariosDisponibles& lista, const std::string& correoConectado);
     void obtenerUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista, const std::string& correoConectado);
+    void obtenerTodosLosUsuarios(ListaDobleUsuariosDisponibles& lista);
+    void obtenerTodosLosUsuariosRecursivo(NodoAVL* nodo, ListaDobleUsuariosDisponibles& lista);
 
 private:
     AVLUsuarios();  // Constructor privado para evitar instanciación externa

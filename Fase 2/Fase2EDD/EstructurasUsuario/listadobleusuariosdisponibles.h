@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <functional>
 
 // Definición del nodo que almacenará solo el correo del usuario
 struct NodoUsuario {
@@ -33,6 +34,8 @@ public:
 
     // Método para verificar si la lista está vacía
     bool estaVacia() const;
+
+    void paraCadaCorreo(const std::function<void(const std::string&)>& funcion) const;
 };
 
 #endif // LISTADOBLEUSUARIOSDISPONIBLES_H

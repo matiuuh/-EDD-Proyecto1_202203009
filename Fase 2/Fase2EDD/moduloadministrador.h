@@ -20,8 +20,10 @@ public:
 private slots:
     void cerrarSesion();  // Declaramos la función aquí
 
-    //cargas masivas
+    //---------------------PUBLICACIONES--------------------
     void cargarPublicaciones();  // Agregar la nueva función para cargar usuarios
+    void btn_importarPublicaciones_Click(const std::string& rutaArchivoJSON);
+    void importarPublicaciones();
 
     //-------------USUARIOS----------------
     void importarUsuarios();  // Agregar la nueva función para cargar usuarios
@@ -32,6 +34,12 @@ private slots:
     void importarSolicitudes();
     void btn_importarSolicitudes_Click(const std::string& rutaArchivoJSON);
     void cargarSolicitudes();  // Agregar la nueva función para cargar usuarios
+
+    //********************BUSCAR**********************
+    void buscarUsuarioPorCorreo();
+    //void mostrarUsuariosOrdenados();
+    //void setupConnections();
+    void mostrarUsuariosEnTabla();
 
 private:
     Ui::ModuloAdministrador *ui;
