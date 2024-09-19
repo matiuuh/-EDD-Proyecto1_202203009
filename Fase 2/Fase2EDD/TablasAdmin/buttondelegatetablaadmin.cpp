@@ -1,37 +1,40 @@
 #include "ButtonDelegateTablaAdmin.h"
 #include <QPushButton>
-#include <QStyleOptionViewItem>
-#include <QAbstractItemModel>
-#include <QWidget>
+#include <QHBoxLayout>
 
 ButtonDelegateTablaAdmin::ButtonDelegateTablaAdmin(QObject *parent)
     : QStyledItemDelegate(parent) {}
 
-// Crear el editor, que en este caso son los botones de Modificar y Eliminar
 QWidget* ButtonDelegateTablaAdmin::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &index) const {
-    QPushButton *button = new QPushButton(parent);
+    QWidget *widget = new QWidget(parent);
+    QHBoxLayout *layout = new QHBoxLayout(widget);
+
+    QPushButton *button = new QPushButton(widget);
 
     // Asignar el texto adecuado según la columna
     if (index.column() == 1) {
         button->setText("Modificar");
+        connect(button, &QPushButton::clicked, [this, index]() {
+            emit modificarUsuario(index);
+        });
     } else if (index.column() == 2) {
         button->setText("Eliminar");
+        connect(button, &QPushButton::clicked, [this, index]() {
+            emit eliminarUsuario(index);
+        });
     }
 
-    return button;
+    layout->addWidget(button);
+    layout->setContentsMargins(0, 0, 0, 0);
+    widget->setLayout(layout);
+
+    return widget;
 }
 
-// No es necesario cargar datos en los botones, esta función se deja vacía
-void ButtonDelegateTablaAdmin::setEditorData(QWidget *, const QModelIndex &) const {
-    // No se necesita implementación
-}
+void ButtonDelegateTablaAdmin::setEditorData(QWidget *, const QModelIndex &) const {}
 
-// No es necesario manipular el modelo de datos con los botones, esta función se deja vacía
-void ButtonDelegateTablaAdmin::setModelData(QWidget *, QAbstractItemModel *, const QModelIndex &) const {
-    // No se necesita implementación
-}
+void ButtonDelegateTablaAdmin::setModelData(QWidget *, QAbstractItemModel *, const QModelIndex &) const {}
 
-// Ajustar la geometría del botón según el espacio de la celda
 void ButtonDelegateTablaAdmin::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &) const {
     editor->setGeometry(option.rect);
 }

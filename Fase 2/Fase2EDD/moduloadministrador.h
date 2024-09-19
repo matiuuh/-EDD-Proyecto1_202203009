@@ -43,6 +43,9 @@ private slots:
 
     void aplicarRecorridos();
 
+    void modificarUsuario(const QModelIndex &index);
+    void eliminarUsuario(const QModelIndex &index);
+
 private:
     Ui::ModuloAdministrador *ui;
 };

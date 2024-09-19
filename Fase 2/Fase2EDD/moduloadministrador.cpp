@@ -368,6 +368,8 @@ void ModuloAdministrador::btn_importarPublicaciones_Click(const std::string& rut
 }
 
 //*************************************BUSCAR**************************************
+
+//------------------------BUSCAR UN USUARIO POR SU CORREO--------------------------
 void ModuloAdministrador::buscarUsuarioPorCorreo() {
     // Limpiar la tabla antes de la búsqueda
     ui->tabla_usuariosADMIN->setRowCount(0);
@@ -394,6 +396,7 @@ void ModuloAdministrador::buscarUsuarioPorCorreo() {
     }
 }
 
+//------------------------MOSTRAR TODOS LOS USUARIOS EN TABLA--------------------------
 void ModuloAdministrador::mostrarUsuariosEnTabla() {
     // Limpiar la tabla antes de llenarla nuevamente
     ui->tabla_usuariosADMIN->clearContents();  // Limpia el contenido sin eliminar las cabeceras
@@ -432,19 +435,23 @@ void ModuloAdministrador::mostrarUsuariosEnTabla() {
         fila++;
     });
 
-    // Asignar el ButtonDelegateTablaAdmin a las columnas de botones
-    ButtonDelegateTablaAdmin* buttonDelegate = new ButtonDelegateTablaAdmin(this);
-    ui->tabla_usuariosADMIN->setItemDelegateForColumn(1, buttonDelegate);  // Columna "Modificar"
-    ui->tabla_usuariosADMIN->setItemDelegateForColumn(2, buttonDelegate);  // Columna "Eliminar"
+    // Crear el delegado y conectar las señales
+    ButtonDelegateTablaAdmin *delegate = new ButtonDelegateTablaAdmin(this);
+    connect(delegate, &ButtonDelegateTablaAdmin::modificarUsuario, this, &ModuloAdministrador::modificarUsuario);
+    connect(delegate, &ButtonDelegateTablaAdmin::eliminarUsuario, this, &ModuloAdministrador::eliminarUsuario);
 
-    // Ajustar el ancho de las columnas
-    int totalWidth = 725;
-    int columnWidth = totalWidth / 3;
-    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth);  // Columna "Correo de Usuario"
-    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth);  // Columna "Modificar"
-    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth);  // Columna "Eliminar"
+    // Asignar el delegado a las columnas correspondientes
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(1, delegate); // Para el botón "Modificar"
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(2, delegate); // Para el botón "Eliminar"
+
+    // Establecer el ancho de cada columna
+    int columnWidth = 721 / 3;
+    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth); // Columna "Correo de Usuario"
+    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth); // Columna "Modificar"
+    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth); // Columna "Eliminar"
 }
 
+//------------------------APLICA RECORRIDOS Y LOS MUESTRA EN TABLA--------------------------
 void ModuloAdministrador::aplicarRecorridos() {
     // Limpiar la tabla antes de llenarla nuevamente
     ui->tabla_usuariosADMIN->setRowCount(0);
@@ -464,6 +471,12 @@ void ModuloAdministrador::aplicarRecorridos() {
         avlUsuarios.obtenerUsuariosPostOrden(listaUsuarios);
     }
 
+    // Configurar las cabeceras de la tabla
+    ui->tabla_usuariosADMIN->setColumnCount(3);
+    QStringList headers;
+    headers << "Correo de Usuario" << "Modificar" << "Eliminar";
+    ui->tabla_usuariosADMIN->setHorizontalHeaderLabels(headers);
+
     // Llenar la tabla iterando sobre los correos de la lista
     int fila = 0;
     listaUsuarios.paraCadaCorreo([this, &fila](const std::string& correo) {
@@ -474,26 +487,56 @@ void ModuloAdministrador::aplicarRecorridos() {
         QTableWidgetItem* itemCorreo = new QTableWidgetItem(QString::fromStdString(correo));
         ui->tabla_usuariosADMIN->setItem(fila, 0, itemCorreo);
 
-        // Crear el botón "Modificar"
-        QPushButton* botonModificar = new QPushButton("Modificar");
-        // Agregar el botón "Modificar" a la tabla en la columna 1
-        ui->tabla_usuariosADMIN->setCellWidget(fila, 1, botonModificar);
+        // Crear los items de las acciones como "placeholders"
+        QTableWidgetItem* modificarItem = new QTableWidgetItem();
+        ui->tabla_usuariosADMIN->setItem(fila, 1, modificarItem);
 
-        // Crear el botón "Eliminar"
-        QPushButton* botonEliminar = new QPushButton("Eliminar");
-        // Agregar el botón "Eliminar" a la tabla en la columna 2
-        ui->tabla_usuariosADMIN->setCellWidget(fila, 2, botonEliminar);
+        QTableWidgetItem* eliminarItem = new QTableWidgetItem();
+        ui->tabla_usuariosADMIN->setItem(fila, 2, eliminarItem);
 
         fila++;
     });
 
-    // Ajustar el ancho de las columnas como antes
-    int totalWidth = 725;
-    int columnWidth = totalWidth / 3;
+    // Crear el delegado y conectar las señales
+    ButtonDelegateTablaAdmin *delegate = new ButtonDelegateTablaAdmin(this);
+    connect(delegate, &ButtonDelegateTablaAdmin::modificarUsuario, this, &ModuloAdministrador::modificarUsuario);
+    connect(delegate, &ButtonDelegateTablaAdmin::eliminarUsuario, this, &ModuloAdministrador::eliminarUsuario);
 
-    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth);
-    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth);
-    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth);
+    // Asignar el delegado a las columnas correspondientes
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(1, delegate); // Para el botón "Modificar"
+    ui->tabla_usuariosADMIN->setItemDelegateForColumn(2, delegate); // Para el botón "Eliminar"
+
+    // Establecer el ancho de cada columna
+    int columnWidth = 721 / 3;
+    ui->tabla_usuariosADMIN->setColumnWidth(0, columnWidth); // Columna "Correo de Usuario"
+    ui->tabla_usuariosADMIN->setColumnWidth(1, columnWidth); // Columna "Modificar"
+    ui->tabla_usuariosADMIN->setColumnWidth(2, columnWidth); // Columna "Eliminar"
 }
 
+//--------------------------ELIMINAR USUARIO------------------------
+void ModuloAdministrador::eliminarUsuario(const QModelIndex &index) {
+    QString correo = index.sibling(index.row(), 0).data().toString();
 
+    // Mostrar un mensaje de confirmación
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Confirmar Eliminación",
+                                  QString("¿Está seguro de eliminar al usuario %1?").arg(correo),
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        // Eliminar el usuario del AVL
+        AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+        avlUsuarios.eliminar(correo.toStdString());
+
+        // Volver a cargar la tabla
+        mostrarUsuariosEnTabla();
+    }
+}
+
+//--------------------------MODIFICAR USUARIO-----------------------
+void ModuloAdministrador::modificarUsuario(const QModelIndex &index) {
+    // Implementa la lógica para modificar el usuario
+    QString correo = index.sibling(index.row(), 0).data().toString();
+    // Llama a una función para modificar el usuario
+    // ejemplo: modificarUsuario(correo.toStdString());
+}
