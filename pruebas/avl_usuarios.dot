@@ -1,0 +1,17 @@
+digraph G {
+Nodo0x24b95ad95a0[label = "luis.perez@example.com"];
+Nodo0x24b95ad95a0->Nodo0x24b95ad9db0;
+Nodo0x24b95ad95a0->Nodo0x24b95ad9f90;
+Nodo0x24b95ad9db0[label = "carlos.gomez@example.com"];
+Nodo0x24b95ad9db0->Nodo0x24b95ad9600;
+Nodo0x24b95ad9db0->Nodo0x24b95ad9b70;
+Nodo0x24b95ad9600[label = "ana.hernandez@example.com"];
+Nodo0x24b95ad9b70[label = "jose.garcia@example.com"];
+Nodo0x24b95ad9b70->Nodo0x24b95ad97e0;
+Nodo0x24b95ad97e0[label = "elena.torres@example.com"];
+Nodo0x24b95ad9f90[label = "miguel.rodriguez@example.com"];
+Nodo0x24b95ad9f90->Nodo0x24b95ad96f0;
+Nodo0x24b95ad9f90->Nodo0x24b95ad9690;
+Nodo0x24b95ad96f0[label = "maria.lopez@example.com"];
+Nodo0x24b95ad9690[label = "sofia.gonzalez@example.com"];
+}

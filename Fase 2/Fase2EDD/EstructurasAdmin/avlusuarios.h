@@ -38,6 +38,9 @@ public:
     //Para eliminar
     void eliminar(const std::string& correo);
 
+    void graph();
+    void graph(NodoAVL *root, std::ofstream &content);
+
 private:
     AVLUsuarios();  // Constructor privado para evitar instanciación externa
     ~AVLUsuarios(); // Destructor privado

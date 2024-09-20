@@ -4,6 +4,8 @@
 #include <QDockWidget>
 #include <QFileDialog>  // Incluir para abrir el explorador de archivos
 
+#include <QLabel>
+
 
 namespace Ui {
 class ModuloAdministrador;
@@ -45,6 +47,9 @@ private slots:
 
     void modificarUsuario(const QModelIndex &index);
     void eliminarUsuario(const QModelIndex &index);
+
+    void generarReportesAdmin();
+    void mostrarGraficoEnLabel(QLabel* label);
 
 private:
     Ui::ModuloAdministrador *ui;

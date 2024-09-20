@@ -3,6 +3,11 @@
 #include <algorithm>
 //#include "../EstructurasUsuario/listadobleusuariosdisponibles.h"
 
+#include <fstream>  // Para std::ofstream
+#include <cstdlib>  // Para system() y comandos externos
+#include <iostream>  // Para std::cout
+
+
 // Inicialización de la instancia estática
 AVLUsuarios* AVLUsuarios::instance = nullptr;
 
@@ -366,3 +371,43 @@ void AVLUsuarios::liberarMemoria(NodoAVL* nodo) {
         delete nodo;
     }
 }
+
+//******************************REPORTES ADMINISTRADOR***************************************
+//---------------------------GENERAR EL ARBOL DE USUARIO (AVL)---------------------------
+void AVLUsuarios::graph() {
+    std::ofstream outfile("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\avl_usuarios.dot");
+    outfile << "digraph G {" << std::endl;
+
+    if (raiz != nullptr) {
+        graph(raiz, outfile);
+    }
+
+    outfile << "}" << std::endl;
+    outfile.close();
+    int returnCode = system("dot -Tpng \"C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\avl_usuarios.dot\" -o \"C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\avl_usuarios.png\"");
+
+    if (returnCode == 0) {
+        std::cout << "Graph generated successfully." << std::endl;
+    } else {
+        std::cout << "Graph generation failed with return code: " << returnCode << std::endl;
+    }
+}
+
+void AVLUsuarios::graph(NodoAVL *root, std::ofstream &content) {
+    if (root != nullptr) {
+        content << "Nodo" << root << "[label = \"" << root->usuario->getCorreo() << "\"];" << std::endl;
+
+        if (root->izquierda != nullptr) {
+            content << "Nodo" << root << "->Nodo" << root->izquierda << ";" << std::endl;
+        }
+
+        if (root->derecha != nullptr) {
+            content << "Nodo" << root << "->Nodo" << root->derecha << ";" << std::endl;
+        }
+
+        graph(root->izquierda, content);
+        graph(root->derecha, content);
+    }
+}
+
+//---------------------------GENERAR GRAFICO LISTA PUBLICACIONES---------------------------

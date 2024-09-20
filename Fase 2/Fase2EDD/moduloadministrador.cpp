@@ -52,8 +52,11 @@ ModuloAdministrador::ModuloAdministrador(QWidget *parent)
     //***************************BUSCAR***************************
     connect(ui->btn_buscar, &QPushButton::clicked, this, &ModuloAdministrador::buscarUsuarioPorCorreo);
 
-    //*****************************APLICAR RECORRIDOS EN ORDEN************************
+    //*****************************APLICAR RECORRIDOS EN ORDEN***********************************
     connect(ui->btn_aplicar, &QPushButton::clicked, this, &ModuloAdministrador::aplicarRecorridos);
+
+    //**************************************GENERAR REPORTES***************************************
+    connect(ui->btn_generarReportes, &QPushButton::clicked, this, &ModuloAdministrador::generarReportesAdmin);
 
     mostrarUsuariosEnTabla();
 
@@ -595,4 +598,22 @@ void ModuloAdministrador::modificarUsuario(const QModelIndex &index) {
         }
     }
     mostrarUsuariosEnTabla();
+}
+
+//*********************************REPORTES***********************************
+//--------------------------GENERAR ARBOL AVL USUARIOS-----------------------
+void ModuloAdministrador::generarReportesAdmin() {
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+
+    // Limpia el QLabel antes de mostrar el nuevo gráfico
+    ui->lbl_arbolUsuario->clear();  // Esto limpia el QLabel
+
+    avlUsuarios.graph();  // 'avlUsuarios' es tu objeto de la clase 'AVLUsuarios'
+    mostrarGraficoEnLabel(ui->lbl_arbolUsuario);  // Asegúrate de que 'label_grafico' está en tu interfaz
+}
+
+void ModuloAdministrador::mostrarGraficoEnLabel(QLabel* label) {
+    QPixmap pixmap("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\avl_usuarios.png");  // Ruta actualizada
+    label->setPixmap(pixmap);  // Establece el gráfico en el QLabel
+    label->setScaledContents(true);  // Asegura que la imagen se escale dentro del QLabel
 }

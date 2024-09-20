@@ -342,7 +342,7 @@
      <widget class="QFrame" name="frame">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>50</x>
         <y>30</y>
         <width>321</width>
         <height>271</height>
@@ -354,11 +354,24 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
+      <widget class="QLabel" name="lbl_arbolUsuario">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>321</width>
+         <height>271</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
      <widget class="QFrame" name="frame_2">
       <property name="geometry">
        <rect>
-        <x>380</x>
+        <x>410</x>
         <y>30</y>
         <width>331</width>
         <height>271</height>
@@ -371,10 +384,10 @@
        <enum>QFrame::Shadow::Raised</enum>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="btn_generarReportes">
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>340</x>
         <y>320</y>
         <width>111</width>
         <height>29</height>
@@ -387,7 +400,7 @@
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>50</x>
         <y>10</y>
         <width>111</width>
         <height>20</height>
@@ -405,7 +418,7 @@
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>380</x>
+        <x>410</x>
         <y>10</y>
         <width>141</width>
         <height>20</height>
