@@ -1,17 +1,21 @@
 digraph G {
-Nodo0x24b95ad95a0[label = "luis.perez@example.com"];
-Nodo0x24b95ad95a0->Nodo0x24b95ad9db0;
-Nodo0x24b95ad95a0->Nodo0x24b95ad9f90;
-Nodo0x24b95ad9db0[label = "carlos.gomez@example.com"];
-Nodo0x24b95ad9db0->Nodo0x24b95ad9600;
-Nodo0x24b95ad9db0->Nodo0x24b95ad9b70;
-Nodo0x24b95ad9600[label = "ana.hernandez@example.com"];
-Nodo0x24b95ad9b70[label = "jose.garcia@example.com"];
-Nodo0x24b95ad9b70->Nodo0x24b95ad97e0;
-Nodo0x24b95ad97e0[label = "elena.torres@example.com"];
-Nodo0x24b95ad9f90[label = "miguel.rodriguez@example.com"];
-Nodo0x24b95ad9f90->Nodo0x24b95ad96f0;
-Nodo0x24b95ad9f90->Nodo0x24b95ad9690;
-Nodo0x24b95ad96f0[label = "maria.lopez@example.com"];
-Nodo0x24b95ad9690[label = "sofia.gonzalez@example.com"];
+Nodo0x1b78f734340[label = "juan.martinez@example.com"];
+Nodo0x1b78f734340->Nodo0x1b78f734490;
+Nodo0x1b78f734340->Nodo0x1b78f734520;
+Nodo0x1b78f734490[label = "carlos.gomez@example.com"];
+Nodo0x1b78f734490->Nodo0x1b78f734310;
+Nodo0x1b78f734490->Nodo0x1b78f7342e0;
+Nodo0x1b78f734310[label = "ana.hernandez@example.com"];
+Nodo0x1b78f7342e0[label = "jose.garcia@example.com"];
+Nodo0x1b78f7342e0->Nodo0x1b78f734230;
+Nodo0x1b78f734230[label = "elena.torres@example.com"];
+Nodo0x1b78f734520[label = "luis.perez@example.com"];
+Nodo0x1b78f734520->Nodo0x1b78f7345e0;
+Nodo0x1b78f734520->Nodo0x1b78f6e6810;
+Nodo0x1b78f7345e0[label = "laura.ramirez@example.com"];
+Nodo0x1b78f6e6810[label = "miguel.rodriguez@example.com"];
+Nodo0x1b78f6e6810->Nodo0x1b78f734580;
+Nodo0x1b78f6e6810->Nodo0x1b78f6e6a20;
+Nodo0x1b78f734580[label = "maria.lopez@example.com"];
+Nodo0x1b78f6e6a20[label = "sofia.gonzalez@example.com"];
 }

@@ -51,6 +51,8 @@ private slots:
     void generarReportesAdmin();
     void mostrarGraficoEnLabel(QLabel* label);
 
+    void mostrarGraficoEnLabelLista(QLabel* label);
+
 private:
     Ui::ModuloAdministrador *ui;
 };

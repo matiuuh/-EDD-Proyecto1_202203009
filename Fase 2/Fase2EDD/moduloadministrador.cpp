@@ -604,16 +604,28 @@ void ModuloAdministrador::modificarUsuario(const QModelIndex &index) {
 //--------------------------GENERAR ARBOL AVL USUARIOS-----------------------
 void ModuloAdministrador::generarReportesAdmin() {
     AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    ListaDoblePublicacionesGlobal& publicacionesGlobal = ListaDoblePublicacionesGlobal::getInstance();
 
     // Limpia el QLabel antes de mostrar el nuevo gráfico
     ui->lbl_arbolUsuario->clear();  // Esto limpia el QLabel
+    ui->lbl_listaDoblePublicaciones->clear();
 
     avlUsuarios.graph();  // 'avlUsuarios' es tu objeto de la clase 'AVLUsuarios'
     mostrarGraficoEnLabel(ui->lbl_arbolUsuario);  // Asegúrate de que 'label_grafico' está en tu interfaz
+
+    publicacionesGlobal.generarGrafico(); // Genera el gráfico de publicaciones
+    mostrarGraficoEnLabelLista(ui->lbl_listaDoblePublicaciones);
 }
 
 void ModuloAdministrador::mostrarGraficoEnLabel(QLabel* label) {
     QPixmap pixmap("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\avl_usuarios.png");  // Ruta actualizada
     label->setPixmap(pixmap);  // Establece el gráfico en el QLabel
     label->setScaledContents(true);  // Asegura que la imagen se escale dentro del QLabel
+}
+//-------------------------GENERAR GRÁFO LISTA DOBLE PUBLICACIONES-------------------------------
+
+void ModuloAdministrador::mostrarGraficoEnLabelLista(QLabel* label) {
+    QPixmap pixmap1("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\lista_publicaciones.png");  // Asegúrate de que la ruta sea correcta
+    label->setPixmap(pixmap1);
+    label->setScaledContents(true);
 }

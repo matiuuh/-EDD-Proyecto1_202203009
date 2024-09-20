@@ -24,6 +24,7 @@ public:
     void eliminar(const std::string& idPublicacion);  // Añadir parámetros necesarios
     void mostrar() const;
     //Publicacion buscar(const std::string& idPublicacion) const;  // Añadir parámetros necesarios
+    void generarGrafico() const;
 
 private:
     static ListaDoblePublicacionesGlobal* instance;  // Instancia única del Singleton
