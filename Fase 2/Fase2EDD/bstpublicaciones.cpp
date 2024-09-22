@@ -1,6 +1,7 @@
 #include "BSTPublicaciones.h"
 #include <iostream>
 #include "listadoble.h"
+//#include "Publicaciones/colaconteos.h"
 
 // Constructor del NodoBST
 NodoBST::NodoBST(const std::string& fecha)
@@ -143,6 +144,7 @@ void BSTPublicaciones::agregarPublicacionesDeLista(ListaDoble& listaPublicacione
     // Recorrer la lista de publicaciones y agregarlas al BST
     while (nodoActual != nullptr) {
         Publicacion publicacion = nodoActual->getPublicacion();  // Obtener la publicación del nodo
+
         insertar(publicacion);  // Insertar la publicación en el BST
         nodoActual = nodoActual->getSiguiente();  // Moverse al siguiente nodo
     }
@@ -211,3 +213,5 @@ void BSTPublicaciones::recorrerPostOrdenRecursivo(NodoBST* nodo, std::function<v
 void BSTPublicaciones::recorrerPostOrden(std::function<void(const Publicacion&)> funcion) const {
     recorrerPostOrdenRecursivo(raiz, funcion);
 }
+
+

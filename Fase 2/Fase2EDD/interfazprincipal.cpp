@@ -21,6 +21,8 @@
 #include <QModelIndex>
 #include <QLineEdit>
 #include <iostream>  // Para utilizar cout
+#include <queue>
+#include <string>
 
 InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuario)
     : QMainWindow(parent)
@@ -56,6 +58,7 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
     llenarTablaSolicitudesEnviadas();
     mostrarPublicaciones();
     mostrarDatosUsuarioConectado();
+    mostrarTopFechasPublicaciones();
 }
 
 InterfazPrincipal::~InterfazPrincipal()
@@ -320,6 +323,7 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     // Mostrar mensaje de éxito
     QMessageBox::information(this, "Solicitud Aceptada", "La solicitud ha sido aceptada.");
     llenarTablaSolicitudesRecibidas();  // Actualizar la tabla
+    mostrarTopFechasPublicaciones();
 }
 
 // Rechazar solicitud
@@ -785,5 +789,135 @@ void InterfazPrincipal::buscarUsuarioCorreo() {
 
         // Mostrar mensaje al usuario
         QMessageBox::warning(this, "Usuario no encontrado", "El correo ingresado no corresponde a ningún usuario.");
+    }
+}
+
+//*********************************REPORTES**************************************
+void InterfazPrincipal::mostrarTopFechasPublicaciones() {
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    if (!usuarioConectado) {
+        std::cerr << "Error: No se encontró el usuario conectado." << std::endl;
+        return;
+    }
+
+    BSTPublicaciones& bstPublicaciones = usuarioConectado->getBSTPublicacionesAmigos();
+
+    std::queue<FechaConteo> colaConteos;
+    std::cout<<"antes de contar publicaciones "<<std::endl;
+    contarPublicacionesPorFecha(bstPublicaciones, colaConteos);
+    std::cout<<"antes de ordenar "<<std::endl;
+    ordenarTop3(colaConteos);
+
+    // Crear un modelo para la tabla
+    QStandardItemModel* model = new QStandardItemModel();
+    model->setColumnCount(2); // Dos columnas: Fecha y Conteo
+    model->setHorizontalHeaderLabels(QStringList() << "Fecha" << "Conteo");
+
+    // Llenar la tabla con el top de fechas
+    while (!colaConteos.empty()) {
+        const auto& top = colaConteos.front();
+        colaConteos.pop();
+
+        QList<QStandardItem*> fila;
+        fila.append(new QStandardItem(QString::fromStdString(top.fecha)));
+        fila.append(new QStandardItem(QString::number(top.conteo)));
+
+        model->appendRow(fila);
+    }
+
+    ui->tbl_fechaMasPublicaciones->setModel(model); // Asignar el modelo a la tabla
+
+    // Opcional: configurar el tamaño de las columnas
+    ui->tbl_fechaMasPublicaciones->resizeColumnToContents(0);
+    ui->tbl_fechaMasPublicaciones->resizeColumnToContents(1);
+
+    int totalWidth = 336;
+    int columnWidth = totalWidth / 2;  // Dividir el espacio en 2 columnas iguales
+
+    // Establecer el ancho de las columnas
+    ui->tbl_fechaMasPublicaciones->setColumnWidth(0, columnWidth);  // Columna "Correo de Usuario"
+    ui->tbl_fechaMasPublicaciones->setColumnWidth(1, columnWidth);  // Columna "Acciones
+}
+
+// Función para contar publicaciones por fecha
+void InterfazPrincipal::contarPublicacionesPorFecha(const BSTPublicaciones& bst, std::queue<FechaConteo>& colaConteos) {
+    std::queue<FechaConteo> colaTemporal;
+
+    // Contamos las publicaciones
+    bst.recorrerInOrden([&colaTemporal](const Publicacion& publicacion) {
+        std::string fecha = publicacion.getFecha().toStdString();
+        bool encontrado = false;
+
+        // Buscar si la fecha ya existe en la cola temporal
+        int size = colaTemporal.size();
+        for (int i = 0; i < size; ++i) {
+            FechaConteo temp = colaTemporal.front();
+            colaTemporal.pop();
+
+            if (temp.fecha == fecha) {
+                // Aumentamos el conteo
+                temp.conteo++;
+                encontrado = true;
+            }
+
+            // Volver a agregar el elemento temporal
+            colaTemporal.push(temp);
+        }
+
+        // Si no se encontró, agregar una nueva entrada con conteo 1
+        if (!encontrado) {
+            colaTemporal.push(FechaConteo(fecha)); // Usar el constructor actual
+        }
+    });
+
+    // Transferimos la cola temporal a la cola de conteos
+    while (!colaTemporal.empty()) {
+        colaConteos.push(colaTemporal.front());
+        colaTemporal.pop();
+    }
+}
+
+// Función para ordenar la cola y mantener solo el top 3
+void InterfazPrincipal::ordenarTop3(std::queue<FechaConteo>& colaConteos) {
+    std::queue<FechaConteo> colaOrdenada;
+
+    while (!colaConteos.empty()) {
+        auto actual = colaConteos.front();
+        colaConteos.pop();
+
+        // Insertar en la cola ordenada
+        std::queue<FechaConteo> tempQueue;
+        while (!colaOrdenada.empty() && colaOrdenada.front().conteo > actual.conteo) {
+            tempQueue.push(colaOrdenada.front());
+            colaOrdenada.pop();
+        }
+        colaOrdenada.push(actual);
+        while (!tempQueue.empty()) {
+            colaOrdenada.push(tempQueue.front());
+            tempQueue.pop();
+        }
+    }
+
+    // Mantener solo el top 3
+    while (colaOrdenada.size() > 3) {
+        colaOrdenada.pop();
+    }
+
+    // Transferimos de nuevo a la cola de conteos
+    while (!colaOrdenada.empty()) {
+        colaConteos.push(colaOrdenada.front());
+        colaOrdenada.pop();
+    }
+}
+
+// Función para mostrar el top 3 fechas con más publicaciones
+void InterfazPrincipal::mostrarTopFechas(std::queue<FechaConteo>& colaConteos) {
+    std::cout << "Top 3 fechas con más publicaciones:\n";
+    for (int i = 0; i < 3 && !colaConteos.empty(); ++i) {
+        const auto& top = colaConteos.front();
+        std::cout << top.fecha << ": " << top.conteo << " publicaciones\n";
+        colaConteos.pop();
     }
 }

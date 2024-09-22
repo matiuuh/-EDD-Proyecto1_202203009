@@ -2,12 +2,23 @@
 #define INTERFAZPRINCIPAL_H
 #include <QMainWindow>
 #include "Publicaciones/publicacion.h"
+#include "bstpublicaciones.h"
+
+#include <queue>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class InterfazPrincipal;
 }
 QT_END_NAMESPACE
+
+struct FechaConteo {
+    std::string fecha;
+    int conteo;
+
+    // Constructor
+    FechaConteo(const std::string& fecha) : fecha(fecha), conteo(1) {}
+};
 
 class InterfazPrincipal : public QMainWindow
 {
@@ -47,6 +58,13 @@ private slots:
     void eliminarUsuarioConectado();
 
     void buscarUsuarioCorreo();
+
+    //Reportes
+    void mostrarTopFechasPublicaciones();
+    // Declaraciones de las funciones
+    void contarPublicacionesPorFecha(const BSTPublicaciones& bst, std::queue<FechaConteo>& colaConteos);
+    void ordenarTop3(std::queue<FechaConteo>& colaConteos);
+    void mostrarTopFechas(std::queue<FechaConteo>& colaConteos);
 
 private:
     Ui::InterfazPrincipal *ui;

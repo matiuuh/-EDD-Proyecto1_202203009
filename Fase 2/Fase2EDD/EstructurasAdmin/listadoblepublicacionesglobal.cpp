@@ -16,6 +16,103 @@ ListaDoblePublicacionesGlobal& ListaDoblePublicacionesGlobal::getInstance() {
 
 ListaDoblePublicacionesGlobal::ListaDoblePublicacionesGlobal() : cabeza(nullptr), cola(nullptr) {}
 
+//***************************REPORTES MÓDULO USUARIO***************************
+//------------------------AGREGAR FECHAS Y ACTUALIZAR--------------------
+void agregarOActualizarFecha(NodoFecha*& cabeza, const std::string& fecha) {
+    NodoFecha* actual = cabeza;
+
+    // Buscar si la fecha ya está en la lista
+    while (actual != nullptr) {
+        if (actual->fecha == fecha) {
+            actual->cantidadPublicaciones++; // Incrementar el contador si la fecha ya existe
+            return;
+        }
+        actual = actual->siguiente;
+    }
+
+    // Si no está en la lista, agregar un nuevo nodo al inicio
+    NodoFecha* nuevoNodo = new NodoFecha(fecha);
+    nuevoNodo->siguiente = cabeza;
+    cabeza = nuevoNodo;
+}
+
+//--------------------CONTAR FECHAS------------------------
+void ListaDoblePublicacionesGlobal::contarFechasPublicaciones(NodoFecha*& listaFechas) {
+    NodoListaDoble* actual = cabeza;
+
+    // Recorrer la lista de publicaciones
+    while (actual != nullptr) {
+        // Agregar o actualizar la fecha de la publicación
+        agregarOActualizarFecha(listaFechas, actual->publicacion.getFecha().toStdString());
+        actual = actual->siguiente;
+    }
+}
+
+//-------------------------ORDENAR FECHAS--------------------------
+void ordenarListaPorCantidad(NodoFecha*& cabeza) {
+    if (!cabeza || !cabeza->siguiente) return;
+
+    bool intercambiado;
+    do {
+        intercambiado = false;
+        NodoFecha* actual = cabeza;
+        NodoFecha* anterior = nullptr;
+
+        while (actual->siguiente != nullptr) {
+            if (actual->cantidadPublicaciones < actual->siguiente->cantidadPublicaciones) {
+                // Intercambiar nodos
+                NodoFecha* temp = actual->siguiente;
+                actual->siguiente = temp->siguiente;
+                temp->siguiente = actual;
+
+                if (anterior == nullptr) {
+                    cabeza = temp;
+                } else {
+                    anterior->siguiente = temp;
+                }
+
+                intercambiado = true;
+            }
+            anterior = actual;
+            actual = actual->siguiente;
+        }
+    } while (intercambiado);
+}
+
+//-----------------------LIBRERAR MEMORIA---------------------------
+void ListaDoblePublicacionesGlobal::liberarListaFechas(NodoFecha*& cabeza) {
+    while (cabeza != nullptr) {
+        NodoFecha* temp = cabeza;
+        cabeza = cabeza->siguiente;
+        delete temp;
+    }
+}
+
+//------------------------MOSTRAR FECHAS EN CONSOLA------------------
+void ListaDoblePublicacionesGlobal::mostrarTopFechasPublicaciones() {
+    NodoFecha* listaFechas = nullptr;
+
+    // Contar las fechas en la lista de publicaciones
+    contarFechasPublicaciones(listaFechas);
+
+    // Ordenar la lista de fechas por cantidad de publicaciones
+    ordenarListaPorCantidad(listaFechas);
+
+    // Mostrar las tres fechas con más publicaciones
+    NodoFecha* actual = listaFechas;
+    int contador = 0;
+
+    std::cout << "Top 3 Fechas con más publicaciones:" << std::endl;
+    while (actual != nullptr && contador < 3) {
+        std::cout << "Fecha: " << actual->fecha << ", Publicaciones: " << actual->cantidadPublicaciones << std::endl;
+        actual = actual->siguiente;
+        contador++;
+    }
+
+    // Liberar memoria de la lista de fechas
+    liberarListaFechas(listaFechas);
+}
+
 void ListaDoblePublicacionesGlobal::insertar(const Publicacion& publicacion) {
     NodoListaDoble* nuevoNodo = new NodoListaDoble(publicacion);
 
@@ -107,3 +204,4 @@ void ListaDoblePublicacionesGlobal::generarGrafico() const {
         std::cout << "Graph generation failed with return code: " << returnCode << std::endl;
     }
 }
+

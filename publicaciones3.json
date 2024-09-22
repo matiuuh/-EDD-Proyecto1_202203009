@@ -1,0 +1,167 @@
+[
+    {
+      "correo": "maria.lopez@example.com",
+      "contenido": "Disfrutando de un día soleado en la playa, la vida es mejor con arena y mar.",
+      "fecha": "10/08/2020",
+      "hora": "14:23",
+        "comentarios":[
+            {
+                "correo": "maria.lopez@example.com",
+                "comentario": "primer comentario.",
+                "fecha": "11/08/2024",
+                "hora": "09:45"
+            },
+            {
+                "correo": "maria.lopez@example.com",
+                "comentario": "segundo comentario.",
+                "fecha": "11/08/2024",
+                "hora": "09:45"
+            }
+        ]
+    },
+    {
+      "correo": "maria.lopez@example.com",
+      "contenido": "Hoy aprendí algo nuevo, siempre es bueno salir de la zona de confort.",
+      "fecha": "10/08/2020",
+      "hora": "09:45",
+      "comentarios":[
+            {
+                "correo": "maria.lopez@example.com",
+                "comentario": "este es un comentario.",
+                "fecha": "11/08/2024",
+                "hora": "09:45"
+            },
+            {
+                "correo": "maria.lopez@example.com",
+                "comentario": "probando.",
+                "fecha": "11/08/2024",
+                "hora": "09:45"
+            }
+        ]
+    },
+    {
+      "correo": "maria.lopez@example.com",
+      "contenido": "El café de la mañana nunca decepciona, ¡energía pura para el día!",
+      "fecha": "12/08/2024",
+      "hora": "07:30",
+      "comentarios":[
+        ]
+    },
+    {
+      "correo": "maria.lopez@example.com",
+      "contenido": "Los atardeceres en la ciudad son simplemente mágicos, me encanta.",
+      "fecha": "12/08/2024",
+      "hora": "18:12",
+      "comentarios":[
+            {
+                "correo": "maria.lopez@example.com",
+                "comentario": "este otro tambien es un comentario",
+                "fecha": "11/08/2024",
+                "hora": "09:45"
+            },
+            {
+                "correo": "maria.lopez@example.com",
+                "comentario": "holaa, me gusta esta publicacion sabes.",
+                "fecha": "11/08/2024",
+                "hora": "09:45"
+            }
+        ]
+    },
+    {
+      "correo": "miguel.rodriguez@example.com",
+      "contenido": "Una nueva aventura comienza, emocionado por lo que viene.",
+      "fecha": "19/08/2024",
+      "hora": "08:50",
+      "comentarios":[
+            {
+                "correo": "maria.lopez@example.com",
+                "comentario": "este es otro comentario random",
+                "fecha": "11/08/2024",
+                "hora": "09:45"
+            }
+        ]
+    },
+    {
+        "correo": "maria.lopez@example.com",
+        "contenido": "Disfrutando de un día soleado en la playa, la vida es mejor con arena y mar.",
+        "fecha": "12/08/2024",
+        "hora": "14:23",
+          "comentarios":[
+              {
+                  "correo": "maria.lopez@example.com",
+                  "comentario": "primer comentario.",
+                  "fecha": "11/08/2024",
+                  "hora": "09:45"
+              },
+              {
+                  "correo": "maria.lopez@example.com",
+                  "comentario": "segundo comentario.",
+                  "fecha": "11/08/2024",
+                  "hora": "09:45"
+              }
+          ]
+      },
+      {
+        "correo": "maria.lopez@example.com",
+        "contenido": "Hoy aprendí algo nuevo, siempre es bueno salir de la zona de confort.",
+        "fecha": "10/08/2020",
+        "hora": "09:45",
+        "comentarios":[
+              {
+                  "correo": "maria.lopez@example.com",
+                  "comentario": "este es un comentario.",
+                  "fecha": "11/08/2024",
+                  "hora": "09:45"
+              },
+              {
+                  "correo": "maria.lopez@example.com",
+                  "comentario": "probando.",
+                  "fecha": "11/08/2024",
+                  "hora": "09:45"
+              }
+          ]
+      },
+      {
+        "correo": "maria.lopez@example.com",
+        "contenido": "El café de la mañana nunca decepciona, ¡energía pura para el día!",
+        "fecha": "11/08/2024",
+        "hora": "07:30",
+        "comentarios":[
+          ]
+      },
+      {
+        "correo": "maria.lopez@example.com",
+        "contenido": "Los atareceres en la ciudad son simplemente mágicos, me encanta.",
+        "fecha": "11/05/2024",
+        "hora": "18:12",
+        "comentarios":[
+              {
+                  "correo": "maria.lopez@example.com",
+                  "comentario": "este otro tambien es un comentario",
+                  "fecha": "11/08/2024",
+                  "hora": "09:45"
+              },
+              {
+                  "correo": "maria.lopez@example.com",
+                  "comentario": "holaa, me gusta esta publicacion sabes.",
+                  "fecha": "11/08/2024",
+                  "hora": "09:45"
+              }
+          ]
+      },
+      {
+        "correo": "maria.lopez@example.com",
+        "contenido": "Una nueva aentura comienza, emocionado por lo que viene.",
+        "fecha": "11/05/2024",
+        "hora": "08:50",
+        "comentarios":[
+              {
+                  "correo": "maria.lopez@example.com",
+                  "comentario": "este es otro comentario random",
+                  "fecha": "11/08/2024",
+                  "hora": "09:45"
+              }
+          ]
+      }
+  ]
+  

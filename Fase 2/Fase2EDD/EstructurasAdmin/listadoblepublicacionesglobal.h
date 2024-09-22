@@ -14,6 +14,17 @@ public:
         : publicacion(pub), siguiente(nullptr), anterior(nullptr) {}
 };
 
+// Estructura auxiliar para manejar las fechas de las publicaciones
+struct NodoFecha {
+    std::string fecha;
+    int cantidadPublicaciones;
+    NodoFecha* siguiente;
+
+    // Constructor
+    NodoFecha(const std::string& fecha)
+        : fecha(fecha), cantidadPublicaciones(1), siguiente(nullptr) {}
+};
+
 class ListaDoblePublicacionesGlobal
 {
 public:
@@ -24,6 +35,9 @@ public:
     void eliminar(const std::string& idPublicacion);  // Añadir parámetros necesarios
     void mostrar() const;
     //Publicacion buscar(const std::string& idPublicacion) const;  // Añadir parámetros necesarios
+    void contarFechasPublicaciones(NodoFecha*& listaFechas);
+    void liberarListaFechas(NodoFecha*& cabeza);
+    void mostrarTopFechasPublicaciones();
     void generarGrafico() const;
 
 private:
