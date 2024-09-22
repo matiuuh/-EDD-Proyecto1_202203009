@@ -66,6 +66,8 @@ private slots:
     void ordenarTop3(std::queue<FechaConteo>& colaConteos);
     void mostrarTopFechas(std::queue<FechaConteo>& colaConteos);
 
+    void generarGraficoBSTPorFecha();
+
 private:
     Ui::InterfazPrincipal *ui;
     QString correoConectado; // Variable para almacenar el correo del usuario conectado

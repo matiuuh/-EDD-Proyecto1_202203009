@@ -3,6 +3,9 @@
 #include "listadoble.h"
 //#include "Publicaciones/colaconteos.h"
 
+#include<string>
+#include<fstream>
+
 // Constructor del NodoBST
 NodoBST::NodoBST(const std::string& fecha)
     : fecha(fecha), izquierda(nullptr), derecha(nullptr) {}
@@ -214,4 +217,61 @@ void BSTPublicaciones::recorrerPostOrden(std::function<void(const Publicacion&)>
     recorrerPostOrdenRecursivo(raiz, funcion);
 }
 
+//-----------------------------GRAFICAS BST PUBLICACION POR FECHA------------------------------------
 
+NodoBST* BSTPublicaciones::buscarPorFechaR(const std::string& fecha) const {
+    return buscarRecursivoR(raiz, fecha);
+}
+
+NodoBST* BSTPublicaciones::buscarRecursivoR(NodoBST* nodo, const std::string& fecha) const {
+    if (!nodo || nodo->fecha == fecha) {
+        return nodo;
+    }
+
+    if (fecha < nodo->fecha) {
+        return buscarRecursivo(nodo->izquierda, fecha);
+    } else {
+        return buscarRecursivo(nodo->derecha, fecha);
+    }
+}
+
+
+// Función para generar el archivo .dot para Graphviz
+void BSTPublicaciones::generarDot(NodoBST* nodo, std::ofstream& archivo) const {
+    if (!nodo) return;
+
+    // Escribir el nodo actual
+    archivo << "\"" << nodo->fecha << "\";\n";
+
+    // Si tiene hijo izquierdo, conectarlo, o poner nodo nulo si no tiene
+    if (nodo->izquierda) {
+        archivo << "\"" << nodo->fecha << "\" -> \"" << nodo->izquierda->fecha << "\";\n";
+        generarDot(nodo->izquierda, archivo);
+    } else {
+        // Nodo nulo a la izquierda si no existe hijo
+        archivo << "\"" << nodo->fecha << "\" -> \"nulo_" << nodo->fecha << "_izquierda\" [style=dotted];\n";
+        archivo << "\"nulo_" << nodo->fecha << "_izquierda\" [label=\"\", shape=point];\n";
+    }
+
+    // Si tiene hijo derecho, conectarlo, o poner nodo nulo si no tiene
+    if (nodo->derecha) {
+        archivo << "\"" << nodo->fecha << "\" -> \"" << nodo->derecha->fecha << "\";\n";
+        generarDot(nodo->derecha, archivo);
+    } else {
+        // Nodo nulo a la derecha si no existe hijo
+        archivo << "\"" << nodo->fecha << "\" -> \"nulo_" << nodo->fecha << "_derecha\" [style=dotted];\n";
+        archivo << "\"nulo_" << nodo->fecha << "_derecha\" [label=\"\", shape=point];\n";
+    }
+}
+
+
+// Función para crear el archivo .dot
+void BSTPublicaciones::exportarDot(const std::string& nombreArchivo) const {
+    std::ofstream archivo(nombreArchivo);
+    if (archivo.is_open()) {
+        archivo << "digraph G {\n";
+        generarDot(raiz, archivo);
+        archivo << "}\n";
+        archivo.close();
+    }
+}

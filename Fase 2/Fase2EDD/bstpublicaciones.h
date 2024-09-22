@@ -15,13 +15,6 @@ public:
 
     NodoBST(const std::string& fecha);
 };
-/*
-struct NodoFecha {
-    std::string fecha;
-    NodoFecha* siguiente;
-
-    NodoFecha(const std::string& fecha) : fecha(fecha), siguiente(nullptr) {}
-};*/
 
 class BSTPublicaciones {
 public:
@@ -58,6 +51,11 @@ public:
     void recorrerPostOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const;
 
     void recorrerPostOrden(std::function<void(const Publicacion&)> funcion) const;
+
+    void generarDot(NodoBST* nodo, std::ofstream& archivo) const;
+    void exportarDot(const std::string& nombreArchivo) const;
+    NodoBST* buscarPorFechaR(const std::string& fecha) const;
+    NodoBST* buscarRecursivoR(NodoBST* nodo, const std::string& fecha) const;
 
 
 private:

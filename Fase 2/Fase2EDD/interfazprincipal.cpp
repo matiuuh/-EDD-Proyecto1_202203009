@@ -23,6 +23,7 @@
 #include <iostream>  // Para utilizar cout
 #include <queue>
 #include <string>
+#include <fstream>
 
 InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuario)
     : QMainWindow(parent)
@@ -51,6 +52,9 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
 
     //Conectar el botón "Aplicar" para aplicar filtro de fecha
     connect(ui->btn_buscarUsuarioCorreo, &QPushButton::clicked, this, &InterfazPrincipal::buscarUsuarioCorreo);
+
+    //Conectar el botón "Aplicar" para aplicar filtro de fecha
+    connect(ui->btn_generarBSTGrafica, &QPushButton::clicked, this, &InterfazPrincipal::generarGraficoBSTPorFecha);
 
     // Llenar la tabla de usuarios cuando se abre la ventana
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
@@ -793,6 +797,7 @@ void InterfazPrincipal::buscarUsuarioCorreo() {
 }
 
 //*********************************REPORTES**************************************
+//----------------------TOP 3 FECHAS CON MÁS PUBLICACIONES-----------------------
 void InterfazPrincipal::mostrarTopFechasPublicaciones() {
     AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
     Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
@@ -919,5 +924,50 @@ void InterfazPrincipal::mostrarTopFechas(std::queue<FechaConteo>& colaConteos) {
         const auto& top = colaConteos.front();
         std::cout << top.fecha << ": " << top.conteo << " publicaciones\n";
         colaConteos.pop();
+    }
+}
+
+//----------------------GRAFICA BST PUBLICACION FECHA ESPECÍFICA-----------------------
+void InterfazPrincipal::generarGraficoBSTPorFecha() {
+    QString fecha = ui->txt_obtenerFechaBST->toPlainText();
+
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    if (!usuarioConectado) {
+        std::cerr << "Error: No se encontró el usuario conectado." << std::endl;
+        return;
+    }
+
+    BSTPublicaciones& bstPublicaciones = usuarioConectado->getBSTPublicacionesAmigos();
+
+    // Convertir los QString a std::string
+    std::string fechastd = fecha.toStdString();
+
+    NodoBST* nodo = bstPublicaciones.buscarPorFechaR(fechastd);
+
+    if (nodo) {
+        std::ofstream archivo("archivo.dot");
+        archivo << "digraph G {\n";
+        bstPublicaciones.generarDot(nodo, archivo);  // Solo graficamos el nodo de la fecha buscada
+        archivo << "}\n";
+        archivo.close();
+
+        // Generar imagen .png
+        std::string rutaImagen = "C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\arbol.png";
+        std::string comando = "dot -Tpng archivo.dot -o \"" + rutaImagen + "\"";
+        system(comando.c_str());
+
+        // Cargar imagen en el label
+        ui->lbl_bstGraficaFecha->clear();
+        QPixmap imagen(QString::fromStdString(rutaImagen));
+        if (!imagen.isNull()) {
+            imagen = imagen.scaled(311, 171, Qt::KeepAspectRatio);
+            ui->lbl_bstGraficaFecha->setPixmap(imagen);
+        } else {
+            std::cerr << "Error: No se pudo cargar la imagen." << std::endl;
+        }
+    } else {
+        std::cerr << "Error: No se encontraron publicaciones en la fecha especificada." << std::endl;
     }
 }
