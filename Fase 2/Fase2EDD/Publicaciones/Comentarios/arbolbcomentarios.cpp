@@ -1,209 +1,186 @@
 #include "arbolbcomentarios.h"
-#include <iostream>
 
-// Constructor del nodo
-NodoB::NodoB(bool hoja) : esHoja(hoja), n(0) {
-    comentarios.resize(ORDEN - 1);
-    hijos.resize(ORDEN);
+using namespace std;
+
+ArbolBComentarios::ArbolBComentarios(){
+    root = nullptr;
 }
 
-// Función para insertar un comentario en un nodo que no está lleno
-void NodoB::insertarNoLleno(const Comentario& comentario) {
-    std::cout << "Insertando comentario: " << comentario.getContenido().toStdString() << std::endl;
-    int i = n - 1;
+void ArbolBComentarios::insertar(shared_ptr<Comentario> comentario) {
+    std::cout << "ingresando "<< std::endl;
+    if (root == nullptr) {
+        std::cout << "root es nulo, inicializando." << std::endl;
+        root = new PaginaB(); // Inicializa root si es nulo
+    }
+    std::cout << "olaoalsa." << std::endl;
+    insertar(&root, comentario);
+}
 
-    // Si es una hoja, insertamos el comentario directamente
-    if (esHoja) {
-        while (i >= 0 && comentarios[i].getFecha() + comentarios[i].getHora() > comentario.getFecha() + comentario.getHora()) {
-            comentarios[i + 1] = comentarios[i];
-            i--;
-        }
-        comentarios[i + 1] = comentario;
-        n++;
+void ArbolBComentarios::insertar(PaginaB** root, shared_ptr<Comentario> comentario) {
+
+    // Verifica si root es nulo
+    if (*root == nullptr) {
+        std::cout << "El root pasado a este método es nulo, inicializando." << std::endl;
+        *root = new PaginaB(); // Inicializa si es nulo
     } else {
-        // Si no es hoja, buscamos el hijo apropiado
-        while (i >= 0 && comentarios[i].getFecha() + comentarios[i].getHora() > comentario.getFecha() + comentario.getHora())
-            i--;
-        i++;
+        std::cout << "Root existente, cuenta actual: " << (*root)->cuenta << std::endl;
+    }
 
-        if (hijos[i]->n == ORDEN - 1) {
-            dividirHijo(i, hijos[i]);
-            if (comentarios[i].getFecha() + comentarios[i].getHora() < comentario.getFecha() + comentario.getHora())
-                i++;
+    bool goUp = false;
+    shared_ptr<Comentario> mediano;
+    PaginaB* newPage;
+    std::cout << "en el push"<< std:: endl;
+    push(*root, comentario, goUp, mediano, &newPage);
+    std::cout << "333333333333333333";
+
+    if (goUp) {
+        // Crear una nueva página si la raíz se divide
+        PaginaB* temp = new PaginaB();
+        temp->keys[0] = mediano;
+        temp->branches[0] = *root;
+        temp->branches[1] = newPage;
+        temp->cuenta = 1;
+        *root = temp;
+    }
+}
+
+// Método push: Empujar un comentario a la página
+void ArbolBComentarios::push(PaginaB* actualPage, shared_ptr<Comentario> comentario, bool &goUp, shared_ptr<Comentario>& mediano, PaginaB** newPage) {
+    int k = 0;
+    std::cout << "[INFO] Entrando a push()" << std::endl;
+
+    if(actualPage == nullptr){
+        std::cout << "[INFO] Página actual es nullptr, subimos el comentario." << std::endl;
+
+        goUp = true;
+        mediano = comentario;
+        *newPage = nullptr;
+    }else{
+        std::cout << "[INFO] Buscando comentario en la página actual." << std::endl;
+
+        bool node_repeated = buscarComentarioEnPagina(actualPage, comentario, k);
+        if (node_repeated) {
+            cout << "Clave Duplicada: " << comentario << endl;
+            goUp = false;
+            return;
         }
-        hijos[i]->insertarNoLleno(comentario);
-    }
-}
+        std::cout << "[INFO] Descendiendo por la rama " << k << std::endl;
+        push(actualPage->branches[k], comentario, goUp, mediano, newPage);
+        /* devuelve control vuelve por el camino de busqueda*/
+        if(goUp) {
+            std::cout << "[INFO] Volviendo a subir después de insertar en una rama." << std::endl;
 
-// Función para dividir un nodo hijo cuando está lleno
-void NodoB::dividirHijo(int i, NodoB* hijo) {
-    NodoB* nuevoNodo = new NodoB(hijo->esHoja);
-    nuevoNodo->n = ORDEN / 2; // Mover la mitad de los elementos al nuevo nodo
-
-    // Mover la mitad de los comentarios al nuevo nodo
-    for (int j = 0; j < ORDEN / 2 - 1; j++) {
-        nuevoNodo->comentarios[j] = hijo->comentarios[j + ORDEN / 2];
-    }
-
-    // Si no es hoja, mover los hijos también
-    if (!hijo->esHoja) {
-        for (int j = 0; j < ORDEN / 2; j++) {
-            nuevoNodo->hijos[j] = hijo->hijos[j + ORDEN / 2];
-        }
-    }
-
-    // Reducir el número de comentarios en el nodo original
-    hijo->n = ORDEN / 2 - 1;
-
-    // Mover los hijos del nodo actual para hacer espacio
-    for (int j = n; j >= i + 1; j--) {
-        hijos[j + 1] = hijos[j];
-    }
-
-    // Insertar el nuevo hijo
-    hijos[i + 1] = nuevoNodo;
-
-    // Mover los comentarios del nodo actual para hacer espacio
-    for (int j = n - 1; j >= i; j--) {
-        comentarios[j + 1] = comentarios[j];
-    }
-
-    // Insertar el comentario mediano en el nodo padre actual
-    comentarios[i] = hijo->comentarios[ORDEN / 2 - 1];
-
-    // Incrementar el número de comentarios en el nodo padre
-    n++;
-}
-// Función para mostrar los comentarios en orden
-void NodoB::mostrar() const {
-    int i;
-    for (i = 0; i < n; i++) {
-        if (!esHoja && hijos[i] != nullptr) {
-            std::cout << "Mostrando comentarios del hijo en posición: " << i << std::endl;
-            hijos[i]->mostrar();  // Recursivamente muestra los nodos hijos
-        }
-        std::cout << "Comentario: " << comentarios[i].getContenido().toStdString() << " - Fecha: "
-                  << comentarios[i].getFecha().toStdString() << " - Hora: "
-                  << comentarios[i].getHora().toStdString() << std::endl;
-    }
-    if (!esHoja && hijos[i] != nullptr) {
-        std::cout << "Mostrando último hijo." << std::endl;
-        hijos[i]->mostrar();  // Muestra el último hijo
-    }
-}
-
-// Función para buscar un comentario por la clave (fecha y hora)
-NodoB* NodoB::buscar(const QString& claveFechaHora) {
-    int i = 0;
-    while (i < n && claveFechaHora > comentarios[i].getFecha() + comentarios[i].getHora())
-        i++;
-
-    if (i < n && comentarios[i].getFecha() + comentarios[i].getHora() == claveFechaHora)
-        return this;
-
-    if (esHoja)
-        return nullptr;
-
-    return hijos[i]->buscar(claveFechaHora);
-}
-
-void NodoB::listarComentarios(std::vector<Comentario>& listaComentarios) {
-    int i;
-    for (i = 0; i < n; i++) {
-        if (!esHoja) {
-            if (hijos[i] != nullptr) {
-                std::cout << "Listando comentarios del hijo " << i << std::endl;
-                hijos[i]->listarComentarios(listaComentarios);  // Recursivamente lista los comentarios de los hijos
+            if(actualPage->paginaLlena()){
+                std::cout << "[INFO] Página llena, se va a dividir." << std::endl;
+                dividir(actualPage, mediano, *newPage, k, mediano, newPage);
             } else {
-                std::cerr << "Error: Nodo hijo en la posición " << i << " es nullptr." << std::endl;
+                std::cout << "[INFO] Insertando comentario mediano en la página actual." << std::endl;
+
+                goUp = false;
+                pushNode(actualPage, mediano, *newPage, k);
             }
         }
-        listaComentarios.push_back(comentarios[i]);  // Agregar el comentario actual
-        std::cout << "Comentario agregado: " << comentarios[i].getContenido().toStdString() << std::endl;
     }
-    if (!esHoja && hijos[i] != nullptr) {
-        std::cout << "Listando comentarios del último hijo" << std::endl;
-        hijos[i]->listarComentarios(listaComentarios);  // Lista el último hijo
-    } else if (!esHoja && hijos[i] == nullptr) {
-        std::cerr << "Error: Último nodo hijo en la posición " << i << " es nullptr." << std::endl;
-    }
+    std::cout << "[INFO] Saliendo de push()" << std::endl;
 }
 
-// Función recursiva para mostrar los comentarios en orden en cada nodo
-void NodoB::mostrarTodosLosComentarios() const {
-    int i;
-    // Recorre los hijos y comentarios del nodo
-    for (i = 0; i < n; i++) {
-        // Si no es hoja, muestra primero los comentarios de los hijos
-        if (!esHoja && hijos[i] != nullptr) {
-            hijos[i]->mostrarTodosLosComentarios();
+void ArbolBComentarios::pushNode(PaginaB* current, shared_ptr<Comentario> comentario, PaginaB* rd, int k){
+    // move the keys and branches to the right
+    std::cout << "[INFO] Insertando comentario en la página." << std::endl;
+
+    for (int i = current->cuenta; i >= k+1; i--)
+    {
+        cout<<"hola1 "<<endl;
+        current->keys[i+1] = current->keys[i];
+        cout<<"hola2 "<<endl;
+        current->branches[i+1] = current->branches[i];
+        cout<<"hola "<<endl;
+    }
+
+    current->keys[k+1] = comentario;
+    current->branches[k+1] = rd;
+    current->cuenta++;
+    std::cout << "[INFO] Clave insertada. Nueva cuenta: " << current->cuenta << std::endl;
+}
+
+// Método para buscar si un comentario ya existe en la página
+bool ArbolBComentarios::buscarComentarioEnPagina(PaginaB* current, shared_ptr<Comentario> comentario, int &k) {
+    // Comparar los comentarios por correo y hora
+    for (k = 0; k < current->cuenta; k++) {
+        if (current->keys[k]->getFecha() == comentario->getFecha() && current->keys[k]->getHora() == comentario->getHora()) {
+            return true;  // El comentario ya existe
         }
-        // Mostrar el comentario actual
-        std::cout << "Comentario: " << comentarios[i].getContenido().toStdString()
-                  << " - Fecha: " << comentarios[i].getFecha().toStdString()
-                  << " - Hora: " << comentarios[i].getHora().toStdString() << std::endl;
-    }
-
-    // Mostrar el último hijo si no es hoja
-    if (!esHoja && hijos[i] != nullptr) {
-        hijos[i]->mostrarTodosLosComentarios();
-    }
-}
-
-
-//******************ARBOLB COMENTARIOS*******************************
-// Constructor del árbol B de comentarios
-ArbolBComentarios::ArbolBComentarios() {
-    raiz = nullptr;
-}
-
-// Función para insertar un comentario
-void ArbolBComentarios::insertar(const Comentario& comentario) {
-    if (!raiz) {
-        raiz = new NodoB(true);
-        raiz->comentarios[0] = comentario;
-        raiz->n = 1;
-    } else {
-        if (raiz->n == ORDEN - 1) {
-            NodoB* nuevoNodo = new NodoB(false);
-            nuevoNodo->hijos[0] = raiz;
-            nuevoNodo->dividirHijo(0, raiz);
-
-            int i = 0;
-            if (nuevoNodo->comentarios[0].getFecha() + nuevoNodo->comentarios[0].getHora() < comentario.getFecha() + comentario.getHora())
-                i++;
-            nuevoNodo->hijos[i]->insertarNoLleno(comentario);
-
-            raiz = nuevoNodo;
-        } else {
-            raiz->insertarNoLleno(comentario);
+        if (current->keys[k]->getFecha() > comentario->getFecha() ||
+            (current->keys[k]->getFecha() == comentario->getFecha() && current->keys[k]->getHora() > comentario->getHora())) {
+            break;  // Encontrar la posición correcta para insertar
         }
     }
+    return false;
 }
 
-// Función para mostrar todos los comentarios
-void ArbolBComentarios::mostrar() const{
-    if (raiz != nullptr)
-        raiz->mostrar();
-}
+// Método para dividir una página cuando está llena
+void ArbolBComentarios::dividir(PaginaB* current, shared_ptr<Comentario> comentario, PaginaB* rd, int k, shared_ptr<Comentario>& mediano, PaginaB** newPage) {
+    // Lógica para dividir la página cuando está llena
+    int posMedio = ORDEN / 2;
+    *newPage = new PaginaB();
 
-std::vector<Comentario> ArbolBComentarios::listarComentarios() const {
-    std::vector<Comentario> listaComentarios;
-    if (raiz != nullptr) {
-        std::cout << "Raíz del árbol encontrada. Listando comentarios..." << std::endl;
-        raiz->listarComentarios(listaComentarios);
-    } else {
-        std::cerr << "Error: La raíz del árbol de comentarios es nullptr." << std::endl;
+    // Mover las claves superiores y ramas a la nueva página
+    for (int i = posMedio + 1, j = 0; i < ORDEN; i++, j++) {
+        (*newPage)->keys[j] = current->keys[i];
+        (*newPage)->branches[j] = current->branches[i];
     }
-    return listaComentarios;
+
+    // Aquí está la corrección
+    (*newPage)->branches[ORDEN - posMedio - 1] = current->branches[current->cuenta];
+
+    current->cuenta = posMedio;
+    (*newPage)->cuenta = ORDEN - posMedio - 1;
+
+    // Determinar la clave mediana
+    if (k <= posMedio) {
+        insertarClave(current, comentario, rd, k);
+    } else {
+        insertarClave(*newPage, comentario, rd, k - posMedio - 1);
+    }
+
+    mediano = current->keys[posMedio];  // Elevar la clave mediana
 }
 
-// Función para mostrar todos los comentarios del árbol en orden
-void ArbolBComentarios::mostrarTodosLosComentarios() const {
-    if (raiz != nullptr) {
-        std::cout << "Mostrando todos los comentarios..." << std::endl;
-        raiz->mostrarTodosLosComentarios();
-    } else {
-        std::cerr << "No hay comentarios, el árbol está vacío." << std::endl;
+
+// Método para insertar una clave en la página
+void ArbolBComentarios::insertarClave(PaginaB* current, shared_ptr<Comentario> comentario, PaginaB* rd, int k) {
+    for (int i = current->cuenta; i > k; i--) {
+        current->keys[i] = current->keys[i - 1];
+        current->branches[i + 1] = current->branches[i];
+    }
+    current->keys[k] = comentario;
+    current->branches[k + 1] = rd;
+    current->cuenta++;
+}
+
+void ArbolBComentarios::mostrarTodosLosComentarios() {
+    mostrarComentariosDesdePagina(root);
+}
+
+void ArbolBComentarios::mostrarComentariosDesdePagina(PaginaB* pagina) {
+    if (pagina == nullptr) {
+        return; // Si la página es nula, no hay nada que mostrar
+    }
+
+    for (int i = 0; i < pagina->cuenta; i++) {
+        // Recorrer la rama izquierda
+        if (pagina->branches[i] != nullptr) {
+            mostrarComentariosDesdePagina(pagina->branches[i]);
+        }
+
+        // Mostrar el comentario en la clave
+        std::cout << "Comentario de " << pagina->keys[i]->getCorreo().toStdString()
+                  << " (Hora: " << pagina->keys[i]->getHora().toStdString() << "): "
+                  << pagina->keys[i]->getContenido().toStdString() << std::endl;
+    }
+
+    // Recorrer la rama derecha
+    if (pagina->branches[pagina->cuenta] != nullptr) {
+        mostrarComentariosDesdePagina(pagina->branches[pagina->cuenta]);
     }
 }

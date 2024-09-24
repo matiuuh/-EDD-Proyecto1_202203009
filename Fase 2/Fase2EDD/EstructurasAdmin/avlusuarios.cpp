@@ -1,5 +1,5 @@
 #include "avlusuarios.h"
-#include <windows.h>
+//#include <windows.h>
 #include <algorithm>
 //#include "../EstructurasUsuario/listadobleusuariosdisponibles.h"
 

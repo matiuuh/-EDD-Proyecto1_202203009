@@ -153,6 +153,7 @@ void BSTPublicaciones::agregarPublicacionesDeLista(ListaDoble& listaPublicacione
     }
 }
 
+//-------------------------------RECORRIDOS----------------------------
 void BSTPublicaciones::recorrerInOrdenRecursivo(NodoBST* nodo, std::function<void(const Publicacion&)> funcion) const {
     if (!nodo) return;
 

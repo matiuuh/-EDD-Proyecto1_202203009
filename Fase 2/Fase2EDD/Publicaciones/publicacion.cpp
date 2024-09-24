@@ -1,5 +1,4 @@
 #include "publicacion.h"
-#include <iostream>
 
 Publicacion::Publicacion(const QString& correo, const QString& contenido)
     : correoUsuario(correo), contenido(contenido)
@@ -31,7 +30,9 @@ void Publicacion::setContenido(const QString& contenido) {
 }
 
 void Publicacion::agregarComentario(const Comentario& comentario) {
-    arbolComentarios.insertar(comentario);  // Aquí usas el método de tu árbol B
+    // Convertir el comentario a shared_ptr
+    auto comentarioPtr = std::make_shared<Comentario>(comentario);
+    arbolComentarios.insertar(comentarioPtr);  // Aquí usas el método de tu árbol B
 }
 
 // Nuevo método para establecer la imagen
@@ -56,7 +57,7 @@ QString Publicacion::getNombreUsuario() const {
 }
 
 void Publicacion::listarComentarios() {
-    arbolComentarios.mostrar();  // Esto debería mostrar todos los comentarios en orden
+    arbolComentarios.mostrarTodosLosComentarios();  // Esto debería mostrar todos los comentarios en orden
 }
 
 ArbolBComentarios& Publicacion::getArbolComentarios() {

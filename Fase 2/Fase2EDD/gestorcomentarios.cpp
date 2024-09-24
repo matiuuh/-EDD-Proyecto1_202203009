@@ -51,7 +51,7 @@ void GestorComentarios::comentar()
     QString contenidoComentario = ui->txt_comentario->toPlainText();
 
     if (!publicacionActual) {
-        qDebug() << "publicacionActual es nulo.";
+        std::cout << "publicacionActual es nulo.";
         return;
     }
 
@@ -61,19 +61,25 @@ void GestorComentarios::comentar()
         return;
     }
 
+    // Verificación: comprobar si se agregó al árbol
+    std::cout << "crear nuevo comentario";
+    // Asegúrate de que correoConectado esté definido
+    std::cout << "Usuario conectado: " << correoConectado.toStdString() << std::endl;
+
+
     // Crear un nuevo comentario
-    Comentario comentario(correoConectado, contenidoComentario);
+    auto comentario = std::make_shared<Comentario>(correoConectado, contenidoComentario);
+
+    std::cout << "crea el objeto" << std::endl;
 
     // Agregar el comentario al árbol de la publicación actual
-    publicacionActual->agregarComentario(comentario);
+    publicacionActual->getArbolComentarios().insertar(comentario); // Cambiado a usar el método insertar
 
     // Verificación: comprobar si se agregó al árbol
-    std::cout << "Árbol de comentarios después de agregar el comentario:"<<std::endl;
+    std::cout << "Árbol de comentarios después de agregar el comentario:" << std::endl;
 
     // Mostrar el árbol de comentarios en consola para depuración
-    publicacionActual->getArbolComentarios().mostrar();
-    std::cout << "aqui si sale bro." << std::endl;
-    //publicacionActual->getArbolComentarios().mostrarTodosLosComentarios();
+    publicacionActual->getArbolComentarios().mostrarTodosLosComentarios(); // Aquí se llama a mostrar todos los comentarios
 
     // Limpiar el campo de texto después de agregar el comentario
     ui->txt_comentario->clear();
@@ -84,43 +90,6 @@ void GestorComentarios::comentar()
 
 void GestorComentarios::verComentarios()
 {
-    if (!publicacionActual) {
-        QMessageBox::warning(this, "Error", "No hay ninguna publicación seleccionada.");
-        return;
-    }
-
-    // Depuración: Imprimir la dirección de memoria de publicacionActual
-    std::cout << "Instancia de publicacionActual en verComentarios: " << publicacionActual << std::endl;
-
-    // Obtener los comentarios de la publicación
-    std::vector<Comentario> comentarios = publicacionActual->getArbolComentarios().listarComentarios();
-
-    // Depuración: Verificar si se obtuvieron los comentarios correctamente
-    std::cout << "Cantidad de comentarios obtenidos: " << comentarios.size() << std::endl;
-
-
-    // Crear un diálogo para mostrar los comentarios
-    QDialog dialog(this);
-    QVBoxLayout layout(&dialog);
-
-    if (comentarios.empty()) {
-        layout.addWidget(new QLabel("No hay comentarios disponibles.", &dialog)); // Mostrar un mensaje si no hay comentarios
-    } else {
-        for (const Comentario& comentario : comentarios) {
-            QString textoComentario = QString("%1: %2")
-            .arg(comentario.getCorreo(), comentario.getContenido());
-            layout.addWidget(new QLabel(textoComentario, &dialog));
-        }
-    }
-
-    QPushButton *btnCerrar = new QPushButton("Cerrar", &dialog);
-    layout.addWidget(btnCerrar);
-    dialog.setLayout(&layout);
-
-    // Conectar el botón "Cerrar" para cerrar el diálogo
-    connect(btnCerrar, &QPushButton::clicked, &dialog, &QDialog::accept);
-
-    dialog.exec();
 }
 
 void GestorComentarios::verArbolComentarios()
