@@ -971,3 +971,4 @@ void InterfazPrincipal::generarGraficoBSTPorFecha() {
         std::cerr << "Error: No se encontraron publicaciones en la fecha especificada." << std::endl;
     }
 }
+

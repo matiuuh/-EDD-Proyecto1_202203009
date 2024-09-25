@@ -56,29 +56,43 @@ El proyecto está organizado en los siguientes archivos y directorios:
 
 Permite a nuevos usuarios registrarse en el sistema mediante la introducción de un nombre, correo electrónico y contraseña. Los usuarios registrados se almacenan en la lista enlazada.
 
+![Módulo Buscar](imagenes/USReg.png)
+
 ### 2. Inicio de Sesión
 
 Función que verifica las credenciales del usuario y permite acceder al sistema. Si las credenciales son correctas, se redirige al menú del perfil.
+
+![Módulo Buscar](imagenes/USprincipal.png)
 
 ### 3. Gestión de Solicitudes de Amistad
 
 El sistema permite enviar, aceptar y rechazar solicitudes de amistad. Estas se almacenan en una pila y una cola según su estado, y pueden visualizarse en el perfil del usuario.
 
+![Módulo Buscar](imagenes/USAM.png)
+
 ### 4. Publicaciones
 
 Los usuarios pueden crear publicaciones que se almacenan en una lista doblemente enlazada. Esta lista es global y permite visualizar tanto las publicaciones propias como las de los amigos.
+
+![Módulo Buscar](imagenes/USPub.png)
 
 ### 5. Administración de Amigos
 
 El sistema gestiona las relaciones de amistad mediante una matriz dispersa que registra las conexiones entre usuarios. Al aceptar una solicitud, la relación de amistad se actualiza en la matriz.
 
+![Módulo Buscar](imagenes/USAM.png)
+
 ### 6. Eliminación de Cuenta
 
 Permite al usuario eliminar su cuenta, lo que implica eliminar sus datos, publicaciones y relaciones de amistad. Una vez realizada la eliminación, el usuario regresa al menú principal.
 
+![Módulo Buscar](imagenes/USEl.png)
+
 ### 7. Reportes y Gráficos
 
 El sistema genera gráficos usando Graphviz para representar visualmente la red de amigos, las solicitudes y las publicaciones. Estos gráficos se generan en formato `.dot` y pueden visualizarse usando herramientas compatibles.
+
+![Módulo Buscar](imagenes/USRep.png)
 
 ## Guía de Uso
 

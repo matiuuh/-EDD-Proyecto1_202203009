@@ -68,6 +68,7 @@ private slots:
 
     void generarGraficoBSTPorFecha();
 
+
 private:
     Ui::InterfazPrincipal *ui;
     QString correoConectado; // Variable para almacenar el correo del usuario conectado
