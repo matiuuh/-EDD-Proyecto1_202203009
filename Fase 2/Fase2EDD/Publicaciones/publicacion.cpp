@@ -29,11 +29,12 @@ void Publicacion::setContenido(const QString& contenido) {
     this->contenido = contenido;
 }
 
+/*
 void Publicacion::agregarComentario(const Comentario& comentario) {
     // Convertir el comentario a shared_ptr
     auto comentarioPtr = std::make_shared<Comentario>(comentario);
     arbolComentarios.insertar(comentarioPtr);  // Aquí usas el método de tu árbol B
-}
+}*/
 
 // Nuevo método para establecer la imagen
 void Publicacion::setImagen(const QString& rutaImagen) {
@@ -62,4 +63,8 @@ void Publicacion::listarComentarios() {
 
 ArbolBComentarios& Publicacion::getArbolComentarios() {
     return arbolComentarios;
+}
+
+ListaDobleComentariosAux& Publicacion::getListaComentarios(){
+    return listaAux;
 }

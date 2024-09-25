@@ -17,6 +17,7 @@ public:
     QString getContenido() const;
     QString getFecha() const;
     QString getHora() const;
+    QString getFechaHora() const;
 
 private:
     QString correoUsuario;    // Correo del usuario que hizo el comentario

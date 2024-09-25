@@ -500,7 +500,7 @@ void InterfazPrincipal::mostrarPublicaciones() {
 
         // Conectar botón a la función que abrirá la nueva interfaz de opciones
         connect(btnOpcionesPublicacion, &QPushButton::clicked, this, [this, &publicacion]() {
-            publicacionActual = const_cast<Publicacion*>(&publicacion); // Asignar la publicación seleccionada
+            publicacionActual = const_cast<Publicacion*>(&publicacion);
             mostrarOpcionesPublicacion();
         });
     });

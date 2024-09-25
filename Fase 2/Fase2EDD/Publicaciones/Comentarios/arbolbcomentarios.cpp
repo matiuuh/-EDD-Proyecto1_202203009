@@ -105,16 +105,25 @@ void ArbolBComentarios::pushNode(PaginaB* current, shared_ptr<Comentario> coment
 
 // Método para buscar si un comentario ya existe en la página
 bool ArbolBComentarios::buscarComentarioEnPagina(PaginaB* current, shared_ptr<Comentario> comentario, int &k) {
-    // Comparar los comentarios por correo y hora
+    // Comparar los comentarios por fecha y hora combinadas
+    QString fechaHoraComentario = comentario->getFechaHora();  // Obtener fecha y hora del comentario
+
+    std::cout << "[INFO] Revisando comentarios en la página." << std::endl;
     for (k = 0; k < current->cuenta; k++) {
-        if (current->keys[k]->getFecha() == comentario->getFecha() && current->keys[k]->getHora() == comentario->getHora()) {
+        QString fechaHoraActual = current->keys[k]->getFechaHora();  // Obtener fecha y hora de cada comentario en la página
+
+        // Verificar si ya existe un comentario con la misma fecha y hora
+        if (fechaHoraActual == fechaHoraComentario) {
+            std::cout << "[INFO] Comentario encontrado, retorna true." << std::endl;
             return true;  // El comentario ya existe
         }
-        if (current->keys[k]->getFecha() > comentario->getFecha() ||
-            (current->keys[k]->getFecha() == comentario->getFecha() && current->keys[k]->getHora() > comentario->getHora())) {
+
+        // Verificar si la fecha y hora actual es mayor que la del comentario
+        if (fechaHoraActual > fechaHoraComentario) {
             break;  // Encontrar la posición correcta para insertar
         }
     }
+    std::cout << "[INFO] Saliendo de la revisión de comentarios." << std::endl;
     return false;
 }
 

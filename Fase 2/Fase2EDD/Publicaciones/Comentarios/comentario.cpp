@@ -1,10 +1,13 @@
 #include "comentario.h"
 
+using namespace std;
+#include <iostream>
+
 Comentario::Comentario(const QString& correo, const QString& comentario)
     : correoUsuario(correo), contenido(comentario)
 {
     // Obtener la fecha y hora actuales
-    QDateTime fechaHoraActual = QDateTime::currentDateTime();
+    QDateTime fechaHoraActual = QDateTime::currentDateTime();//nos ayuda a encontrar la hora y fecha actules
     fecha = fechaHoraActual.date().toString("dd/MM/yyyy");
     hora = fechaHoraActual.time().toString("HH:mm:ss");
 }
@@ -26,4 +29,11 @@ QString Comentario::getFecha() const {
 
 QString Comentario::getHora() const {
     return hora;
+}
+
+QString Comentario::getFechaHora() const {
+    QString fechaHora = fecha + hora;
+
+    std::cout<<fechaHora.toStdString()<<std::endl;
+    return fechaHora;
 }

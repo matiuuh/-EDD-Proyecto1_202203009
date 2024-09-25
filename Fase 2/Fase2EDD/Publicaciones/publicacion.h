@@ -4,7 +4,8 @@
 #include <QString>
 #include <QDateTime>
 #include "Comentarios/arbolbcomentarios.h"   // Aquí deberías tener la implementación del árbol B
-#include "Comentarios/comentario.h"
+//#include "Comentarios/arbolavlcomentarios.h"
+#include "Comentarios/listadoblecomentariosaux.h"
 
 class Publicacion
 {
@@ -19,7 +20,7 @@ public:
     QString getImagen() const;
     QString getNombreUsuario() const;
 
-    void agregarComentario(const Comentario& comentario);
+    //void agregarComentario(const Comentario& comentario);
 
     //Publicaciones
     void setContenido(const QString& contenido);
@@ -29,6 +30,8 @@ public:
 
     void listarComentarios();
     ArbolBComentarios& getArbolComentarios();
+    //const ListaDobleComentariosAux& getListaComentarios() const;
+    ListaDobleComentariosAux& getListaComentarios(); // Para modificación
 
 private:
     QString correoUsuario;      // Correo del usuario que crea la publicación
@@ -37,6 +40,7 @@ private:
     QString hora;               // Hora de creación
     QString imagen;  // Variable miembro para almacenar la ruta de la imagen
     ArbolBComentarios arbolComentarios;  // Árbol B que almacena los comentarios
+    ListaDobleComentariosAux listaAux;
 };
 
 #endif // PUBLICACION_H

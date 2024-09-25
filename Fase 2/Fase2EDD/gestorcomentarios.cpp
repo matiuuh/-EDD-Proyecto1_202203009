@@ -61,25 +61,14 @@ void GestorComentarios::comentar()
         return;
     }
 
-    // Verificación: comprobar si se agregó al árbol
-    std::cout << "crear nuevo comentario";
-    // Asegúrate de que correoConectado esté definido
-    std::cout << "Usuario conectado: " << correoConectado.toStdString() << std::endl;
-
-
     // Crear un nuevo comentario
     auto comentario = std::make_shared<Comentario>(correoConectado, contenidoComentario);
 
-    std::cout << "crea el objeto" << std::endl;
+    // Agregar el comentario a la lista doblemente enlazada de la publicación actual
+    publicacionActual->getListaComentarios().agregarComentario(comentario);
 
-    // Agregar el comentario al árbol de la publicación actual
-    publicacionActual->getArbolComentarios().insertar(comentario); // Cambiado a usar el método insertar
+    std::cout << "Comentario insertado correctamente en la lista doblemente enlazada." << std::endl;
 
-    // Verificación: comprobar si se agregó al árbol
-    std::cout << "Árbol de comentarios después de agregar el comentario:" << std::endl;
-
-    // Mostrar el árbol de comentarios en consola para depuración
-    publicacionActual->getArbolComentarios().mostrarTodosLosComentarios(); // Aquí se llama a mostrar todos los comentarios
 
     // Limpiar el campo de texto después de agregar el comentario
     ui->txt_comentario->clear();
@@ -90,6 +79,13 @@ void GestorComentarios::comentar()
 
 void GestorComentarios::verComentarios()
 {
+    if (!publicacionActual) {
+        std::cout << "publicacionActual es nulo." << std::endl;
+        return;
+    }
+
+    // Agregar el comentario a la lista doblemente enlazada de la publicación actual
+    publicacionActual->getListaComentarios().mostrarComentarios();
 }
 
 void GestorComentarios::verArbolComentarios()
