@@ -50,17 +50,6 @@ void GestorComentarios::comentar()
     // Obtener el texto del campo de comentario
     QString contenidoComentario = ui->txt_comentario->toPlainText();
 
-    if (!publicacionActual) {
-        std::cout << "publicacionActual es nulo.";
-        return;
-    }
-
-    // Verificar si el comentario está vacío
-    if (contenidoComentario.isEmpty()) {
-        QMessageBox::warning(this, "Error", "El comentario no puede estar vacío.");
-        return;
-    }
-
     // Crear un nuevo comentario
     auto comentario = std::make_shared<Comentario>(correoConectado, contenidoComentario);
 
@@ -81,6 +70,12 @@ void GestorComentarios::verComentarios()
 {
     if (!publicacionActual) {
         std::cout << "publicacionActual es nulo." << std::endl;
+        return;
+    }
+
+    // Verificar si la lista de comentarios tiene cabeza
+    if (!publicacionActual->getListaComentarios().estaVacia()) {
+        std::cout << "No hay comentarios para mostrar." << std::endl;
         return;
     }
 

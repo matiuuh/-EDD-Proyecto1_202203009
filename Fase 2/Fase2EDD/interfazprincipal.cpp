@@ -487,6 +487,15 @@ void InterfazPrincipal::mostrarPublicaciones() {
         QLabel *contenidoPublicacion = new QLabel(publicacion.getContenido());
         layoutPublicacion->addWidget(contenidoPublicacion);
 
+        // Crear QLabel para mostrar la imagen, si existe
+        QString rutaImagen = publicacion.getImagen();  // Obtén la ruta de la imagen
+        if (!rutaImagen.isEmpty()) {  // Verifica que la ruta no esté vacía
+            QLabel *imagenPublicacion = new QLabel();
+            QPixmap imagen(rutaImagen);  // Carga la imagen desde la ruta
+            imagenPublicacion->setPixmap(imagen.scaled(200, 200, Qt::KeepAspectRatio));  // Ajusta el tamaño
+            layoutPublicacion->addWidget(imagenPublicacion);  // Añade el QLabel de la imagen al layout
+        }
+
         // Añadir botones debajo del contenido
         QHBoxLayout *layoutBotones = new QHBoxLayout();
         QPushButton *btnOpcionesPublicacion = new QPushButton("Opciones Publicación");
@@ -571,6 +580,15 @@ void InterfazPrincipal::mostrarPublicacionesPorFecha(const QString& fechaFiltro)
             QLabel *contenidoPublicacion = new QLabel(publicacion.getContenido());
             layoutPublicacion->addWidget(contenidoPublicacion);
 
+            // Crear QLabel para mostrar la imagen, si existe
+            QString rutaImagen = publicacion.getImagen();  // Obtén la ruta de la imagen
+            if (!rutaImagen.isEmpty()) {  // Verifica que la ruta no esté vacía
+                QLabel *imagenPublicacion = new QLabel();
+                QPixmap imagen(rutaImagen);  // Carga la imagen desde la ruta
+                imagenPublicacion->setPixmap(imagen.scaled(200, 200, Qt::KeepAspectRatio));  // Ajusta el tamaño
+                layoutPublicacion->addWidget(imagenPublicacion);  // Añade el QLabel de la imagen al layout
+            }
+
             // Añadir botones debajo del contenido
             QHBoxLayout *layoutBotones = new QHBoxLayout();
             QPushButton *btnComentar = new QPushButton("Comentar");
@@ -638,6 +656,15 @@ void InterfazPrincipal::mostrarPublicacionesConOrden(const QString& tipoOrden, i
         QLabel *contenidoPublicacion = new QLabel(publicacion.getContenido());
         layoutPublicacion->addWidget(contenidoPublicacion);
 
+        // Crear QLabel para mostrar la imagen, si existe
+        QString rutaImagen = publicacion.getImagen();  // Obtén la ruta de la imagen
+        if (!rutaImagen.isEmpty()) {  // Verifica que la ruta no esté vacía
+            QLabel *imagenPublicacion = new QLabel();
+            QPixmap imagen(rutaImagen);  // Carga la imagen desde la ruta
+            imagenPublicacion->setPixmap(imagen.scaled(200, 200, Qt::KeepAspectRatio));  // Ajusta el tamaño
+            layoutPublicacion->addWidget(imagenPublicacion);  // Añade el QLabel de la imagen al layout
+        }
+
         QHBoxLayout *layoutBotones = new QHBoxLayout();
         QPushButton *btnComentar = new QPushButton("Comentar");
         QPushButton *btnVerComentarios = new QPushButton("Ver Comentarios");
@@ -682,6 +709,12 @@ void InterfazPrincipal::mostrarPublicacionesConOrden(const QString& tipoOrden, i
 //****************************COMENTARIOS*****************************
 
 void InterfazPrincipal::mostrarOpcionesPublicacion(){
+
+    if (!publicacionActual) {
+        std::cerr << "Error: publicacionActual es nulo." << std::endl;
+        return;
+    }
+
     // Crear una nueva instancia de gestor
     GestorComentarios *crear = new GestorComentarios(nullptr, correoConectado, publicacionActual);
     crear->show();

@@ -552,6 +552,23 @@ void ModuloAdministrador::eliminarUsuario(const QModelIndex &index) {
                                   QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
+        /*std::string correoUsuario = correo.toStdString();
+        // Eliminar al usuario de la matriz dispersa
+        MatrizDispersaAmigos& matrizAmigos = MatrizDispersaAmigos::getInstance();
+        std::vector<std::string> amigos = matrizAmigos.obtenerAmigos(correoUsuario);
+
+        // Eliminar la amistad del usuario en la matriz dispersa y de sus amigos
+        for (const std::string& amigo : amigos) {
+            matrizAmigos.eliminarAmistad(correoUsuario);  // Eliminar la relación con cada amigo
+            matrizAmigos.eliminarAmistad(amigo);          // Eliminar al usuario de la matriz de sus amigos
+        }
+
+        // Eliminar publicaciones del usuario del BST de sus amigos
+        for (const std::string& amigo : amigos) {
+            BSTPublicaciones& bstAmigo = obtenerBSTPublicacionesDeAmigo(amigo); // Obtener el BST de publicaciones del amigo
+            bstAmigo.eliminarPublicacionesDeUsuario(correoUsuario);  // Eliminar publicaciones del usuario
+        }
+        */
         // Eliminar el usuario del AVL
         AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
         avlUsuarios.eliminar(correo.toStdString());

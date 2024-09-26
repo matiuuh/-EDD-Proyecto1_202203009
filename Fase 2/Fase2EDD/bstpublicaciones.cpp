@@ -276,3 +276,14 @@ void BSTPublicaciones::exportarDot(const std::string& nombreArchivo) const {
         archivo.close();
     }
 }
+
+
+//-----------------------------------------------
+void BSTPublicaciones::eliminarPublicacionesDeUsuario(const std::string& correoUsuario) {
+    QString qCorreoUsuario = QString::fromStdString(correoUsuario); // Convertir std::string a QString
+    recorrerInOrden([&](const Publicacion& publicacion) {
+        if (publicacion.getCorreo() == qCorreoUsuario) {
+            eliminar(publicacion);  // Eliminar la publicación del usuario
+        }
+    });
+}

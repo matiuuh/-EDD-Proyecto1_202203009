@@ -58,6 +58,8 @@ public:
     NodoBST* buscarRecursivoR(NodoBST* nodo, const std::string& fecha) const;
 
 
+    void eliminarPublicacionesDeUsuario(const std::string& correoUsuario);
+
 private:
     NodoBST* raiz;
 

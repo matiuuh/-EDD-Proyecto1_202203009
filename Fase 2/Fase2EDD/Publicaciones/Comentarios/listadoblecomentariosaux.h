@@ -23,6 +23,8 @@ public:
 
     // Destructor para liberar memoria
     ~ListaDobleComentariosAux();
+
+    bool estaVacia() const;
 };
 
 #endif // LISTADOBLECOMENTARIOSAUX_H

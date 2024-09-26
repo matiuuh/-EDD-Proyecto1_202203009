@@ -10,6 +10,9 @@ Comentario::Comentario(const QString& correo, const QString& comentario)
     QDateTime fechaHoraActual = QDateTime::currentDateTime();//nos ayuda a encontrar la hora y fecha actules
     fecha = fechaHoraActual.date().toString("dd/MM/yyyy");
     hora = fechaHoraActual.time().toString("HH:mm:ss");
+
+    // Depuración
+    std::cout << "Comentario creado de: " << correo.toStdString() << " contenido: " << contenido.toStdString() << std::endl;
 }
 
 Comentario::Comentario() = default;  // Constructor predeterminado
