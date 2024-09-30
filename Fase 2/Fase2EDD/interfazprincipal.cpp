@@ -502,6 +502,10 @@ void InterfazPrincipal::mostrarPublicaciones() {
 
         layoutBotones->addWidget(btnOpcionesPublicacion);
 
+        // Botón de Eliminar Publicación
+        QPushButton *btnEliminarPublicacion = new QPushButton("Eliminar Publicación");
+        layoutBotones->addWidget(btnEliminarPublicacion);
+
         layoutPublicacion->addLayout(layoutBotones);
 
         // Añadir el widget de la publicación al layout de todas las publicaciones
@@ -512,12 +516,40 @@ void InterfazPrincipal::mostrarPublicaciones() {
             publicacionActual = const_cast<Publicacion*>(&publicacion);
             mostrarOpcionesPublicacion();
         });
+
+
+        // Conectar el botón de eliminar a la función que eliminará la publicación
+        connect(btnEliminarPublicacion, &QPushButton::clicked, this, [this, publicacion]() {
+            eliminarPublicacion(publicacion);  // Llamar al método auxiliar para eliminar la publicación
+        });
+
     });
 
     // Establecer el layout de publicaciones en el contenedor de scroll
     ui->scroll_publicaciones->setWidget(contenedorPublicaciones);
     contenedorPublicaciones->setLayout(layoutPublicaciones);
 }
+
+void InterfazPrincipal::eliminarPublicacion(const Publicacion& publicacion) {
+    // Obtener el usuario conectado
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    if (!usuarioConectado) {
+        std::cerr << "Error: No se encontró el usuario conectado." << std::endl;
+        return;
+    }
+
+    // Obtener el BST de publicaciones del usuario conectado
+    BSTPublicaciones& bstPublicaciones = usuarioConectado->getBSTPublicacionesAmigos();
+
+    // Eliminar la publicación del BST
+    bstPublicaciones.eliminar(publicacion);
+    std::cout << "Publicacion eliminada "<< std::endl;
+    // Actualizar la vista
+    mostrarPublicaciones();
+}
+
 
 // Método para validar el formato de la fecha
 bool validarFecha(const QString& fecha) {

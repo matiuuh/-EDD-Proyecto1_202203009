@@ -40,7 +40,7 @@ void ModuloEntrada::verificarCredenciales()
     if (correo.isEmpty() || contrasenia.isEmpty()) {
         QMessageBox::warning(this, "Error", "Por favor ingresa tu correo y contraseña.");
         return;
-    }else if(correo == "admin" && contrasenia == "admin"){
+    }else if(correo == "admin@gmail.com" && contrasenia == "EDD2S2024"){
         // Si las credenciales son de administrador, abrir el módulo de administrador
         ModuloAdministrador *adminWindow = new ModuloAdministrador(nullptr);
         adminWindow->show();  // Mostrar la ventana del módulo administrador

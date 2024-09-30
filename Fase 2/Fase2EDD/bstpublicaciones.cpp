@@ -67,6 +67,8 @@ NodoBST* BSTPublicaciones::buscarRecursivo(NodoBST* nodo, const std::string& fec
 void BSTPublicaciones::eliminar(const Publicacion& publicacion) {
     std::string fecha = publicacion.getFecha().toStdString();
     std::string contenido = publicacion.getContenido().toStdString();
+    std:: cout <<fecha<<std::endl;
+    std:: cout <<contenido<<std::endl;
     raiz = eliminarRecursivo(raiz, fecha, contenido);
 }
 
