@@ -1,4 +1,23 @@
 digraph G {
 rankdir=LR;
 node [shape=record];
+Nodo0 [label="{cg@example.com | Disfrutando de un día soleado en la playa, la vida es mejor con arena y mar. | 12/08/2024 | 14:23}"];
+Nodo0 -> Nodo1 [dir=both];
+Nodo1 [label="{ml@example.com | Hoy aprendí algo nuevo, siempre es bueno salir de la zona de confort. | 11/08/2024 | 09:45}"];
+Nodo1 -> Nodo2 [dir=both];
+Nodo2 [label="{jm@example.com | El café de la mañana nunca decepciona, ¡energía pura para el día! | 10/08/2024 | 07:30}"];
+Nodo2 -> Nodo3 [dir=both];
+Nodo3 [label="{ah@example.com | Los atardeceres en la ciudad son simplemente mágicos, me encanta. | 13/08/2024 | 18:12}"];
+Nodo3 -> Nodo4 [dir=both];
+Nodo4 [label="{lp@example.com | Día perfecto para una caminata por el parque, disfrutando de la naturaleza. | 15/08/2024 | 10:57}"];
+Nodo4 -> Nodo5 [dir=both];
+Nodo5 [label="{lr@example.com | La lectura de un buen libro puede cambiar tu perspectiva del mundo. | 20/08/2024 | 16:45}"];
+Nodo5 -> Nodo6 [dir=both];
+Nodo6 [label="{jg@example.com | Esos pequeños momentos de felicidad son los que más cuentan. | 14/08/2024 | 13:20}"];
+Nodo6 -> Nodo7 [dir=both];
+Nodo7 [label="{et@example.com | Cocinando mi plato favorito, nada como la comida casera. | 21/08/2024 | 11:40}"];
+Nodo7 -> Nodo8 [dir=both];
+Nodo8 [label="{mr@example.com | Una nueva aventura comienza, emocionado por lo que viene. | 19/08/2024 | 08:50}"];
+Nodo8 -> Nodo9 [dir=both];
+Nodo9 [label="{sg@example.com | La música siempre encuentra la manera de alegrar mi día. | 18/08/2024 | 17:15}"];
 }

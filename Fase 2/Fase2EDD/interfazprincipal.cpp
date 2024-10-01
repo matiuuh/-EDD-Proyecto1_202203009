@@ -10,6 +10,7 @@
 #include "nuevapublicacion.h"
 #include "bstpublicaciones.h"
 #include "gestorcomentarios.h"
+#include "TablasModUsuario/buttondelegateeliminardef.h"
 
 #include <regex>
 #include <QStandardItemModel>
@@ -63,6 +64,7 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
     mostrarPublicaciones();
     mostrarDatosUsuarioConectado();
     mostrarTopFechasPublicaciones();
+    mostrarEliminar();
 }
 
 InterfazPrincipal::~InterfazPrincipal()
@@ -449,6 +451,7 @@ void InterfazPrincipal::crearPublicacion()
 
     // Cerrar la ventana actual
     this->close();
+    mostrarEliminar();
 }
 
 //--------------MOSTRAR PUBLICACIONES Y APLICAR FILTROS-----------------
@@ -528,6 +531,7 @@ void InterfazPrincipal::mostrarPublicaciones() {
     // Establecer el layout de publicaciones en el contenedor de scroll
     ui->scroll_publicaciones->setWidget(contenedorPublicaciones);
     contenedorPublicaciones->setLayout(layoutPublicaciones);
+    mostrarEliminar();
 }
 
 void InterfazPrincipal::eliminarPublicacion(const Publicacion& publicacion) {
@@ -548,6 +552,92 @@ void InterfazPrincipal::eliminarPublicacion(const Publicacion& publicacion) {
     std::cout << "Publicacion eliminada "<< std::endl;
     // Actualizar la vista
     mostrarPublicaciones();
+}
+
+void InterfazPrincipal::mostrarEliminar() {
+    // Obtener el usuario conectado
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoConectado.toStdString());
+
+    if (!usuarioConectado) {
+        std::cerr << "Error: No se encontró el usuario conectado." << std::endl;
+        return;
+    }
+
+    // Crear el modelo para la tabla de publicaciones
+    QStandardItemModel* model = new QStandardItemModel();
+    model->setColumnCount(5); // 5 columnas: Correo, Contenido, Imagen, Comentarios, Eliminar
+    model->setHorizontalHeaderLabels(QStringList() << "Correo" << "Contenido" << "Imagen" << "Comentarios" << "Eliminar");
+
+    // Obtener el BST de publicaciones del usuario conectado
+    BSTPublicaciones& bstPublicaciones = usuarioConectado->getBSTPublicacionesAmigos();
+
+    // Recorre el BST de publicaciones usando la función en orden
+    bstPublicaciones.recorrerInOrden([this, model](const Publicacion& publicacion) {
+        QList<QStandardItem*> fila;
+
+        // Convertir el correo y contenido a QString
+        QStandardItem* itemCorreo = new QStandardItem(publicacion.getCorreo());
+        QStandardItem* itemContenido = new QStandardItem(publicacion.getContenido());
+
+        // Añadir los elementos a la fila
+        fila.append(itemCorreo);
+        fila.append(itemContenido);
+
+        // Procesar la imagen si existe
+        QString rutaImagen = publicacion.getImagen();
+        QStandardItem* itemImagen = new QStandardItem();
+        if (!rutaImagen.isEmpty()) {
+            QPixmap imagen(rutaImagen);
+            itemImagen->setIcon(QIcon(imagen.scaled(50, 50, Qt::KeepAspectRatio)));  // Ajustar el tamaño
+        }
+        fila.append(itemImagen);
+
+        // Botón de comentarios
+        QStandardItem* itemComentarios = new QStandardItem("Comentarios");
+        fila.append(itemComentarios);
+
+        // Botón de eliminar
+        QStandardItem* itemEliminar = new QStandardItem("Eliminar");
+        itemEliminar->setData(QVariant::fromValue(publicacion), Qt::UserRole); // Guardar referencia a la publicación
+        fila.append(itemEliminar);
+
+        // Agregar la fila al modelo
+        model->appendRow(fila);
+    });
+
+    // Asignar el modelo a la tabla
+    ui->tbl_publicacionesEliminar->setModel(model);
+
+    // Crear un delegado para las columnas de comentarios y eliminar
+    ButtonDelegateEliminarDef *delegateComentarios = new ButtonDelegateEliminarDef(this, "Comentarios");
+    ButtonDelegateEliminarDef *delegateEliminar = new ButtonDelegateEliminarDef(this, "Eliminar");
+
+    ui->tbl_publicacionesEliminar->setItemDelegateForColumn(3, delegateComentarios); // Comentarios
+    ui->tbl_publicacionesEliminar->setItemDelegateForColumn(4, delegateEliminar); // Eliminar
+
+    // Conectar las señales de los botones
+    connect(delegateEliminar, &ButtonDelegateEliminarDef::publicacionEliminada, this, [this, model](const QModelIndex &index) {
+        //Publicacion publicacion = index.data(Qt::UserRole).value<Publicacion>();
+
+        // Aquí eliminarías la publicación del BST del usuario
+        // usuarioConectado->getBSTPublicacionesAmigos().eliminar(publicacion);
+
+        // Eliminar la fila del modelo
+        model->removeRow(index.row());
+        QMessageBox::information(this, "Eliminar", "Publicación eliminada.");
+    });
+
+    connect(delegateComentarios, &ButtonDelegateEliminarDef::mostrarComentarios, this, [](const QModelIndex &index) {
+        QMessageBox::information(nullptr, "Comentarios", "Botón de comentarios presionado.");
+    });
+
+    // Ajustar el ancho de las columnas si es necesario
+    ui->tbl_publicacionesEliminar->setColumnWidth(0, 175); // Columna "Correo"
+    ui->tbl_publicacionesEliminar->setColumnWidth(1, 210); // Columna "Contenido"
+    ui->tbl_publicacionesEliminar->setColumnWidth(2, 100); // Columna "Imagen"
+    ui->tbl_publicacionesEliminar->setColumnWidth(3, 100); // Columna "Comentarios"
+    ui->tbl_publicacionesEliminar->setColumnWidth(4, 100); // Columna "Eliminar"
 }
 
 

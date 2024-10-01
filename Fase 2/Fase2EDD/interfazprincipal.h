@@ -69,6 +69,7 @@ private slots:
     void generarGraficoBSTPorFecha();
 
     void eliminarPublicacion(const Publicacion& publicacion);
+    void mostrarEliminar();
 
 private:
     Ui::InterfazPrincipal *ui;

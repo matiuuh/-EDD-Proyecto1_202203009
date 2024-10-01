@@ -48,6 +48,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Publicaciones/Comentarios/paginab.h Publicaciones/Comentarios/paginab.cpp
         Publicaciones/Comentarios/listadoblecomentariosaux.h Publicaciones/Comentarios/listadoblecomentariosaux.cpp
         Publicaciones/Comentarios/nodocomentario.h Publicaciones/Comentarios/nodocomentario.cpp
+        TablasModUsuario/buttondelegateeliminardef.h TablasModUsuario/buttondelegateeliminardef.cpp
+
+
 
 
 
