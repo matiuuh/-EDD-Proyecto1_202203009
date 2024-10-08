@@ -305,16 +305,25 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();  // Usamos Singleton o un mecanismo similar si es necesario
 
     // Agregar la amistad en ambas direcciones
+    matrizGlobal.agregarUsuario(usuarioConectado->getCorreo());
+    matrizGlobal.agregarUsuario(remitente->getCorreo());
+    matrizGlobal.agregarRelacion(usuarioConectado->getCorreo(), remitente->getCorreo());
+    matrizGlobal.graficarMatriz();
+
+    // Agregar la amistad en ambas direcciones
     matrizAmigosUsuarioConectado.agregarAmistad( remitente->getCorreo());
     matrizAmigosRemitente.agregarAmistad(usuarioConectado->getCorreo());
+
+    // Insertar ambos usuarios en la matriz antes de crear la relación
+    nuevaMatrizAmigosUsuarioConectado.insertarUsuario(usuarioConectado->getCorreo());
+    nuevaMatrizAmigosUsuarioConectado.insertarUsuario(remitente->getCorreo());
+
+    nuevaMatrizAmigosRemitente.insertarUsuario(remitente->getCorreo());
+    nuevaMatrizAmigosRemitente.insertarUsuario(usuarioConectado->getCorreo());
 
     // Agregar la relación en las matrices individuales de adyacencia
     nuevaMatrizAmigosUsuarioConectado.crearRelacion(usuarioConectado->getCorreo(), remitente->getCorreo());
     nuevaMatrizAmigosRemitente.crearRelacion(remitente->getCorreo(), usuarioConectado->getCorreo());
-
-    // Agregar la relación en la matriz de adyacencia global
-    matrizGlobal.agregarRelacion(usuarioConectado->getCorreo(), remitente->getCorreo());
-
 
     // Transferir las publicaciones del remitente al BST del usuario conectado
     BSTPublicaciones& bstPublicacionesUsuarioConectado = usuarioConectado->getBSTPublicacionesAmigos();
@@ -329,32 +338,13 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     //Se agregan las publicaciones al feed (interfaz gráfica)
     mostrarPublicaciones();
 
-    // Imprimir las solicitudes antes de la eliminación
-    //std::cout << "Solicitudes antes de aceptar:" << std::endl;
-    usuarioConectado->getPilaSolicitudes().imprimir();
-
     // Eliminar la solicitud de la pila de recibidas y de la lista de enviadas
     usuarioConectado->getPilaSolicitudes().eliminarPorCorreo(correoRemitente);
     remitente->getListaSolicitudesEnviadas().eliminarPorCorreo(correoConectado.toStdString());
 
-    // Imprimir las solicitudes después de la eliminación
-    //std::cout << "Solicitudes después de aceptar:" << std::endl;
-    usuarioConectado->getPilaSolicitudes().imprimir();
-
     // Graficar las relaciones de ambos usuarios en sus matrices individuales de adyacencia
     nuevaMatrizAmigosUsuarioConectado.graficar("grafoIndividual_" + usuarioConectado->getCorreo());
     nuevaMatrizAmigosRemitente.graficar("grafoIndividual_" + remitente->getCorreo());
-
-    // Graficar la matriz global de adyacencia
-    matrizGlobal.graficarMatriz();
-
-    // Mostrar las relaciones de amistad del usuario conectado
-    std::cout << "Relaciones de amistad del usuario conectado:" << std::endl;
-    nuevaMatrizAmigosUsuarioConectado.mostrarRelaciones(usuarioConectado->getCorreo());
-
-    // Mostrar las relaciones de amistad del remitente
-    std::cout << "Relaciones de amistad del remitente:" << std::endl;
-    nuevaMatrizAmigosRemitente.mostrarRelaciones(remitente->getCorreo());
 
     // Graficar las relaciones del usuario conectado
     nuevaMatrizAmigosUsuarioConectado.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matrizRelacionUsuarioConectado");

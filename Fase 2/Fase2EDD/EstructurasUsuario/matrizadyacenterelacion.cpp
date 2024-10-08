@@ -43,25 +43,69 @@ void MatrizAdyacenteRelacion::insertarUsuario(const std::string& correoUsuario) 
 
 // Crear una relación de amistad (conexión) entre dos usuarios
 void MatrizAdyacenteRelacion::crearRelacion(const std::string& correoUsuario, const std::string& correoAmigo) {
+    bool existeRelacionUsuario = false;
+    bool existeRelacionAmigo = false;
+
+    // Verificar y agregar al usuario
     auto actual = cabeza;
     while (actual) {
         if (actual->correo == correoUsuario) {
-            actual->insertarVecino(correoAmigo);
+            // Intentar insertar el amigo
+            existeRelacionUsuario = true;
+            if (!actual->vecinos) {
+                actual->insertarVecino(correoAmigo);
+                std::cout << "Se ha creado una nueva relación entre " << correoUsuario << " y " << correoAmigo << ".\n";
+            } else {
+                auto vecinoActual = actual->vecinos;
+                while (vecinoActual) {
+                    if (vecinoActual->correo == correoAmigo) {
+                        std::cout << "La relación entre " << correoUsuario << " y " << correoAmigo << " ya existe, no se duplicará.\n";
+                        return;  // Relación ya existe, salimos
+                    }
+                    vecinoActual = vecinoActual->siguiente;
+                }
+                actual->insertarVecino(correoAmigo);
+                std::cout << "Se ha creado una nueva relación entre " << correoUsuario << " y " << correoAmigo << ".\n";
+            }
             break;
         }
         actual = actual->siguiente;
     }
 
-    // Insertar la relación recíproca
+    // Verificar y agregar al amigo
     actual = cabeza;
     while (actual) {
         if (actual->correo == correoAmigo) {
-            actual->insertarVecino(correoUsuario);
+            existeRelacionAmigo = true;
+            // Intentar insertar el usuario
+            if (!actual->vecinos) {
+                actual->insertarVecino(correoUsuario);
+                std::cout << "Se ha creado una nueva relación entre " << correoAmigo << " y " << correoUsuario << ".\n";
+            } else {
+                auto vecinoActual = actual->vecinos;
+                while (vecinoActual) {
+                    if (vecinoActual->correo == correoUsuario) {
+                        std::cout << "La relación entre " << correoAmigo << " y " << correoUsuario << " ya existe, no se duplicará.\n";
+                        return;  // Relación ya existe, salimos
+                    }
+                    vecinoActual = vecinoActual->siguiente;
+                }
+                actual->insertarVecino(correoUsuario);
+                std::cout << "Se ha creado una nueva relación entre " << correoAmigo << " y " << correoUsuario << ".\n";
+            }
             break;
         }
         actual = actual->siguiente;
     }
+
+    if (!existeRelacionUsuario) {
+        std::cout << "El usuario " << correoUsuario << " no existe en la matriz.\n";
+    }
+    if (!existeRelacionAmigo) {
+        std::cout << "El amigo " << correoAmigo << " no existe en la matriz.\n";
+    }
 }
+
 
 // Mostrar las relaciones de un usuario
 void MatrizAdyacenteRelacion::mostrarRelaciones(const std::string& correoUsuario) {
@@ -102,7 +146,7 @@ void MatrizAdyacenteRelacion::graficar(const std::string& filename) {
 
         auto vecino = actual->vecinos;
         while (vecino) {
-            out << nodoUsuario.str() << " -- \"" << vecino->correo << "\";\n";
+            out << nodoUsuario.str() << " -- \"" << vecino->correo << "\";\n";  // Solo una línea para la relación
             vecino = vecino->siguiente;
         }
         actual = actual->siguiente;

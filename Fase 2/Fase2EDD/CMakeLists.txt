@@ -49,6 +49,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Publicaciones/Comentarios/listadoblecomentariosaux.h Publicaciones/Comentarios/listadoblecomentariosaux.cpp
         Publicaciones/Comentarios/nodocomentario.h Publicaciones/Comentarios/nodocomentario.cpp
         TablasModUsuario/buttondelegateeliminardef.h TablasModUsuario/buttondelegateeliminardef.cpp
+        EstructurasUsuario/matrizadyacenterelacion.h EstructurasUsuario/matrizadyacenterelacion.cpp
+        EstructurasAdmin/matrizadyacenteglobal.h EstructurasAdmin/matrizadyacenteglobal.cpp
 
 
 

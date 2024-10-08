@@ -1,0 +1,14 @@
+graph g {
+rankdir=LR;
+"cc";
+"cc" -- "bb";
+"cc" -- "aa";
+"cc" -- "dd";
+"bb";
+"bb" -- "cc";
+"aa";
+"aa" -- "cc";
+"aa";
+"dd";
+"dd" -- "cc";
+}
