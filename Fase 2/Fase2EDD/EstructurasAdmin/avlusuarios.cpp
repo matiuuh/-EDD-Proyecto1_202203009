@@ -33,7 +33,7 @@ AVLUsuarios& AVLUsuarios::getInstance() {
 
 //-----------------PARA AGREGAR USUARIOS AL SISTEMA-----------
 void AVLUsuarios::insertar(Usuario* usuario) {
-    std::cout << "Insertando usuario con correo: " << usuario->getCorreo() << std::endl;
+    //std::cout << "Insertando usuario con correo: " << usuario->getCorreo() << std::endl;
     raiz = insertarRecursivo(raiz, usuario);
 }
 //----------------BUSCAR USUARIO POR CORREO-------------------
@@ -55,7 +55,7 @@ int AVLUsuarios::altura(NodoAVL* nodo) {
 }
 
 NodoAVL* AVLUsuarios::rotacionDerecha(NodoAVL* y) {
-    std::cout << "Realizando rotación derecha sobre: " << y->usuario->getCorreo() << std::endl;
+    //std::cout << "Realizando rotación derecha sobre: " << y->usuario->getCorreo() << std::endl;
     NodoAVL* x = y->izquierda;
     NodoAVL* T2 = x->derecha;
 
@@ -79,16 +79,16 @@ bool AVLUsuarios::validarCredenciales(const std::string& correo, const std::stri
         if (usuarioEncontrado->getContrasenia() == contrasenia) {
             return true;  // Credenciales válidas
         } else {
-            std::cout << "Contraseña incorrecta para el correo: " << correo << std::endl;
+            //std::cout << "Contraseña incorrecta para el correo: " << correo << std::endl;
             return false;  // Contraseña incorrecta
         }
     }
-    std::cout << "Usuario no encontrado con el correo: " << correo << std::endl;
+    //std::cout << "Usuario no encontrado con el correo: " << correo << std::endl;
     return false;  // Usuario no encontrado
 }
 
 NodoAVL* AVLUsuarios::rotacionIzquierda(NodoAVL* x) {
-    std::cout << "Realizando rotación izquierda sobre: " << x->usuario->getCorreo() << std::endl;
+    //std::cout << "Realizando rotación izquierda sobre: " << x->usuario->getCorreo() << std::endl;
     NodoAVL* y = x->derecha;
     NodoAVL* T2 = y->izquierda;
 
@@ -108,45 +108,45 @@ int AVLUsuarios::obtenerBalance(NodoAVL* nodo) {
 
 NodoAVL* AVLUsuarios::insertarRecursivo(NodoAVL* nodo, Usuario* usuario) {
     if (!nodo) {
-        std::cout << "Creando nuevo nodo para el usuario: " << usuario->getCorreo() << std::endl;
+        //std::cout << "Creando nuevo nodo para el usuario: " << usuario->getCorreo() << std::endl;
         return new NodoAVL(usuario);
     }
 
     if (usuario->getCorreo() < nodo->usuario->getCorreo()) {
-        std::cout << "Insertando en el lado izquierdo de: " << nodo->usuario->getCorreo() << std::endl;
+        //std::cout << "Insertando en el lado izquierdo de: " << nodo->usuario->getCorreo() << std::endl;
         nodo->izquierda = insertarRecursivo(nodo->izquierda, usuario);
     } else if (usuario->getCorreo() > nodo->usuario->getCorreo()) {
-        std::cout << "Insertando en el lado derecho de: " << nodo->usuario->getCorreo() << std::endl;
+        //std::cout << "Insertando en el lado derecho de: " << nodo->usuario->getCorreo() << std::endl;
         nodo->derecha = insertarRecursivo(nodo->derecha, usuario);
     } else {
-        std::cout << "El usuario con correo " << usuario->getCorreo() << " ya existe." << std::endl;
+        //std::cout << "El usuario con correo " << usuario->getCorreo() << " ya existe." << std::endl;
         return nodo;  // Correo ya existe
     }
 
     nodo->altura = 1 + std::max(altura(nodo->izquierda), altura(nodo->derecha));
 
     int balance = obtenerBalance(nodo);
-    std::cout << "Balance del nodo " << nodo->usuario->getCorreo() << ": " << balance << std::endl;
+    //std::cout << "Balance del nodo " << nodo->usuario->getCorreo() << ": " << balance << std::endl;
 
     // Verificar y aplicar rotaciones
     if (balance > 1 && usuario->getCorreo() < nodo->izquierda->usuario->getCorreo()) {
-        std::cout << "Rotación derecha sobre: " << nodo->usuario->getCorreo() << std::endl;
+        //std::cout << "Rotación derecha sobre: " << nodo->usuario->getCorreo() << std::endl;
         return rotacionDerecha(nodo);
     }
 
     if (balance < -1 && usuario->getCorreo() > nodo->derecha->usuario->getCorreo()) {
-        std::cout << "Rotación izquierda sobre: " << nodo->usuario->getCorreo() << std::endl;
+        //std::cout << "Rotación izquierda sobre: " << nodo->usuario->getCorreo() << std::endl;
         return rotacionIzquierda(nodo);
     }
 
     if (balance > 1 && usuario->getCorreo() > nodo->izquierda->usuario->getCorreo()) {
-        std::cout << "Rotación izquierda-derecha sobre: " << nodo->usuario->getCorreo() << std::endl;
+        //std::cout << "Rotación izquierda-derecha sobre: " << nodo->usuario->getCorreo() << std::endl;
         nodo->izquierda = rotacionIzquierda(nodo->izquierda);
         return rotacionDerecha(nodo);
     }
 
     if (balance < -1 && usuario->getCorreo() < nodo->derecha->usuario->getCorreo()) {
-        std::cout << "Rotación derecha-izquierda sobre: " << nodo->usuario->getCorreo() << std::endl;
+        //std::cout << "Rotación derecha-izquierda sobre: " << nodo->usuario->getCorreo() << std::endl;
         nodo->derecha = rotacionDerecha(nodo->derecha);
         return rotacionIzquierda(nodo);
     }
@@ -156,21 +156,21 @@ NodoAVL* AVLUsuarios::insertarRecursivo(NodoAVL* nodo, Usuario* usuario) {
 
 NodoAVL* AVLUsuarios::buscarRecursivo(NodoAVL* nodo, const std::string& correo) const {
     if (!nodo) {
-        std::cout << "No se encontró el nodo con correo: " << correo << std::endl;
+        //std::cout << "No se encontró el nodo con correo: " << correo << std::endl;
         return nullptr;
     }
 
     if (nodo->usuario->getCorreo() == correo) {
-        std::cout << "Nodo encontrado: " << correo << std::endl;
+        //std::cout << "Nodo encontrado: " << correo << std::endl;
         return nodo;
     }
 
     if (correo < nodo->usuario->getCorreo()) {
-        std::cout << "Buscando en el lado izquierdo de: " << nodo->usuario->getCorreo() << std::endl;
+        //std::cout << "Buscando en el lado izquierdo de: " << nodo->usuario->getCorreo() << std::endl;
         return buscarRecursivo(nodo->izquierda, correo);
     }
 
-    std::cout << "Buscando en el lado derecho de: " << nodo->usuario->getCorreo() << std::endl;
+    //std::cout << "Buscando en el lado derecho de: " << nodo->usuario->getCorreo() << std::endl;
     return buscarRecursivo(nodo->derecha, correo);
 }
 
@@ -178,7 +178,7 @@ NodoAVL* AVLUsuarios::buscarRecursivo(NodoAVL* nodo, const std::string& correo) 
 void AVLUsuarios::mostrarRecursivo(NodoAVL* nodo) const {
     if (nodo) {
         mostrarRecursivo(nodo->izquierda);
-        std::cout << "Mostrando usuario: " << nodo->usuario->getNombre() << " - " << nodo->usuario->getCorreo() << std::endl;
+        //std::cout << "Mostrando usuario: " << nodo->usuario->getNombre() << " - " << nodo->usuario->getCorreo() << std::endl;
         mostrarRecursivo(nodo->derecha);
     }
 }
