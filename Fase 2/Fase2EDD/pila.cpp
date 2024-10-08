@@ -82,9 +82,9 @@ bool Pila::estaVacia() const {
 // Verificar si la pila está vacía
 void Pila::imprimir() const {
     if (estaVacia()) {
-        std::cout << "La pila está vacía." << std::endl;
+        //std::cout << "La pila está vacía." << std::endl;
     } else {
-        std::cout << "La pila contiene elementos." << std::endl;
+        //std::cout << "La pila contiene elementos." << std::endl;
     }
 }
 
