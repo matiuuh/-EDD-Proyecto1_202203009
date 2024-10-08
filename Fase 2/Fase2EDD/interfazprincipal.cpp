@@ -11,6 +11,7 @@
 #include "bstpublicaciones.h"
 #include "gestorcomentarios.h"
 #include "TablasModUsuario/buttondelegateeliminardef.h"
+#include "EstructurasAdmin/matrizadyacenteglobal.h"
 
 #include <regex>
 #include <QStandardItemModel>
@@ -296,10 +297,24 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     MatrizDispersaAmigos& matrizAmigosUsuarioConectado = usuarioConectado->getMatrizAmigos();
     MatrizDispersaAmigos& matrizAmigosRemitente = remitente->getMatrizAmigos();
 
+    // Obtener las instancias de la matriz de adyacencia para el usuario conectado y el remitente
+    MatrizAdyacenteRelacion& nuevaMatrizAmigosUsuarioConectado = usuarioConectado->getNuevaMatrizAmigos();
+    MatrizAdyacenteRelacion& nuevaMatrizAmigosRemitente = remitente->getNuevaMatrizAmigos();
+
+    // Obtener la matriz de adyacencia global
+    MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();  // Usamos Singleton o un mecanismo similar si es necesario
 
     // Agregar la amistad en ambas direcciones
     matrizAmigosUsuarioConectado.agregarAmistad( remitente->getCorreo());
     matrizAmigosRemitente.agregarAmistad(usuarioConectado->getCorreo());
+
+    // Agregar la relación en las matrices individuales de adyacencia
+    nuevaMatrizAmigosUsuarioConectado.crearRelacion(usuarioConectado->getCorreo(), remitente->getCorreo());
+    nuevaMatrizAmigosRemitente.crearRelacion(remitente->getCorreo(), usuarioConectado->getCorreo());
+
+    // Agregar la relación en la matriz de adyacencia global
+    matrizGlobal.agregarRelacion(usuarioConectado->getCorreo(), remitente->getCorreo());
+
 
     // Transferir las publicaciones del remitente al BST del usuario conectado
     BSTPublicaciones& bstPublicacionesUsuarioConectado = usuarioConectado->getBSTPublicacionesAmigos();
@@ -315,7 +330,7 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     mostrarPublicaciones();
 
     // Imprimir las solicitudes antes de la eliminación
-    std::cout << "Solicitudes antes de aceptar:" << std::endl;
+    //std::cout << "Solicitudes antes de aceptar:" << std::endl;
     usuarioConectado->getPilaSolicitudes().imprimir();
 
     // Eliminar la solicitud de la pila de recibidas y de la lista de enviadas
@@ -323,8 +338,29 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     remitente->getListaSolicitudesEnviadas().eliminarPorCorreo(correoConectado.toStdString());
 
     // Imprimir las solicitudes después de la eliminación
-    std::cout << "Solicitudes después de aceptar:" << std::endl;
+    //std::cout << "Solicitudes después de aceptar:" << std::endl;
     usuarioConectado->getPilaSolicitudes().imprimir();
+
+    // Graficar las relaciones de ambos usuarios en sus matrices individuales de adyacencia
+    nuevaMatrizAmigosUsuarioConectado.graficar("grafoIndividual_" + usuarioConectado->getCorreo());
+    nuevaMatrizAmigosRemitente.graficar("grafoIndividual_" + remitente->getCorreo());
+
+    // Graficar la matriz global de adyacencia
+    matrizGlobal.graficarMatriz();
+
+    // Mostrar las relaciones de amistad del usuario conectado
+    std::cout << "Relaciones de amistad del usuario conectado:" << std::endl;
+    nuevaMatrizAmigosUsuarioConectado.mostrarRelaciones(usuarioConectado->getCorreo());
+
+    // Mostrar las relaciones de amistad del remitente
+    std::cout << "Relaciones de amistad del remitente:" << std::endl;
+    nuevaMatrizAmigosRemitente.mostrarRelaciones(remitente->getCorreo());
+
+    // Graficar las relaciones del usuario conectado
+    nuevaMatrizAmigosUsuarioConectado.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matrizRelacionUsuarioConectado");
+
+    // Graficar las relaciones del remitente
+    nuevaMatrizAmigosRemitente.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matrizRelacionRemitente");
 
     // Mostrar mensaje de éxito
     QMessageBox::information(this, "Solicitud Aceptada", "La solicitud ha sido aceptada.");
