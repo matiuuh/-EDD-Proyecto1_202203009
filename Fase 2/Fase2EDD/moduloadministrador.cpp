@@ -1,6 +1,8 @@
 #include "moduloadministrador.h"
 #include "ui_moduloadministrador.h"
 #include "moduloentrada.h"
+#include "EstructurasAdmin/ventanaemergente.h"
+#include "EstructurasAdmin/matrizadyacenteglobal.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -57,6 +59,9 @@ ModuloAdministrador::ModuloAdministrador(QWidget *parent)
 
     //**************************************GENERAR REPORTES***************************************
     connect(ui->btn_generarReportes, &QPushButton::clicked, this, &ModuloAdministrador::generarReportesAdmin);
+
+    //**************************************GENERAR REPORTE MATRIZ ADYACENTE***************************************
+    connect(ui->btn_matrizPersonal, &QPushButton::clicked, this, &ModuloAdministrador::enlace);
 
     mostrarUsuariosEnTabla();
 
@@ -552,23 +557,6 @@ void ModuloAdministrador::eliminarUsuario(const QModelIndex &index) {
                                   QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
-        /*std::string correoUsuario = correo.toStdString();
-        // Eliminar al usuario de la matriz dispersa
-        MatrizDispersaAmigos& matrizAmigos = MatrizDispersaAmigos::getInstance();
-        std::vector<std::string> amigos = matrizAmigos.obtenerAmigos(correoUsuario);
-
-        // Eliminar la amistad del usuario en la matriz dispersa y de sus amigos
-        for (const std::string& amigo : amigos) {
-            matrizAmigos.eliminarAmistad(correoUsuario);  // Eliminar la relación con cada amigo
-            matrizAmigos.eliminarAmistad(amigo);          // Eliminar al usuario de la matriz de sus amigos
-        }
-
-        // Eliminar publicaciones del usuario del BST de sus amigos
-        for (const std::string& amigo : amigos) {
-            BSTPublicaciones& bstAmigo = obtenerBSTPublicacionesDeAmigo(amigo); // Obtener el BST de publicaciones del amigo
-            bstAmigo.eliminarPublicacionesDeUsuario(correoUsuario);  // Eliminar publicaciones del usuario
-        }
-        */
         // Eliminar el usuario del AVL
         AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
         avlUsuarios.eliminar(correo.toStdString());
@@ -632,6 +620,12 @@ void ModuloAdministrador::generarReportesAdmin() {
 
     publicacionesGlobal.generarGrafico(); // Genera el gráfico de publicaciones
     mostrarGraficoEnLabelLista(ui->lbl_listaDoblePublicaciones);
+
+    // Obtener la matriz de adyacencia global
+    MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();  // Usamos Singleton o un mecanismo similar si es necesario
+
+    matrizGlobal.graficarMatriz();
+    graficarMatrizAdyacenteRelacion(ui->lbl_matrizGlobal);
 }
 
 void ModuloAdministrador::mostrarGraficoEnLabel(QLabel* label) {
@@ -643,6 +637,66 @@ void ModuloAdministrador::mostrarGraficoEnLabel(QLabel* label) {
 
 void ModuloAdministrador::mostrarGraficoEnLabelLista(QLabel* label) {
     QPixmap pixmap1("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\lista_publicaciones.png");  // Asegúrate de que la ruta sea correcta
+    label->setPixmap(pixmap1);
+    label->setScaledContents(true);
+}
+
+//método enlace para poder mostrar el grafico de un usuario en específico
+void ModuloAdministrador::enlace(){
+    mostrarGraficoUsuarioEspecifico(ui->lbl_matrizPersonal);
+}
+
+void ModuloAdministrador::mostrarGraficoUsuarioEspecifico(QLabel* label) {
+    // Crear y mostrar la ventana emergente para solicitar el correo electrónico
+    VentanaEmergente ventana(this);
+    if (ventana.exec() == QDialog::Accepted) {
+        QString email = ventana.getEmail();
+
+        //MatrizAdyacenteRelacion& nuevaMatrizAmigosUsuarioConectado = usuarioConectado->getNuevaMatrizAmigos();
+
+        // Obtener la instancia del árbol AVL de usuarios y buscar el usuario por su correo
+        AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+        Usuario* usuarioEncontrado = avlUsuarios.buscar(email.toStdString());
+
+        if(usuarioEncontrado){
+            std::cout<<"se encontro "<<std::endl;
+        }
+
+        if (usuarioEncontrado != nullptr) {
+            // Graficar la matriz de amigos del usuario encontrado
+            MatrizAdyacenteRelacion& matrizAmigos = usuarioEncontrado->getNuevaMatrizAmigos();  // Método que devuelve la matriz de amigos del usuario (objeto, no puntero)
+
+            // Verificar si la matriz contiene relaciones
+            if (!matrizAmigos.estaVacia()) {
+                std::cout << "La matriz no está vacía, contiene relaciones." << std::endl;
+            } else {
+                std::cout << "La matriz está vacía." << std::endl;
+            }
+
+            matrizAmigos.graficar("grafoIndividual_encontrado" + usuarioEncontrado->getCorreo());
+            matrizAmigos.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matriz_adyacente_usuario.png");
+
+            // Verificar si el archivo de imagen existe y mostrarlo en el QLabel
+            QString rutaImagen = "C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\grafoIndividual_encontrado" +email+ ".png";
+            if (QFile::exists(rutaImagen)) {
+                QPixmap pixmap(rutaImagen);
+                if (!pixmap.isNull()) {
+                    label->setPixmap(pixmap);
+                    label->setScaledContents(true);
+                } else {
+                    std::cout << "Error: El QPixmap está vacío." << std::endl;
+                }
+            } else {
+                QMessageBox::warning(this, "Error", "No se pudo generar el gráfico de la matriz adyacente.");
+            }
+        } else {
+            QMessageBox::warning(this, "Error", "No se encontró un usuario con el correo electrónico especificado.");
+        }
+    }
+}
+
+void ModuloAdministrador:: graficarMatrizAdyacenteRelacion(QLabel* label){
+    QPixmap pixmap1("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\grafoGlobal.png");  // Asegúrate de que la ruta sea correcta
     label->setPixmap(pixmap1);
     label->setScaledContents(true);
 }

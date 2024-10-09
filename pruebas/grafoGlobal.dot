@@ -2,10 +2,8 @@ graph G {
   "dd" -- "cc";
   "dd" -- "aa";
   "cc" -- "dd";
-  "cc" -- "aa";
   "cc" -- "bb";
   "aa" -- "dd";
-  "aa" -- "cc";
   "aa" -- "bb";
   "bb" -- "cc";
   "bb" -- "aa";

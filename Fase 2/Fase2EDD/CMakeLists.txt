@@ -51,6 +51,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         TablasModUsuario/buttondelegateeliminardef.h TablasModUsuario/buttondelegateeliminardef.cpp
         EstructurasUsuario/matrizadyacenterelacion.h EstructurasUsuario/matrizadyacenterelacion.cpp
         EstructurasAdmin/matrizadyacenteglobal.h EstructurasAdmin/matrizadyacenteglobal.cpp
+        EstructurasAdmin/ventanaemergente.h EstructurasAdmin/ventanaemergente.cpp
 
 
 

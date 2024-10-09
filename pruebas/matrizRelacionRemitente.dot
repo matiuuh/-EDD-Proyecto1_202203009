@@ -1,10 +1,11 @@
 graph g {
 rankdir=LR;
-"dd";
-"dd" -- "aa";
-"dd" -- "cc";
-"aa";
-"aa" -- "dd";
 "cc";
+"cc" -- "bb";
 "cc" -- "dd";
+"bb";
+"bb" -- "cc";
+"dd";
+"dd" -- "cc";
+"dd";
 }

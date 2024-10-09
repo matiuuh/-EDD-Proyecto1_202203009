@@ -33,6 +33,10 @@ public:
     void crearRelacion(const std::string& correoUsuario, const std::string& correoAmigo);
     void mostrarRelaciones(const std::string& correoUsuario);
     void graficar(const std::string& filename);  // Generar gráfico con Graphviz (opcional)
+
+    std::shared_ptr<Nodo> buscarUsuarioEnMatriz(const std::string& correoUsuario);
+
+    bool estaVacia() const;
 };
 
 #endif // MATRIZADYACENTERELACION_H

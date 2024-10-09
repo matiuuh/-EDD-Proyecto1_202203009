@@ -53,6 +53,10 @@ private slots:
 
     void mostrarGraficoEnLabelLista(QLabel* label);
 
+    void mostrarGraficoUsuarioEspecifico(QLabel* label);
+    void enlace();
+    void graficarMatrizAdyacenteRelacion(QLabel* label);
+
 private:
     Ui::ModuloAdministrador *ui;
 };

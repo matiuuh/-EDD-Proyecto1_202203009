@@ -666,7 +666,6 @@ void InterfazPrincipal::mostrarEliminar() {
     ui->tbl_publicacionesEliminar->setColumnWidth(4, 100); // Columna "Eliminar"
 }
 
-
 // Método para validar el formato de la fecha
 bool validarFecha(const QString& fecha) {
     // Validar el formato de la fecha (dd/mm/yyyy)

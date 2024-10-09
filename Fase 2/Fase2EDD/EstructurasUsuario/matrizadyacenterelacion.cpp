@@ -106,7 +106,6 @@ void MatrizAdyacenteRelacion::crearRelacion(const std::string& correoUsuario, co
     }
 }
 
-
 // Mostrar las relaciones de un usuario
 void MatrizAdyacenteRelacion::mostrarRelaciones(const std::string& correoUsuario) {
     auto actual = cabeza;
@@ -165,4 +164,21 @@ void MatrizAdyacenteRelacion::graficar(const std::string& filename) {
     } else {
         std::cout << "La imagen fue generada exitosamente.\n";
     }
+}
+
+// Agregar este método a la clase MatrizAdyacenteRelacion
+std::shared_ptr<Nodo> MatrizAdyacenteRelacion::buscarUsuarioEnMatriz(const std::string& correoUsuario) {
+    auto actual = cabeza;
+    while (actual) {
+        if (actual->correo == correoUsuario) {
+            return actual;  // Usuario encontrado
+        }
+        actual = actual->siguiente;
+    }
+    return nullptr;  // Usuario no encontrado
+}
+
+// Verifica si la matriz está vacía
+bool MatrizAdyacenteRelacion::estaVacia() const {
+    return cabeza == nullptr;
 }
