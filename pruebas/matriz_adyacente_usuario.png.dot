@@ -1,11 +1,7 @@
 graph g {
 rankdir=LR;
-"dd";
-"dd" -- "aa";
-"dd" -- "cc";
-"aa";
-"aa" -- "dd";
-"cc";
-"cc" -- "dd";
-"cc";
+"ana.hernandez@example.com";
+"ana.hernandez@example.com" -- "carlos.gomez@example.com";
+"carlos.gomez@example.com";
+"carlos.gomez@example.com" -- "ana.hernandez@example.com";
 }

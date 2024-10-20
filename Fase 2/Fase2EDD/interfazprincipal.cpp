@@ -58,6 +58,9 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
     //Conectar el botón "Aplicar" para aplicar filtro de fecha
     connect(ui->btn_generarBSTGrafica, &QPushButton::clicked, this, &InterfazPrincipal::generarGraficoBSTPorFecha);
 
+    //Conectar el botón "Aplicar" para aplicar filtro de fecha
+    connect(ui->btn_generarGrafoSugerencia, &QPushButton::clicked, this, &InterfazPrincipal::mostrarSugerenciasGrafo);
+
     // Llenar la tabla de usuarios cuando se abre la ventana
     llenarTablaUsuarios();  // Aquí llamamos al método para llenar la tabla
     llenarTablaSolicitudesRecibidas();
@@ -66,6 +69,7 @@ InterfazPrincipal::InterfazPrincipal(QWidget *parent, const QString& correoUsuar
     mostrarDatosUsuarioConectado();
     mostrarTopFechasPublicaciones();
     mostrarEliminar();
+    llenarTablaSugerencias();
 }
 
 InterfazPrincipal::~InterfazPrincipal()
@@ -149,7 +153,7 @@ void InterfazPrincipal::llenarTablaUsuarios() {
         }
     });
 
-    int totalWidth = 665;
+    int totalWidth = 320;
     int columnWidth = totalWidth / 2;  // Dividir el espacio en 2 columnas iguales
 
     // Establecer el ancho de las columnas
@@ -219,6 +223,58 @@ void InterfazPrincipal::enviarSolicitud(const QString& correo, const std::string
     llenarTablaSolicitudesRecibidas();
     llenarTablaSolicitudesEnviadas();
 }
+
+//-----------------------------MOSTRAR SUGERENCIAS DE AMISTAD----------------------------------
+
+void InterfazPrincipal::llenarTablaSugerencias() {
+    // Obtener las sugerencias de amigos utilizando el método que ya creamos
+    MatrizAdyacenteGlobal& matriz = MatrizAdyacenteGlobal::getInstancia();
+    std::vector<std::string> sugerencias = matriz.sugerirAmigos(correoConectado.toStdString());
+
+    // Crear un modelo para la tabla
+    QStandardItemModel* model = new QStandardItemModel();
+    model->setColumnCount(2);
+    model->setHorizontalHeaderLabels(QStringList() << "Correo de Usuario" << "Acciones");
+
+    // Llenar la tabla con los usuarios sugeridos
+    for (const std::string& correo : sugerencias) {
+        QList<QStandardItem*> fila;
+
+        // Crear un QStandardItem para el correo del usuario
+        QStandardItem* itemCorreo = new QStandardItem(QString::fromStdString(correo));
+        fila.append(itemCorreo);
+
+        // Crear un placeholder para el botón en la columna de "Acciones"
+        QStandardItem* itemBoton = new QStandardItem();
+        itemBoton->setData(QVariant::fromValue(QString::fromStdString(correo)), Qt::UserRole);
+        fila.append(itemBoton);
+
+        // Añadir la fila al modelo
+        model->appendRow(fila);
+    }
+
+    // Asignar el modelo a la tabla tbl_sugerencias
+    ui->tbl_sugerencias->setModel(model);
+
+    // Crear un delegado para la columna de "Acciones" que añadirá los botones
+    ButtonDelegate *delegate = new ButtonDelegate(this);
+    ui->tbl_sugerencias->setItemDelegateForColumn(1, delegate);
+
+    // Conectar el botón con la función enviarSolicitud
+    connect(ui->tbl_sugerencias, &QTableView::clicked, this, [this](const QModelIndex &index) {
+        if (index.column() == 1) {  // Si se hace clic en la columna de "Acciones"
+            QString correo = index.sibling(index.row(), 0).data().toString();
+            enviarSolicitud(correo, correoConectado.toStdString());
+        }
+    });
+
+    // Configurar el ancho de las columnas
+    int totalWidth = 320;
+    int columnWidth = totalWidth / 2;
+    ui->tbl_sugerencias->setColumnWidth(0, columnWidth);  // Columna "Correo de Usuario"
+    ui->tbl_sugerencias->setColumnWidth(1, columnWidth);  // Columna "Acciones"
+}
+
 
 //--------PARA LAS TABLAS DE SOLICITUDES RECIBIDAS POR EL USUARIO CONECTADO-------------
 void InterfazPrincipal::llenarTablaSolicitudesRecibidas() {
@@ -343,19 +399,20 @@ void InterfazPrincipal::aceptarSolicitud(const std::string& correoRemitente) {
     remitente->getListaSolicitudesEnviadas().eliminarPorCorreo(correoConectado.toStdString());
 
     // Graficar las relaciones de ambos usuarios en sus matrices individuales de adyacencia
-    nuevaMatrizAmigosUsuarioConectado.graficar("grafoIndividual_" + usuarioConectado->getCorreo());
-    nuevaMatrizAmigosRemitente.graficar("grafoIndividual_" + remitente->getCorreo());
+    //nuevaMatrizAmigosUsuarioConectado.graficar("grafoIndividual_" + usuarioConectado->getCorreo());
+    //nuevaMatrizAmigosRemitente.graficar("grafoIndividual_" + remitente->getCorreo());
 
     // Graficar las relaciones del usuario conectado
-    nuevaMatrizAmigosUsuarioConectado.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matrizRelacionUsuarioConectado");
+    //nuevaMatrizAmigosUsuarioConectado.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matrizRelacionUsuarioConectado");
 
     // Graficar las relaciones del remitente
-    nuevaMatrizAmigosRemitente.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matrizRelacionRemitente");
+    //nuevaMatrizAmigosRemitente.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matrizRelacionRemitente");
 
     // Mostrar mensaje de éxito
     QMessageBox::information(this, "Solicitud Aceptada", "La solicitud ha sido aceptada.");
     llenarTablaSolicitudesRecibidas();  // Actualizar la tabla
     mostrarTopFechasPublicaciones();
+    llenarTablaSugerencias();
 }
 
 // Rechazar solicitud
@@ -376,6 +433,7 @@ void InterfazPrincipal::rechazarSolicitud(const std::string& correoRemitente) {
     // Mostrar mensaje de éxito
     QMessageBox::information(this, "Solicitud Rechazada", "La solicitud ha sido rechazada.");
     llenarTablaSolicitudesRecibidas();  // Actualizar la tabla
+    llenarTablaSugerencias();
 }
 
 //--------PARA LAS TABLAS DE SOLICITUDES ENVIADAS POR EL USUARIO CONECTADO-------------
@@ -1152,3 +1210,33 @@ void InterfazPrincipal::generarGraficoBSTPorFecha() {
     }
 }
 
+//----------------------PARA MOSTRAR LAS SUGERENCIAS EN GRAFO-----------------------
+void InterfazPrincipal::mostrarSugerenciasGrafo() {
+    // Obtener la matriz de adyacencia global
+    MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();
+
+    // Obtener el usuario conectado desde el AVL
+    AVLUsuarios& avl = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avl.buscar(correoConectado.toStdString());
+
+    // Verificar si el usuario conectado fue encontrado
+    if (usuarioConectado == nullptr) {
+        std::cout << "Error: Usuario conectado no encontrado en el AVL." << std::endl;
+        return;
+    }
+
+    // Obtener el correo del usuario conectado
+    std::string correoUsuarioConectado = usuarioConectado->getCorreo();
+
+    // Generar el gráfico con sugerencias de amistad
+    matrizGlobal.graficarMatrizConSugerencias(correoUsuarioConectado);
+
+    // Mostrar el gráfico en la interfaz
+    graficarMatrizAdyacenteRelacion(ui->lbl_GrafoSugerencia);
+}
+
+void InterfazPrincipal:: graficarMatrizAdyacenteRelacion(QLabel* label){
+    QPixmap pixmap1("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\grafoGlobal.png");  // Asegúrate de que la ruta sea correcta
+    label->setPixmap(pixmap1);
+    label->setScaledContents(true);
+}

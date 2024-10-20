@@ -114,6 +114,8 @@ void ModuloAdministrador::btn_importarUsuarios_Click(const std::string& rutaArch
     archivo >> root;
 
     AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    // Obtener la matriz de adyacencia global
+    MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();  // Usamos Singleton o un mecanismo similar si es necesario
 
     for (const auto& usuarioJson : root) {
         std::string nombres = usuarioJson["nombres"].get<std::string>();
@@ -124,6 +126,8 @@ void ModuloAdministrador::btn_importarUsuarios_Click(const std::string& rutaArch
 
         Usuario* nuevoUsuario = new Usuario(nombres, apellidos, fechaNacimiento, correo, contrasenia);
         avlUsuarios.insertar(nuevoUsuario);
+
+        matrizGlobal.agregarUsuario(correo);
     }
 
     std::cout << "Usuarios importados exitosamente desde el archivo JSON." << std::endl;
@@ -185,6 +189,9 @@ void ModuloAdministrador::btn_importarSolicitudes_Click(const std::string& rutaA
 
     AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
 
+    // Obtener la matriz de adyacencia global
+    MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();
+
     // Iterar sobre cada solicitud en el archivo
     for (const auto& solicitud : solicitudesJSON) {
         std::string emisorCorreo = solicitud["emisor"];
@@ -237,6 +244,23 @@ void ModuloAdministrador::btn_importarSolicitudes_Click(const std::string& rutaA
             BSTPublicaciones& bstPublicacionesRemitente = emisor->getBSTPublicacionesAmigos();
             ListaDoble& listaPublicacionesReceptor = receptor->getListaPublicacionesPropias();
             bstPublicacionesRemitente.agregarPublicacionesDeLista(listaPublicacionesReceptor);
+
+            matrizGlobal.agregarRelacion(emisor->getCorreo(), receptor->getCorreo());
+
+            // Obtener las instancias de la matriz de adyacencia para el usuario conectado y el remitente
+            MatrizAdyacenteRelacion& nuevaMatrizAmigosUsuarioConectado = emisor->getNuevaMatrizAmigos();
+            MatrizAdyacenteRelacion& nuevaMatrizAmigosRemitente = receptor->getNuevaMatrizAmigos();
+
+            // Insertar ambos usuarios en la matriz antes de crear la relación
+            nuevaMatrizAmigosUsuarioConectado.insertarUsuario(emisor->getCorreo());
+            nuevaMatrizAmigosUsuarioConectado.insertarUsuario(receptor->getCorreo());
+
+            nuevaMatrizAmigosRemitente.insertarUsuario(receptor->getCorreo());
+            nuevaMatrizAmigosRemitente.insertarUsuario(emisor->getCorreo());
+
+            // Agregar la relación en las matrices individuales de adyacencia
+            nuevaMatrizAmigosUsuarioConectado.crearRelacion(emisor->getCorreo(), receptor->getCorreo());
+            nuevaMatrizAmigosRemitente.crearRelacion(receptor->getCorreo(), emisor->getCorreo());
 
         } else if (estado == "pendiente") {
             std::cout << "Solicitud pendiente entre: " << emisorCorreo << " y " << receptorCorreo << std::endl;

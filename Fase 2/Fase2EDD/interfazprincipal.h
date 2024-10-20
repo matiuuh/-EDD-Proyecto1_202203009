@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include "Publicaciones/publicacion.h"
 #include "bstpublicaciones.h"
+#include <QLabel>
 
 #include <queue>
 
@@ -40,6 +41,7 @@ private slots:
     void rechazarSolicitud(const std::string& correoRemitente);
     void manejarCancelacionSolicitud(const QModelIndex &index);
     void llenarTablaSolicitudesEnviadas();
+    void llenarTablaSugerencias();
 
     //Publicaciones
     void crearPublicacion();
@@ -70,6 +72,9 @@ private slots:
 
     void eliminarPublicacion(const Publicacion& publicacion);
     void mostrarEliminar();
+
+    void mostrarSugerenciasGrafo();
+    void graficarMatrizAdyacenteRelacion(QLabel* label);
 
 private:
     Ui::InterfazPrincipal *ui;

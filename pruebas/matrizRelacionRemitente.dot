@@ -2,10 +2,7 @@ graph g {
 rankdir=LR;
 "cc";
 "cc" -- "bb";
-"cc" -- "dd";
 "bb";
 "bb" -- "cc";
-"dd";
-"dd" -- "cc";
-"dd";
+"bb";
 }

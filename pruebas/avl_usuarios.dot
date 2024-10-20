@@ -1,9 +1,21 @@
 digraph G {
-Nodo0x297ad5a6e40[label = "bb"];
-Nodo0x297ad5a6e40->Nodo0x297ad5a6a80;
-Nodo0x297ad5a6e40->Nodo0x297ad5a6fc0;
-Nodo0x297ad5a6a80[label = "aa"];
-Nodo0x297ad5a6fc0[label = "cc"];
-Nodo0x297ad5a6fc0->Nodo0x297ad5a7230;
-Nodo0x297ad5a7230[label = "dd"];
+Nodo0x295976b5180[label = "juan.martinez@example.com"];
+Nodo0x295976b5180->Nodo0x295976b4b80;
+Nodo0x295976b5180->Nodo0x295976b4fa0;
+Nodo0x295976b4b80[label = "carlos.gomez@example.com"];
+Nodo0x295976b4b80->Nodo0x295976b52a0;
+Nodo0x295976b4b80->Nodo0x295976b52d0;
+Nodo0x295976b52a0[label = "ana.hernandez@example.com"];
+Nodo0x295976b52d0[label = "jose.garcia@example.com"];
+Nodo0x295976b52d0->Nodo0x295976b5210;
+Nodo0x295976b5210[label = "elena.torres@example.com"];
+Nodo0x295976b4fa0[label = "luis.perez@example.com"];
+Nodo0x295976b4fa0->Nodo0x295976b5150;
+Nodo0x295976b4fa0->Nodo0x295976b4c40;
+Nodo0x295976b5150[label = "laura.ramirez@example.com"];
+Nodo0x295976b4c40[label = "miguel.rodriguez@example.com"];
+Nodo0x295976b4c40->Nodo0x295976b4be0;
+Nodo0x295976b4c40->Nodo0x295976b5240;
+Nodo0x295976b4be0[label = "maria.lopez@example.com"];
+Nodo0x295976b5240[label = "sofia.gonzalez@example.com"];
 }
