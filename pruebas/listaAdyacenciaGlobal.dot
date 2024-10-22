@@ -1,12 +1,27 @@
 digraph g {
 rankdir=LR;
-"sofia.gonzalez@example.com" [label="sofia.gonzalez@example.com" style=filled fillcolor="lightblue"];
-"miguel.rodriguez@example.com" [label="miguel.rodriguez@example.com" style=filled fillcolor="yellow"];
-"sofia.gonzalez@example.com" -> "miguel.rodriguez@example.com";
+"carlos.gomez@example.com" [label="carlos.gomez@example.com" style=filled fillcolor="yellow"];
+"carlos.gomez@example.com" -> "sofia.gonzalez@example.com";
+"carlos.gomez@example.com" -> "ana.hernandez@example.com";
+"carlos.gomez@example.com" -> "maria.lopez@example.com";
+"maria.lopez@example.com" [label="maria.lopez@example.com" style=filled fillcolor="lightgreen"];
+"maria.lopez@example.com" -> "carlos.gomez@example.com";
+"juan.martinez@example.com" [label="juan.martinez@example.com" style=filled fillcolor="white"];
+"ana.hernandez@example.com" [label="ana.hernandez@example.com" style=filled fillcolor="lightgreen"];
+"ana.hernandez@example.com" -> "carlos.gomez@example.com";
 "luis.perez@example.com" [label="luis.perez@example.com" style=filled fillcolor="yellow"];
-"sofia.gonzalez@example.com" -> "luis.perez@example.com";
-"elena.torres@example.com" [label="elena.torres@example.com" style=filled fillcolor="lightgreen"];
-"sofia.gonzalez@example.com" -> "elena.torres@example.com" [style=dashed];
+"luis.perez@example.com" -> "sofia.gonzalez@example.com";
+"luis.perez@example.com" -> "laura.ramirez@example.com";
 "laura.ramirez@example.com" [label="laura.ramirez@example.com" style=filled fillcolor="lightgreen"];
-"sofia.gonzalez@example.com" -> "laura.ramirez@example.com" [style=dashed];
+"laura.ramirez@example.com" -> "luis.perez@example.com";
+"jose.garcia@example.com" [label="jose.garcia@example.com" style=filled fillcolor="white"];
+"elena.torres@example.com" [label="elena.torres@example.com" style=filled fillcolor="lightgreen"];
+"elena.torres@example.com" -> "miguel.rodriguez@example.com";
+"miguel.rodriguez@example.com" [label="miguel.rodriguez@example.com" style=filled fillcolor="yellow"];
+"miguel.rodriguez@example.com" -> "sofia.gonzalez@example.com";
+"miguel.rodriguez@example.com" -> "elena.torres@example.com";
+"sofia.gonzalez@example.com" [label="sofia.gonzalez@example.com" style=filled fillcolor="lightblue"];
+"sofia.gonzalez@example.com" -> "carlos.gomez@example.com";
+"sofia.gonzalez@example.com" -> "miguel.rodriguez@example.com";
+"sofia.gonzalez@example.com" -> "luis.perez@example.com";
 }

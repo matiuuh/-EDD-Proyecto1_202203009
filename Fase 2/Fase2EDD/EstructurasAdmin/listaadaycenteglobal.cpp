@@ -267,19 +267,30 @@ void ListaAdyacenteGlobal::graficarListaAdyacente(const std::string& correoUsuar
     out << "digraph g {\n";
     out << "rankdir=LR;\n";
 
-    // Graficar el usuario conectado
-    out << "\"" << correoUsuario << "\" [label=\"" << correoUsuario << "\" style=filled fillcolor=\"lightblue\"];\n";
+    // Recorrer toda la lista adyacente para graficar todos los usuarios
+    NodoUsuarioo* actualUsuario = cabeza;
+    while (actualUsuario) {
+        // Determinar el color del nodo según el estado del usuario
+        std::string color = "white"; // Color por defecto
+        if (actualUsuario->usuario == usuarioConectado) {
+            color = "lightblue"; // Usuario conectado
+        } else if (std::find(amigos.begin(), amigos.end(), actualUsuario->usuario) != amigos.end()) {
+            color = "yellow"; // Amigos del usuario conectado
+        } else if (std::find(sugerencias.begin(), sugerencias.end(), actualUsuario->usuario) != sugerencias.end()) {
+            color = "lightgreen"; // Sugerencias de amistad
+        }
 
-    // Graficar amigos
-    for (Usuario* amigo : amigos) {
-        out << "\"" << amigo->getCorreo() << "\" [label=\"" << amigo->getCorreo() << "\" style=filled fillcolor=\"yellow\"];\n";
-        out << "\"" << correoUsuario << "\" -> \"" << amigo->getCorreo() << "\";\n"; // Conexión del usuario conectado con sus amigos
-    }
+        // Graficar el nodo del usuario
+        out << "\"" << actualUsuario->usuario->getCorreo() << "\" [label=\"" << actualUsuario->usuario->getCorreo() << "\" style=filled fillcolor=\"" << color << "\"];\n";
 
-    // Graficar sugerencias
-    for (Usuario* sugerencia : sugerencias) {
-        out << "\"" << sugerencia->getCorreo() << "\" [label=\"" << sugerencia->getCorreo() << "\" style=filled fillcolor=\"lightgreen\"];\n";
-        out << "\"" << correoUsuario << "\" -> \"" << sugerencia->getCorreo() << "\" [style=dashed];\n"; // Conexión del usuario conectado con sugerencias
+        // Graficar las relaciones de amistad de este usuario
+        NodoAmigoo* actualAmigo = actualUsuario->listaAmigos;
+        while (actualAmigo) {
+            out << "\"" << actualUsuario->usuario->getCorreo() << "\" -> \"" << actualAmigo->amigo->getCorreo() << "\";\n"; // Conexión de usuario con su amigo
+            actualAmigo = actualAmigo->siguiente;
+        }
+
+        actualUsuario = actualUsuario->siguiente; // Pasar al siguiente usuario
     }
 
     out << "}\n";
@@ -295,3 +306,4 @@ void ListaAdyacenteGlobal::graficarListaAdyacente(const std::string& correoUsuar
         std::cout << "La imagen fue generada exitosamente.\n";
     }
 }
+
