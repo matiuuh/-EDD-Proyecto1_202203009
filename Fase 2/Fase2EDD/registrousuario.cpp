@@ -2,6 +2,7 @@
 #include "ui_registrousuario.h"
 #include "moduloentrada.h"
 #include "EstructurasAdmin/avlusuarios.h"
+#include "EstructurasAdmin/listaadaycenteglobal.h"
 
 RegistroUsuario::RegistroUsuario(QWidget *parent)
     : QDockWidget(parent)
@@ -79,6 +80,10 @@ void RegistroUsuario::registrarUsuario()
                                         contrasenia.toStdString());
 
     //QMessageBox::warning(this, "Éxito", "estamos antes de insertar");
+
+    // Agregar el nuevo usuario a la lista adyacente global
+    ListaAdyacenteGlobal& listaGlobal = ListaAdyacenteGlobal::getInstance();
+    listaGlobal.agregarUsuario(nuevoUsuario);
 
     // Insertar el nuevo usuario en el árbol AVL
     avlUsuarios.insertar(nuevoUsuario);

@@ -1,0 +1,8 @@
+graph ListaAdyacenteGlobal {
+rankdir=LR;
+"sofia.gonzalez@example.com" [style=filled, fillcolor=blue];
+"luis.perez@example.com" [style=filled, fillcolor=yellow];
+"sofia.gonzalez@example.com" -- "luis.perez@example.com";
+"miguel.rodriguez@example.com" [style=filled, fillcolor=yellow];
+"sofia.gonzalez@example.com" -- "miguel.rodriguez@example.com";
+}

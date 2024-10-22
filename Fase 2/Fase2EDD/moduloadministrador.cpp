@@ -2,7 +2,7 @@
 #include "ui_moduloadministrador.h"
 #include "moduloentrada.h"
 #include "EstructurasAdmin/ventanaemergente.h"
-#include "EstructurasAdmin/matrizadyacenteglobal.h"
+//#include "EstructurasAdmin/matrizadyacenteglobal.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -15,6 +15,7 @@
 #include <iostream>
 //#include <json/json.h>  // Usando la librería JsonCpp para leer el JSON
 #include "EstructurasAdmin/avlusuarios.h"
+#include "EstructurasAdmin/listaadaycenteglobal.h"
 #include "usuario.h"
 #include "listadoble.h"
 #include "EstructurasAdmin/listadoblepublicacionesglobal.h"
@@ -114,8 +115,8 @@ void ModuloAdministrador::btn_importarUsuarios_Click(const std::string& rutaArch
     archivo >> root;
 
     AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
-    // Obtener la matriz de adyacencia global
-    MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();  // Usamos Singleton o un mecanismo similar si es necesario
+    // Obtener la lista adyacencia global
+    ListaAdyacenteGlobal& ListaAdyacenteG = ListaAdyacenteGlobal::getInstance();  // Usamos Singleton o un mecanismo similar si es necesario
 
     for (const auto& usuarioJson : root) {
         std::string nombres = usuarioJson["nombres"].get<std::string>();
@@ -127,7 +128,7 @@ void ModuloAdministrador::btn_importarUsuarios_Click(const std::string& rutaArch
         Usuario* nuevoUsuario = new Usuario(nombres, apellidos, fechaNacimiento, correo, contrasenia);
         avlUsuarios.insertar(nuevoUsuario);
 
-        matrizGlobal.agregarUsuario(correo);
+        ListaAdyacenteG.agregarUsuario(nuevoUsuario);
     }
 
     std::cout << "Usuarios importados exitosamente desde el archivo JSON." << std::endl;
@@ -190,7 +191,7 @@ void ModuloAdministrador::btn_importarSolicitudes_Click(const std::string& rutaA
     AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
 
     // Obtener la matriz de adyacencia global
-    MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();
+    ListaAdyacenteGlobal& ListaAdyacenteG = ListaAdyacenteGlobal::getInstance();
 
     // Iterar sobre cada solicitud en el archivo
     for (const auto& solicitud : solicitudesJSON) {
@@ -245,22 +246,8 @@ void ModuloAdministrador::btn_importarSolicitudes_Click(const std::string& rutaA
             ListaDoble& listaPublicacionesReceptor = receptor->getListaPublicacionesPropias();
             bstPublicacionesRemitente.agregarPublicacionesDeLista(listaPublicacionesReceptor);
 
-            matrizGlobal.agregarRelacion(emisor->getCorreo(), receptor->getCorreo());
+            ListaAdyacenteG.agregarRelacion(emisor, receptor);
 
-            // Obtener las instancias de la matriz de adyacencia para el usuario conectado y el remitente
-            MatrizAdyacenteRelacion& nuevaMatrizAmigosUsuarioConectado = emisor->getNuevaMatrizAmigos();
-            MatrizAdyacenteRelacion& nuevaMatrizAmigosRemitente = receptor->getNuevaMatrizAmigos();
-
-            // Insertar ambos usuarios en la matriz antes de crear la relación
-            nuevaMatrizAmigosUsuarioConectado.insertarUsuario(emisor->getCorreo());
-            nuevaMatrizAmigosUsuarioConectado.insertarUsuario(receptor->getCorreo());
-
-            nuevaMatrizAmigosRemitente.insertarUsuario(receptor->getCorreo());
-            nuevaMatrizAmigosRemitente.insertarUsuario(emisor->getCorreo());
-
-            // Agregar la relación en las matrices individuales de adyacencia
-            nuevaMatrizAmigosUsuarioConectado.crearRelacion(emisor->getCorreo(), receptor->getCorreo());
-            nuevaMatrizAmigosRemitente.crearRelacion(receptor->getCorreo(), emisor->getCorreo());
 
         } else if (estado == "pendiente") {
             std::cout << "Solicitud pendiente entre: " << emisorCorreo << " y " << receptorCorreo << std::endl;
@@ -646,9 +633,9 @@ void ModuloAdministrador::generarReportesAdmin() {
     mostrarGraficoEnLabelLista(ui->lbl_listaDoblePublicaciones);
 
     // Obtener la matriz de adyacencia global
-    MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();  // Usamos Singleton o un mecanismo similar si es necesario
+    //MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();  // Usamos Singleton o un mecanismo similar si es necesario
 
-    matrizGlobal.graficarMatriz();
+    //matrizGlobal.graficarMatriz();
     graficarMatrizAdyacenteRelacion(ui->lbl_matrizGlobal);
 }
 
@@ -688,17 +675,17 @@ void ModuloAdministrador::mostrarGraficoUsuarioEspecifico(QLabel* label) {
 
         if (usuarioEncontrado != nullptr) {
             // Graficar la matriz de amigos del usuario encontrado
-            MatrizAdyacenteRelacion& matrizAmigos = usuarioEncontrado->getNuevaMatrizAmigos();  // Método que devuelve la matriz de amigos del usuario (objeto, no puntero)
+            //MatrizAdyacenteRelacion& matrizAmigos = usuarioEncontrado->getNuevaMatrizAmigos();  // Método que devuelve la matriz de amigos del usuario (objeto, no puntero)
 
             // Verificar si la matriz contiene relaciones
-            if (!matrizAmigos.estaVacia()) {
+            /*if (!matrizAmigos.estaVacia()) {
                 std::cout << "La matriz no está vacía, contiene relaciones." << std::endl;
             } else {
                 std::cout << "La matriz está vacía." << std::endl;
             }
 
             matrizAmigos.graficar("grafoIndividual_encontrado" + usuarioEncontrado->getCorreo());
-            matrizAmigos.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matriz_adyacente_usuario.png");
+            matrizAmigos.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matriz_adyacente_usuario.png");*/
 
             // Verificar si el archivo de imagen existe y mostrarlo en el QLabel
             QString rutaImagen = "C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\grafoIndividual_encontrado" +email+ ".png";

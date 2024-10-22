@@ -30,6 +30,11 @@
       "estado": "PENDIENTE"
     },
     {
+      "emisor": "luis.perez@example.com",
+      "receptor": "sofia.gonzalez@example.com",
+      "estado": "ACEPTADA"
+    },
+    {
       "emisor": "miguel.rodriguez@example.com",
       "receptor": "sofia.gonzalez@example.com",
       "estado": "ACEPTADA"

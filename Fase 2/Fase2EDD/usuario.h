@@ -7,7 +7,6 @@
 #include "listadoble.h"
 #include "bstpublicaciones.h"
 #include "EstructurasUsuario/matrizdispersaamigos.h"
-#include "EstructurasUsuario/matrizadyacenterelacion.h"
 
 class Usuario {
 public:
@@ -38,8 +37,6 @@ public:
     Pila& getPilaSolicitudes() { return solicitudesRecibidas; }
     ListaSimple& getListaSolicitudesEnviadas() { return solicitudesEnviadas; }
     MatrizDispersaAmigos& getMatrizAmigos() { return matrizAmigos; }  // Método para obtener la matriz dispersa de amigos
-    MatrizAdyacenteRelacion& getNuevaMatrizAmigos() { return nuevaMatrizAmigos; }  // Método para obtener la matriz dispersa de amigos
-
 
     ListaDoble& getListaPublicacionesPropias();
     BSTPublicaciones& getBSTPublicacionesAmigos();
@@ -58,7 +55,6 @@ private:
     ListaDoble publicacionesPropias;           // Lista doble para publicaciones propias
     BSTPublicaciones publicacionesAmigos;      // Árbol binario de búsqueda para publicaciones de amigos
     MatrizDispersaAmigos matrizAmigos;          // Matriz dispersa para amistades
-    MatrizAdyacenteRelacion nuevaMatrizAmigos;  //sustituye la matriz dispersa de amistades
 };
 
 #endif // USUARIO_H
