@@ -1,0 +1,15 @@
+digraph g {
+rankdir=LR;
+node [shape=box];
+"carlos.gomez@example.com" -> "ana.hernandez@example.com_from_carlos.gomez@example.com" -> "maria.lopez@example.com_from_carlos.gomez@example.com";
+"maria.lopez@example.com" -> "carlos.gomez@example.com_from_maria.lopez@example.com";
+"juan.martinez@example.com";
+"ana.hernandez@example.com" -> "carlos.gomez@example.com_from_ana.hernandez@example.com";
+"luis.perez@example.com" -> "sofia.gonzalez@example.com_from_luis.perez@example.com" -> "laura.ramirez@example.com_from_luis.perez@example.com";
+"laura.ramirez@example.com" -> "luis.perez@example.com_from_laura.ramirez@example.com";
+"jose.garcia@example.com";
+"elena.torres@example.com" -> "miguel.rodriguez@example.com_from_elena.torres@example.com";
+"miguel.rodriguez@example.com" -> "sofia.gonzalez@example.com_from_miguel.rodriguez@example.com" -> "elena.torres@example.com_from_miguel.rodriguez@example.com";
+"sofia.gonzalez@example.com" -> "miguel.rodriguez@example.com_from_sofia.gonzalez@example.com" -> "luis.perez@example.com_from_sofia.gonzalez@example.com";
+"aa";
+}

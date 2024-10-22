@@ -1,7 +1,7 @@
 #include "moduloadministrador.h"
 #include "ui_moduloadministrador.h"
 #include "moduloentrada.h"
-#include "EstructurasAdmin/ventanaemergente.h"
+//#include "EstructurasAdmin/ventanaemergente.h"
 //#include "EstructurasAdmin/matrizadyacenteglobal.h"
 
 #include <QFile>
@@ -633,10 +633,13 @@ void ModuloAdministrador::generarReportesAdmin() {
     mostrarGraficoEnLabelLista(ui->lbl_listaDoblePublicaciones);
 
     // Obtener la matriz de adyacencia global
-    //MatrizAdyacenteGlobal& matrizGlobal = MatrizAdyacenteGlobal::getInstancia();  // Usamos Singleton o un mecanismo similar si es necesario
+    ListaAdyacenteGlobal& matrizGlobal = ListaAdyacenteGlobal::getInstance();  // Usamos Singleton o un mecanismo similar si es necesario
 
+    matrizGlobal.graficarListaAdyacenteGlobal();
+    matrizGlobal.graficarListaAdyacenteComoLista();
     //matrizGlobal.graficarMatriz();
     graficarMatrizAdyacenteRelacion(ui->lbl_matrizGlobal);
+    enlace();
 }
 
 void ModuloAdministrador::mostrarGraficoEnLabel(QLabel* label) {
@@ -658,56 +661,22 @@ void ModuloAdministrador::enlace(){
 }
 
 void ModuloAdministrador::mostrarGraficoUsuarioEspecifico(QLabel* label) {
-    // Crear y mostrar la ventana emergente para solicitar el correo electrónico
-    VentanaEmergente ventana(this);
-    if (ventana.exec() == QDialog::Accepted) {
-        QString email = ventana.getEmail();
-
-        //MatrizAdyacenteRelacion& nuevaMatrizAmigosUsuarioConectado = usuarioConectado->getNuevaMatrizAmigos();
-
-        // Obtener la instancia del árbol AVL de usuarios y buscar el usuario por su correo
-        AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
-        Usuario* usuarioEncontrado = avlUsuarios.buscar(email.toStdString());
-
-        if(usuarioEncontrado){
-            std::cout<<"se encontro "<<std::endl;
-        }
-
-        if (usuarioEncontrado != nullptr) {
-            // Graficar la matriz de amigos del usuario encontrado
-            //MatrizAdyacenteRelacion& matrizAmigos = usuarioEncontrado->getNuevaMatrizAmigos();  // Método que devuelve la matriz de amigos del usuario (objeto, no puntero)
-
-            // Verificar si la matriz contiene relaciones
-            /*if (!matrizAmigos.estaVacia()) {
-                std::cout << "La matriz no está vacía, contiene relaciones." << std::endl;
-            } else {
-                std::cout << "La matriz está vacía." << std::endl;
-            }
-
-            matrizAmigos.graficar("grafoIndividual_encontrado" + usuarioEncontrado->getCorreo());
-            matrizAmigos.graficar("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\matriz_adyacente_usuario.png");*/
-
-            // Verificar si el archivo de imagen existe y mostrarlo en el QLabel
-            QString rutaImagen = "C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\grafoIndividual_encontrado" +email+ ".png";
-            if (QFile::exists(rutaImagen)) {
-                QPixmap pixmap(rutaImagen);
-                if (!pixmap.isNull()) {
-                    label->setPixmap(pixmap);
-                    label->setScaledContents(true);
-                } else {
-                    std::cout << "Error: El QPixmap está vacío." << std::endl;
-                }
-            } else {
-                QMessageBox::warning(this, "Error", "No se pudo generar el gráfico de la matriz adyacente.");
-            }
+    QString rutaImagen = "C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\listaAdyacenteLista.png";
+    if (QFile::exists(rutaImagen)) {
+        QPixmap pixmap(rutaImagen);
+        if (!pixmap.isNull()) {
+            label->setPixmap(pixmap);
+            label->setScaledContents(true);
         } else {
-            QMessageBox::warning(this, "Error", "No se encontró un usuario con el correo electrónico especificado.");
+            std::cout << "Error: El QPixmap está vacío." << std::endl;
         }
+    } else {
+        QMessageBox::warning(this, "Error", "No se pudo generar el gráfico de la matriz adyacente.");
     }
 }
 
 void ModuloAdministrador:: graficarMatrizAdyacenteRelacion(QLabel* label){
-    QPixmap pixmap1("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\grafoGlobal.png");  // Asegúrate de que la ruta sea correcta
+    QPixmap pixmap1("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\listaAdyacenciaGlobal.png");  // Asegúrate de que la ruta sea correcta
     label->setPixmap(pixmap1);
     label->setScaledContents(true);
 }

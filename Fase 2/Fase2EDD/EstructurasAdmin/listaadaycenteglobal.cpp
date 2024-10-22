@@ -307,3 +307,103 @@ void ListaAdyacenteGlobal::graficarListaAdyacente(const std::string& correoUsuar
     }
 }
 
+void ListaAdyacenteGlobal::graficarListaAdyacenteGlobal() {
+    // Crear archivo dot para la representación gráfica
+    std::string filename = "C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\listaAdyacenciaGlobal"; // Ruta completa sin extensión
+    std::ofstream out(filename + ".dot");
+    if (!out) {
+        std::cerr << "Error al crear el archivo dot\n";
+        return;
+    }
+
+    out << "digraph g {\n";
+    out << "rankdir=LR;\n"; // Organiza el grafo de izquierda a derecha
+
+    // Recorrer toda la lista adyacente para graficar todos los usuarios y sus relaciones
+    NodoUsuarioo* actualUsuario = cabeza;
+    while (actualUsuario) {
+        // Graficar el nodo del usuario sin color especial
+        out << "\"" << actualUsuario->usuario->getCorreo() << "\" [label=\"" << actualUsuario->usuario->getCorreo() << "\" style=filled fillcolor=\"white\"];\n";
+
+        // Graficar las relaciones de amistad de este usuario
+        NodoAmigoo* actualAmigo = actualUsuario->listaAmigos;
+        while (actualAmigo) {
+            out << "\"" << actualUsuario->usuario->getCorreo() << "\" -> \"" << actualAmigo->amigo->getCorreo() << "\";\n"; // Conexión de usuario con su amigo
+            actualAmigo = actualAmigo->siguiente;
+        }
+
+        actualUsuario = actualUsuario->siguiente; // Pasar al siguiente usuario
+    }
+
+    out << "}\n";
+    out.close();
+
+    // Comando para generar la imagen (asegúrate de que Graphviz esté instalado)
+    std::string command = "dot -Tpng " + filename + ".dot -o " + filename + ".png";
+    int result = system(command.c_str());
+
+    if (result != 0) {
+        std::cout << "Ocurrió un error al generar la imagen.\n";
+    } else {
+        std::cout << "La imagen fue generada exitosamente.\n";
+    }
+}
+
+void ListaAdyacenteGlobal::graficarListaAdyacenteComoLista() {
+    // Crear archivo dot para la representación gráfica
+    std::string filename = "C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\listaAdyacenteLista"; // Ruta completa sin extensión
+    std::ofstream out(filename + ".dot");
+    if (!out) {
+        std::cerr << "Error al crear el archivo dot\n";
+        return;
+    }
+
+    // Empezar el archivo DOT para graficar la lista adyacente
+    out << "digraph g {\n";
+    out << "rankdir=LR;\n";  // Organiza el grafo de izquierda a derecha, como una lista enlazada
+    out << "node [shape=box];\n";  // Los nodos tendrán forma de caja
+
+    // Recorrer toda la lista adyacente para graficar los usuarios y sus amigos
+    NodoUsuarioo* actualUsuario = cabeza;
+    while (actualUsuario) {
+        // Graficar el nodo del usuario actual
+        out << "\"" << actualUsuario->usuario->getCorreo() << "\"";
+
+        // Si el usuario tiene amigos, graficar la lista de amigos como una lista enlazada
+        NodoAmigoo* actualAmigo = actualUsuario->listaAmigos;
+        if (actualAmigo) {
+            out << " -> ";
+            while (actualAmigo) {
+                // Graficar cada amigo del usuario actual
+                out << "\"" << actualAmigo->amigo->getCorreo() << "_from_" << actualUsuario->usuario->getCorreo() << "\"";
+                // Notar que el nombre del nodo incluye "_from_usuario" para evitar que se comparta en la imagen
+
+                actualAmigo = actualAmigo->siguiente;
+                if (actualAmigo) {
+                    out << " -> ";  // Conexión a otro amigo, simulando la lista
+                }
+            }
+        }
+
+        out << ";\n";  // Terminar la línea de conexiones para este usuario y sus amigos
+
+        // Pasar al siguiente usuario en la lista adyacente
+        actualUsuario = actualUsuario->siguiente;
+    }
+
+    out << "}\n";  // Cerrar el archivo DOT
+    out.close();
+
+    // Comando para generar la imagen (asegúrate de que Graphviz esté instalado)
+    std::string command = "dot -Tpng " + filename + ".dot -o " + filename + ".png";
+    int result = system(command.c_str());
+
+    if (result != 0) {
+        std::cout << "Ocurrió un error al generar la imagen.\n";
+    } else {
+        std::cout << "La imagen fue generada exitosamente.\n";
+    }
+}
+
+
+

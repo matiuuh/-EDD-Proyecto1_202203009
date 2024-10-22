@@ -69,6 +69,10 @@ public:
 
     void graficarListaAdyacente(const std::string& correoUsuario);
 
+    void graficarListaAdyacenteGlobal();
+
+    void graficarListaAdyacenteComoLista();
+
     static ListaAdyacenteGlobal& getInstance();
 };
 
