@@ -1,6 +1,7 @@
 #include "listaadaycenteglobal.h"
 #include <vector>  // Para utilizar el vector
-//#include <fstream>
+#include <fstream>
+#include "avlusuarios.h"
 
 
 // Constructor: Inicializa la lista vacía
@@ -239,4 +240,58 @@ std::vector<Sugerencia> ListaAdyacenteGlobal::obtenerSugerenciasConAmigosEnComun
     }
 
     return sugerenciasConAmigosEnComun;
+}
+
+void ListaAdyacenteGlobal::graficarListaAdyacente(const std::string& correoUsuario) {
+    // Obtener la instancia de AVLUsuarios y buscar el usuario conectado
+    AVLUsuarios& avlUsuarios = AVLUsuarios::getInstance();
+    Usuario* usuarioConectado = avlUsuarios.buscar(correoUsuario);
+
+    if (!usuarioConectado) {
+        std::cout << "Usuario no encontrado." << std::endl;
+        return;
+    }
+
+    // Obtener amigos y sugerencias
+    std::vector<Usuario*> amigos = obtenerAmigos(usuarioConectado);
+    std::vector<Usuario*> sugerencias = obtenerSugerenciasAmistad(usuarioConectado);
+
+    // Crear archivo dot para la representación gráfica
+    std::string filename = "C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\listaAdyacenciaGlobal"; // Ruta completa sin extensión
+    std::ofstream out(filename + ".dot");
+    if (!out) {
+        std::cerr << "Error al crear el archivo dot\n";
+        return;
+    }
+
+    out << "digraph g {\n";
+    out << "rankdir=LR;\n";
+
+    // Graficar el usuario conectado
+    out << "\"" << correoUsuario << "\" [label=\"" << correoUsuario << "\" style=filled fillcolor=\"lightblue\"];\n";
+
+    // Graficar amigos
+    for (Usuario* amigo : amigos) {
+        out << "\"" << amigo->getCorreo() << "\" [label=\"" << amigo->getCorreo() << "\" style=filled fillcolor=\"yellow\"];\n";
+        out << "\"" << correoUsuario << "\" -> \"" << amigo->getCorreo() << "\";\n"; // Conexión del usuario conectado con sus amigos
+    }
+
+    // Graficar sugerencias
+    for (Usuario* sugerencia : sugerencias) {
+        out << "\"" << sugerencia->getCorreo() << "\" [label=\"" << sugerencia->getCorreo() << "\" style=filled fillcolor=\"lightgreen\"];\n";
+        out << "\"" << correoUsuario << "\" -> \"" << sugerencia->getCorreo() << "\" [style=dashed];\n"; // Conexión del usuario conectado con sugerencias
+    }
+
+    out << "}\n";
+    out.close();
+
+    // Comando para generar la imagen (asegúrate de que Graphviz esté instalado)
+    std::string command = "dot -Tpng " + filename + ".dot -o " + filename + ".png";
+    int result = system(command.c_str());
+
+    if (result != 0) {
+        std::cout << "Ocurrió un error al generar la imagen.\n";
+    } else {
+        std::cout << "La imagen fue generada exitosamente.\n";
+    }
 }

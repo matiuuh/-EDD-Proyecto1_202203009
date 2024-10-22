@@ -67,6 +67,8 @@ public:
 
     std::vector<Sugerencia> obtenerSugerenciasConAmigosEnComun(Usuario* usuarioConectado);
 
+    void graficarListaAdyacente(const std::string& correoUsuario);
+
     static ListaAdyacenteGlobal& getInstance();
 };
 

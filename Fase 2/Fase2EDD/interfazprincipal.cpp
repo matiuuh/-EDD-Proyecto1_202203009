@@ -1205,41 +1205,42 @@ void InterfazPrincipal::mostrarSugerenciasGrafo() {
 
     //ListaAdyacenteG.graficarListaAdyacencia(usuarioConectado);
 
-    // Mostrar el gráfico en la interfaz
-    graficarMatrizAdyacenteRelacion(ui->lbl_GrafoSugerencia);
     //ListaAdyacenteG.mostrarListaAdyacente();
 
     // Obtener los amigos del usuario conectado
     std::vector<Usuario*> amigosDelUsuario = ListaAdyacenteG.obtenerAmigos(usuarioConectado);
 
     // Mostrar los amigos obtenidos
-    std::cout << "Amigos de " << usuarioConectado->getCorreo() << ":" << std::endl;
+    /*std::cout << "Amigos de " << usuarioConectado->getCorreo() << ":" << std::endl;
     for (Usuario* amigo : amigosDelUsuario) {
         std::cout << amigo->getCorreo() << std::endl;
-    }
+    }*/
 
     // Obtener las sugerencias de amistad para el usuario conectado
     std::vector<Usuario*> sugerenciasAmistad = ListaAdyacenteG.obtenerSugerenciasAmistad(usuarioConectado);
 
     // Mostrar las sugerencias de amistad obtenidas
-    std::cout << "Sugerencias de amistad para " << usuarioConectado->getCorreo() << ":" << std::endl;
+    /*std::cout << "Sugerencias de amistad para " << usuarioConectado->getCorreo() << ":" << std::endl;
     for (Usuario* sugerencia : sugerenciasAmistad) {
         std::cout << sugerencia->getCorreo() << std::endl;
-    }
+    }*/
 
     // Obtener las sugerencias de amistad con la cantidad de amigos en común
     std::vector<Sugerencia> sugerenciasConAmigosEnComun = ListaAdyacenteG.obtenerSugerenciasConAmigosEnComun(usuarioConectado);
 
     // Mostrar las sugerencias de amistad y la cantidad de amigos en común
-    std::cout << "Sugerencias de amistad para " << usuarioConectado->getCorreo() << " con amigos en comun:" << std::endl;
+    /*std::cout << "Sugerencias de amistad para " << usuarioConectado->getCorreo() << " con amigos en comun:" << std::endl;
     for (const Sugerencia& sugerencia : sugerenciasConAmigosEnComun) {
         std::cout << sugerencia.usuario->getCorreo() << " (Amigos en comun: " << sugerencia.amigosEnComun << ")" << std::endl;
-    }
+    }*/
 
+    ListaAdyacenteG.graficarListaAdyacente(correoUsuarioConectado);
+    // Mostrar el gráfico en la interfaz
+    graficarMatrizAdyacenteRelacion(ui->lbl_GrafoSugerencia);
 }
 
 void InterfazPrincipal:: graficarMatrizAdyacenteRelacion(QLabel* label){
-    QPixmap pixmap1("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\listaAdyacencia.png");  // Asegúrate de que la ruta sea correcta
+    QPixmap pixmap1("C:\\Users\\estua\\OneDrive\\Documentos\\Proyecto1EDD\\pruebas\\listaAdyacenciaGlobal.png");  // Asegúrate de que la ruta sea correcta
     label->setPixmap(pixmap1);
     label->setScaledContents(true);
 }
