@@ -80,7 +80,7 @@ Los usuarios pueden crear publicaciones que se almacenan en una lista doblemente
 
 El sistema gestiona las relaciones de amistad mediante una matriz dispersa que registra las conexiones entre usuarios. Al aceptar una solicitud, la relación de amistad se actualiza en la matriz.
 
-![Módulo Buscar](imagenes/USAM.png)
+![Módulo Buscar](imagenes/ModUsuarioNuevaSolicitud.png)
 
 ### 6. Eliminación de Cuenta
 
@@ -93,6 +93,18 @@ Permite al usuario eliminar su cuenta, lo que implica eliminar sus datos, public
 El sistema genera gráficos usando Graphviz para representar visualmente la red de amigos, las solicitudes y las publicaciones. Estos gráficos se generan en formato `.dot` y pueden visualizarse usando herramientas compatibles.
 
 ![Módulo Buscar](imagenes/USRep.png)
+
+### 8. Sugerencias
+
+El sistema generan las sugerencias de amistad del usuario conectado, mostrandose en un grafo que representa las amistades mediante relaciones, aristas que conectan a los usuarios.
+
+![Módulo Buscar](imagenes/ModUsuarioSugerencias.png)
+
+### 9. Gráficos administrador
+
+El sistema genera los gráficos de la lista adyacente global y su respectivo grafo.
+
+![Módulo Buscar](imagenes/ModAdminGrafFIN.png)
 
 ## Guía de Uso
 

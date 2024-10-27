@@ -11,5 +11,4 @@ node [shape=box];
 "elena.torres@example.com" -> "miguel.rodriguez@example.com_from_elena.torres@example.com";
 "miguel.rodriguez@example.com" -> "sofia.gonzalez@example.com_from_miguel.rodriguez@example.com" -> "elena.torres@example.com_from_miguel.rodriguez@example.com";
 "sofia.gonzalez@example.com" -> "miguel.rodriguez@example.com_from_sofia.gonzalez@example.com" -> "luis.perez@example.com_from_sofia.gonzalez@example.com";
-"aa";
 }
